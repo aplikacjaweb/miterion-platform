@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer-core';
-import type { Browser, LaunchOptions } from 'puppeteer-core';
+import type { Browser } from 'puppeteer-core';
 import { generatePdfContent } from '@/lib/pdfTemplate';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
@@ -8,7 +8,9 @@ const PAGE_TIMEOUT_MS = 25_000;
 const LAUNCH_TIMEOUT_MS = 15_000;
 const SIGNED_URL_EXPIRES_IN_SECONDS = 60 * 60; // 1 hour
 
-async function getLaunchOptions(): Promise<LaunchOptions> {
+type PuppeteerLaunchOptions = Parameters<typeof puppeteer.launch>[0];
+
+async function getLaunchOptions(): Promise<PuppeteerLaunchOptions> {
   const localExecutablePath = process.env.CHROMIUM_EXECUTABLE_PATH;
 
   if (localExecutablePath) {
