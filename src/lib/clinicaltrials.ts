@@ -106,7 +106,7 @@ function generatePreviewMetrics(studies: NormalizedStudy[]): PreviewMetrics {
     totalTrials,
     recruitingTrials,
     recruitingPct: totalTrials > 0 ? Math.round((recruitingTrials / totalTrials) * 100) : 0,
-    countryDistribution: [...countryMap.entries()]
+    countryDistribution: Array.from(countryMap.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([country, count]) => ({ country, count })),
