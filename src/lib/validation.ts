@@ -44,7 +44,7 @@ const rfpBaseSchema = z.object({
  * Validates the File object before upload begins.
  */
 export const rfpFormSchema = rfpBaseSchema.extend({
-  file: z.custom((val) => { if (typeof File === 'undefined') return false; return val instanceof File; })
+  file: z.custom<File>((val) => { if (typeof File === 'undefined') return false; return val instanceof File; })
     .refine((f) => f.size > 0, 'File cannot be empty')
     .refine((f) => f.size <= 20 * 1024 * 1024, 'File must be less than 20MB')
     .refine(
