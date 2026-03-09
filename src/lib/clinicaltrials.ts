@@ -62,7 +62,7 @@ function normalizeStudy(raw: RawStudy): NormalizedStudy {
     overallStatus: proto.statusModule.overallStatus,
     startDate: proto.statusModule.startDateStruct?.date || null,
     leadSponsorName: proto.sponsorCollaboratorsModule?.leadSponsor?.name || null,
-    countries: [...new Set(locations.map((l) => l.country))],
+    countries: Array.from(new Set(locations.map((l) => l.country))),
     phases: proto.designModule?.phases || [],
     studySites: locations.map((l) => ({
       facility: l.facility,
