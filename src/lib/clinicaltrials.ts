@@ -179,3 +179,4 @@ export async function fetchTrials({ indication, phase, geo }: SearchParams) {
     };
   }
 }
+
