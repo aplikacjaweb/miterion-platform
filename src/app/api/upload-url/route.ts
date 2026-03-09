@@ -1,39 +1,40 @@
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 
-const ALLOWED_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-];
+export async function POST(request: Request) {
+  let body: unknown;
 
-export async function GET(request: Request) {
+  try {
+    body = await request.json();
+  } catch {
+    return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
+  }
+
   if (!supabaseAdmin) {
     return apiError('SERVICE_UNAVAILABLE', 'Storage service is not configured', 503);
   }
 
-  const { searchParams } = new URL(request.url);
-  const filename = searchParams.get('filename');
-  const type = searchParams.get('type');
+  const { filename } = (body ?? {}) as Record<string, unknown>;
 
-  if (!filename || !type) {
-    return apiError('INVALID_REQUEST', 'filename and type query params are required', 400);
-  }
-  if (!ALLOWED_TYPES.includes(type)) {
-    return apiError('INVALID_REQUEST', 'File must be PDF or XLSX', 400);
+  if (!filename || typeof filename !== 'string') {
+    return apiError('INVALID_REQUEST', 'Filename is required', 400);
   }
 
-  // Sanitise filename — strip path traversal attempts
-  const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path = `${Date.now()}-${safeName}`;
+  const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '-');
+  const path = `${Date.now()}-${safeFilename}`;
 
   const { data, error } = await supabaseAdmin.storage
     .from('rfp-uploads')
-    .createSignedUploadUrl(path, { expiresIn: 120 });
+    .createSignedUploadUrl(path);
 
-  if (error || !data?.signedUrl) {
-    console.error('Signed URL generation failed:', error);
-    return apiError('UPLOAD_FAILED', 'Failed to generate upload URL', 500);
+  if (error || !data?.signedUrl || !data?.token) {
+    console.error('Signed upload URL generation failed:', error);
+    return apiError('UPLOAD_FAILED', 'Failed to create upload URL', 500);
   }
 
-  return apiSuccess({ signedUrl: data.signedUrl, path: data.path });
+  return apiSuccess({
+    path,
+    token: data.token,
+    signedUrl: data.signedUrl,
+  });
 }
