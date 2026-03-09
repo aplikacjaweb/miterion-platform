@@ -1,0 +1,126 @@
+{
+  "Index": {
+    "metadata": {
+      "title": "Miterion - Inteligencja Operacji Klinicznych",
+      "description": "Szybko strukturyzuj dane z rejestru publicznego w użyteczne obrazy operacyjne dla zespołów Operacji Klinicznych i Wykonalności."
+    },
+    "hero": {
+      "title": "Inteligencja Operacji Klinicznych",
+      "subtitle": "Szybko strukturyzuj dane z rejestru publicznego w użyteczne obrazy operacyjne",
+      "cta": "Generuj Raport"
+    },
+    "valueProps": {
+      "competition": {
+        "title": "Wcześnie Identyfikuj Konkurencję",
+        "description": "Uzyskaj jasny obraz aktywnych badań i konkurencyjnych sponsorów w swojej przestrzeni wskazań"
+      },
+      "density": {
+        "title": "Zrozum Gęstość Badań",
+        "description": "Zobacz rozkład krajowy i wzorce aktywacji ośrodków w różnych regionach"
+      },
+      "feasibility": {
+        "title": "Wspieraj Wykonalność",
+        "description": "Identyfikuj powtarzające się ośrodki badawcze i zrozum regionalną objętość badań"
+      }
+    },
+    "snapshot": {
+      "title": "Obraz Krajobrazu Klinicznego",
+      "description": "Uzyskaj natychmiastowy wgląd w krajobraz badań",
+      "form": {
+        "step1": {
+          "title": "Krok 1: Podgląd Krajobrazu",
+          "indication": "Wskazanie",
+          "indicationPlaceholder": "np. Stwardnienie Rozsiane",
+          "phase": "Faza",
+          "phases": {
+            "all": "Wszystkie Fazy",
+            "phase1": "Faza 1",
+            "phase2": "Faza 2",
+            "phase3": "Faza 3",
+            "phase4": "Faza 4"
+          },
+          "geo": "Geografia",
+          "geos": {
+            "global": "Globalnie",
+            "us": "Stany Zjednoczone",
+            "eu": "Unia Europejska",
+            "uk": "Wielka Brytania"
+          },
+          "submit": "Pokaż Podgląd",
+          "loading": "Ładowanie podglądu..."
+        },
+        "step2": {
+          "title": "Krok 2: Odblokuj Pełny Raport",
+          "email": "Email",
+          "emailPlaceholder": "twoj@email.com",
+          "company": "Firma (opcjonalnie)",
+          "companyPlaceholder": "Twoja organizacja",
+          "submit": "Generuj Raport PDF",
+          "generating": "Generowanie PDF...",
+          "download": "Pobierz Raport PDF"
+        },
+        "preview": {
+          "title": "Metryki Podglądu",
+          "totalTrials": "Wszystkie Badania",
+          "recruitingTrials": "Badania Rekrutujące",
+          "topCountry": "Główny Kraj",
+          "topSponsor": "Główny Sponsor"
+        },
+        "errors": {
+          "preview": "Nie udało się załadować podglądu. Spróbuj ponownie.",
+          "emailRequired": "Email jest wymagany do wygenerowania raportu.",
+          "pdfGeneration": "Nie udało się wygenerować PDF. Spróbuj ponownie."
+        }
+      }
+    },
+    "rfp": {
+      "title": "Harmonizacja RFP",
+      "description": "Uzyskaj harmonizację RFP i kwestionariuszy wyboru ośrodka ze standardami branżowymi, zoptymalizowaną pod kątem adopcji przez ośrodki.",
+      "pricing": "1200–1800 EUR / realizacja w 48h",
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "twoj@email.com",
+        "company": "Firma",
+        "companyPlaceholder": "Twoja organizacja",
+        "message": "Wiadomość",
+        "messagePlaceholder": "Szczególne wymagania lub kontekst",
+        "file": "Prześlij RFP/Kwestionariusz",
+        "fileTypes": "PDF lub XLSX, max 20MB",
+        "submit": "Wyślij Zapytanie",
+        "uploading": "Przesyłanie pliku...",
+        "submitting": "Wysyłanie...",
+        "success": "Twoje zapytanie RFP zostało wysłane pomyślnie."
+      }
+    },
+    "dct": {
+      "title": "Wczesny Dostęp do Panelu DCT",
+      "description": "Otrzymaj powiadomienie o uruchomieniu naszego panelu badań klinicznych zdecentralizowanych.",
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "twoj@email.com",
+        "submit": "Dołącz do Listy",
+        "submitting": "Dołączanie...",
+        "success": "Zostałeś dodany do listy oczekujących!"
+      }
+    }
+  },
+  "Common": {
+    "loading": "Ładowanie...",
+    "error": "Wystąpił błąd",
+    "retry": "Spróbuj Ponownie",
+    "cookieBanner": {
+      "message": "Używamy plików cookie, aby poprawić Twoje doświadczenia",
+      "accept": "Akceptuj Wszystkie",
+      "reject": "Odrzuć Wszystkie",
+      "settings": "Ustawienia Cookie"
+    },
+    "footer": {
+      "legal": "Prawne",
+      "privacy": "Polityka Prywatności",
+      "terms": "Warunki Użytkowania",
+      "cookies": "Polityka Cookies",
+      "contact": "Kontakt",
+      "rights": "Wszelkie prawa zastrzeżone."
+    }
+  }
+}

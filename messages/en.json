@@ -1,0 +1,126 @@
+{
+  "Index": {
+    "metadata": {
+      "title": "Miterion - Clinical Operations Intelligence",
+      "description": "Quickly structure public registry data into useful operational snapshots for Clinical Operations and Feasibility teams."
+    },
+    "hero": {
+      "title": "Clinical Operations Intelligence",
+      "subtitle": "Quickly structure public registry data into useful operational snapshots",
+      "cta": "Generate Snapshot"
+    },
+    "valueProps": {
+      "competition": {
+        "title": "Identify Competition Early",
+        "description": "Get a clear view of active trials and competing sponsors in your indication space"
+      },
+      "density": {
+        "title": "Understand Trial Density",
+        "description": "See country distribution and site activation patterns across geographies"
+      },
+      "feasibility": {
+        "title": "Support Feasibility",
+        "description": "Identify recurring study sites and understand regional trial volumes"
+      }
+    },
+    "snapshot": {
+      "title": "Clinical Landscape Snapshot",
+      "description": "Get instant insights into your trial landscape",
+      "form": {
+        "step1": {
+          "title": "Step 1: Preview Landscape",
+          "indication": "Indication",
+          "indicationPlaceholder": "e.g., Multiple Sclerosis",
+          "phase": "Phase",
+          "phases": {
+            "all": "All Phases",
+            "phase1": "Phase 1",
+            "phase2": "Phase 2",
+            "phase3": "Phase 3",
+            "phase4": "Phase 4"
+          },
+          "geo": "Geography",
+          "geos": {
+            "global": "Global",
+            "us": "United States",
+            "eu": "European Union",
+            "uk": "United Kingdom"
+          },
+          "submit": "Preview Landscape",
+          "loading": "Loading preview..."
+        },
+        "step2": {
+          "title": "Step 2: Unlock Full Report",
+          "email": "Email",
+          "emailPlaceholder": "your@email.com",
+          "company": "Company (optional)",
+          "companyPlaceholder": "Your organization",
+          "submit": "Generate PDF Report",
+          "generating": "Generating PDF...",
+          "download": "Download PDF Report"
+        },
+        "preview": {
+          "title": "Preview Metrics",
+          "totalTrials": "Total Trials",
+          "recruitingTrials": "Recruiting Trials",
+          "topCountry": "Top Country",
+          "topSponsor": "Top Sponsor"
+        },
+        "errors": {
+          "preview": "Failed to load preview. Please try again.",
+          "emailRequired": "Email is required to generate the report.",
+          "pdfGeneration": "Failed to generate PDF. Please try again."
+        }
+      }
+    },
+    "rfp": {
+      "title": "RFP Harmonization",
+      "description": "Get your RFP and site selection questionnaires harmonized with industry standards and optimized for site adoption.",
+      "pricing": "1200–1800 EUR / 48h turnaround",
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "your@email.com",
+        "company": "Company",
+        "companyPlaceholder": "Your organization",
+        "message": "Message",
+        "messagePlaceholder": "Any specific requirements or context",
+        "file": "Upload RFP/Questionnaire",
+        "fileTypes": "PDF or XLSX, max 20MB",
+        "submit": "Submit Request",
+        "uploading": "Uploading file...",
+        "submitting": "Submitting...",
+        "success": "Your RFP request has been submitted successfully."
+      }
+    },
+    "dct": {
+      "title": "DCT Dashboard Early Access",
+      "description": "Get notified when our decentralized clinical trials dashboard launches.",
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "your@email.com",
+        "submit": "Join Waitlist",
+        "submitting": "Joining...",
+        "success": "You've been added to the waitlist!"
+      }
+    }
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try Again",
+    "cookieBanner": {
+      "message": "We use cookies to improve your experience",
+      "accept": "Accept All",
+      "reject": "Reject All",
+      "settings": "Cookie Settings"
+    },
+    "footer": {
+      "legal": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "contact": "Contact",
+      "rights": "All rights reserved."
+    }
+  }
+}

@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #0F2044;
+  --teal: #0D9488;
+}
+
+@layer base {
+  html {
+    font-family: Inter, Arial, sans-serif;
+  }
+  
+  body {
+    @apply bg-white text-navy;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-teal text-white px-6 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50;
+  }
+  
+  .btn-secondary {
+    @apply border-2 border-teal text-teal px-6 py-2 rounded-md hover:bg-teal/5 transition-colors;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal focus:border-transparent outline-none;
+  }
+
+  .section-title {
+    @apply text-3xl font-bold mb-8 text-center;
+  }
+
+  .error-text {
+    @apply text-red-500 text-sm mt-1;
+  }
+
+  .success-text {
+    @apply text-green-600 font-semibold;
+  }
+}
