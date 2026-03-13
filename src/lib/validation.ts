@@ -5,11 +5,13 @@ import { z } from 'zod';
 // ---------------------------------------------------------------------------
 
 export const snapshotFormSchema = z.object({
-  indication: z.string().min(3, 'Indication must be at least 3 characters').max(100),
+  indication: z.string().min(2, 'Indication must be at least 2 characters').max(100),
   phase: z.enum(['All', 'Phase 1', 'Phase 2', 'Phase 3', 'Phase 4']),
-  geo: z.enum(['Global', 'US', 'EU', 'UK']),
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
-  company: z.string().min(2).max(100).optional().or(z.literal('')),
+  country_name: z.string().min(1, 'Country is required').max(100),
+  country_code: z.string().length(2).optional(), // ISO 3166-1 alpha-2 code
+  email: z.string().email('Invalid email address'),
+  company: z.string().max(100).optional().or(z.literal('')),
+  user_question: z.string().max(1000).optional().or(z.literal('')),
 });
 
 // ---------------------------------------------------------------------------

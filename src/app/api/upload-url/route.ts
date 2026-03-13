@@ -1,6 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   let body: unknown;
 
@@ -24,7 +26,7 @@ export async function POST(request: Request) {
   const path = `${Date.now()}-${safeFilename}`;
 
   const { data, error } = await supabaseAdmin.storage
-    .from('rfp-uploads')
+    .from('rfp_uploads')
     .createSignedUploadUrl(path);
 
   if (error || !data?.signedUrl || !data?.token) {

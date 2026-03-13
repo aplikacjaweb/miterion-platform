@@ -1,10 +1,10 @@
 'use client';
 
-import { Link } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+
 
 export default function Footer() {
-  const t = useTranslations('Common');
+
 
   return (
     <footer className="bg-navy text-white py-8">
@@ -15,21 +15,21 @@ export default function Footer() {
             <p className="text-gray-300">Clinical Operations Intelligence</p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('footer.legal')}</h3>
+            <h3 className="text-lg font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/privacy" className="text-gray-300 hover:text-white">
-                  {t('footer.privacy')}
+                  Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-gray-300 hover:text-white">
-                  {t('footer.terms')}
+                  Terms of Service
                 </Link>
               </li>
               <li>
                 <Link href="/cookies" className="text-gray-300 hover:text-white">
-                  {t('footer.cookies')}
+                  Cookie Policy
                 </Link>
               </li>
             </ul>

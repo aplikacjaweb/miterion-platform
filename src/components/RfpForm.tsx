@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { rfpFormSchema } from '@/lib/validation';
@@ -9,7 +9,7 @@ import { unwrapApi } from '@/lib/apiResponse';
 import type { RfpFormData } from '@/types';
 
 export default function RfpForm() {
-  const t = useTranslations('Index.rfp.form');
+
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -67,7 +67,7 @@ export default function RfpForm() {
       setSuccess(true);
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('error'));
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
     } finally {
       setIsUploading(false);
       setIsSubmitting(false);
@@ -77,7 +77,7 @@ export default function RfpForm() {
   if (success) {
     return (
       <div className="text-center text-green-600 p-4">
-        <p className="font-semibold">{t('success')}</p>
+        <p className="font-semibold">Your request has been submitted successfully!</p>
       </div>
     );
   }
@@ -89,21 +89,21 @@ export default function RfpForm() {
       )}
       <div className="space-y-4">
         <div>
-          <label className="block mb-1">{t('email')}</label>
-          <input {...register('email')} type="email" placeholder={t('emailPlaceholder')} className="input-field" />
+          <label className="block mb-1">Email</label>
+          <input {...register('email')} type="email" placeholder="Your email address" className="input-field" />
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
         </div>
         <div>
-          <label className="block mb-1">{t('company')}</label>
-          <input {...register('company')} placeholder={t('companyPlaceholder')} className="input-field" />
+          <label className="block mb-1">Company (optional)</label>
+          <input {...register('company')} placeholder="Your company name" className="input-field" />
           {errors.company && <p className="text-red-500 text-sm mt-1">{errors.company.message}</p>}
         </div>
         <div>
-          <label className="block mb-1">{t('message')}</label>
-          <textarea {...register('message')} placeholder={t('messagePlaceholder')} className="input-field min-h-[100px]" />
+          <label className="block mb-1">Message (optional)</label>
+          <textarea {...register('message')} placeholder="Any specific requests or questions?" className="input-field min-h-[100px]" />
         </div>
         <div>
-          <label className="block mb-1">{t('file')}</label>
+          <label className="block mb-1">File Upload (PDF or XLSX, max 20MB)</label>
           <input
             type="file"
             accept=".pdf,.xlsx"
@@ -113,11 +113,11 @@ export default function RfpForm() {
               setValue('file', (file ?? null) as unknown as File, { shouldValidate: true });
             }}
           />
-          <p className="text-sm text-gray-600 mt-1">{t('fileTypes')}</p>
+
           {errors.file && <p className="text-red-500 text-sm mt-1">{errors.file.message as string}</p>}
         </div>
         <button type="submit" disabled={isUploading || isSubmitting} className="btn-primary w-full">
-          {isUploading ? t('uploading') : isSubmitting ? t('submitting') : t('submit')}
+          {isUploading ? 'Uploading file...' : isSubmitting ? 'Submitting request...' : 'Request Full Trial Intelligence Report'}
         </button>
       </div>
     </form>

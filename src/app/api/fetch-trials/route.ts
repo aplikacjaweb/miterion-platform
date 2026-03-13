@@ -3,6 +3,8 @@ import { fetchTrials } from '@/lib/clinicaltrials';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { apiError } from '@/lib/apiResponse';
 
+export const runtime = "nodejs";
+
 /**
  * NOTE — intentional exception to the apiSuccess() wrapper pattern.
  *
@@ -24,18 +26,21 @@ export async function POST(request: Request) {
     return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
   }
 
-  const { indication, phase, geo } = (body ?? {}) as Record<string, unknown>;
+  const { indication, phase, country_name, country_code } = (body ?? {}) as Record<string, unknown>;
 
-  if (!indication || typeof indication !== 'string' || indication.trim().length < 3) {
-    return apiError('INVALID_REQUEST', 'Indication must be at least 3 characters', 400);
+  if (!indication || typeof indication !== 'string' || indication.trim().length < 2) {
+    return apiError('INVALID_REQUEST', 'Indication must be at least 2 characters', 400);
   }
 
-  if (!phase || !geo) {
-    return apiError('INVALID_REQUEST', 'Phase and geo are required', 400);
+  if (!phase || typeof phase !== 'string') {
+    return apiError('INVALID_REQUEST', 'Phase is required', 400);
   }
 
-  const cacheKey = `${indication.trim()}:${phase}:${geo}`;
+  if (!country_name || typeof country_name !== 'string') {
+    return apiError('INVALID_REQUEST', 'Country name is required', 400);
+  }
 
+  const cacheKey = `${indication.trim()}:${phase}:${country_name}:${country_code || ''}`;
   // Check cache
   if (supabaseAdmin) {
     const { data: cached, error: cacheReadError } = await supabaseAdmin
@@ -57,7 +62,8 @@ export async function POST(request: Request) {
   const result = await fetchTrials({
     indication: indication.trim(),
     phase: phase as string,
-    geo: geo as 'Global' | 'US' | 'EU' | 'UK',
+    country_name: country_name as string,
+    country_code: (country_code as string) || undefined,
   });
 
   // Cache on success (non-fatal)

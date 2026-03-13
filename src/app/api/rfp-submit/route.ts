@@ -4,6 +4,8 @@ import { supabaseAdmin } from '@/lib/supabaseServer';
 import { rfpSubmitSchema } from '@/lib/validation';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 
+export const runtime = "nodejs";
+
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
@@ -33,8 +35,18 @@ export async function POST(request: Request) {
 
   if (supabaseAdmin) {
     const { data: lead, error: leadError } = await supabaseAdmin
-      .from('leads_rfp')
-      .insert({ email, company: company || null, message: message || null })
+      .from('leads')
+      .insert({
+        email,
+        company: company || null,
+        message: message || null,
+        indication: null, // RFP leads do not have this initially
+        phase: null, // RFP leads do not have this initially
+        country: null, // RFP leads do not have this initially
+        country_code: null, // RFP leads do not have this initially
+        user_question: null, // RFP leads do not have this initially
+        pdf_path: null, // RFP leads do not have this initially
+      })
       .select('id')
       .single();
 
@@ -42,7 +54,7 @@ export async function POST(request: Request) {
       console.error('leads_rfp insert failed:', leadError);
       // Lead insert failed — clean up the already-uploaded file so storage
       // doesn't accumulate orphans.
-      await cleanupFile(filePath, 'rfp-uploads');
+      await cleanupFile(filePath, 'rfp_uploads');
       return apiError('DB_ERROR', 'Failed to save your request', 500);
     }
 

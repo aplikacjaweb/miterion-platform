@@ -29,10 +29,12 @@ export type FetchTrialsResponse =
       error: false;
       indication: string;
       phase: string;
-      geo: string;
+      country_name: string;
+      country_code?: string;
       studies: NormalizedStudy[];
       sampledStudyCount: number;
       preview: PreviewMetrics;
+      key_insight: string;
       note: string;
     }
   | {
@@ -46,9 +48,11 @@ export type FetchTrialsResponse =
 export interface SnapshotFormData {
   indication: string;
   phase: 'All' | 'Phase 1' | 'Phase 2' | 'Phase 3' | 'Phase 4';
-  geo: 'Global' | 'US' | 'EU' | 'UK';
+  country_name: string;
+  country_code?: string;
   email?: string;
   company?: string;
+  user_question?: string;
 }
 
 export interface RfpFormData {

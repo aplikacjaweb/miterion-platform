@@ -4,6 +4,8 @@ import { generatePdfContent } from '@/lib/pdfTemplate';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 
+export const runtime = "nodejs";
+
 const PAGE_TIMEOUT_MS = 25_000;
 const LAUNCH_TIMEOUT_MS = 15_000;
 const SIGNED_URL_EXPIRES_IN_SECONDS = 60 * 60; // 1 hour
@@ -42,11 +44,23 @@ export async function POST(request: Request) {
     return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
   }
 
-  const { email, company, indication, phase, geo, data } =
+  const { email, company, indication, phase, country_name, country_code, user_question, data } =
     (body ?? {}) as Record<string, unknown>;
 
   if (!email || typeof email !== 'string') {
     return apiError('INVALID_REQUEST', 'Email is required', 400);
+  }
+
+  if (!indication || typeof indication !== 'string') {
+    return apiError('INVALID_REQUEST', 'Indication is required', 400);
+  }
+
+  if (!phase || typeof phase !== 'string') {
+    return apiError('INVALID_REQUEST', 'Phase is required', 400);
+  }
+
+  if (!country_name || typeof country_name !== 'string') {
+    return apiError('INVALID_REQUEST', 'Country name is required', 400);
   }
 
   if (!data || typeof data !== 'object' || (data as { error?: boolean }).error) {
@@ -88,7 +102,7 @@ export async function POST(request: Request) {
     uploadedFilename = `${slug}-${Date.now()}.pdf`;
 
     const { error: uploadError } = await supabaseAdmin.storage
-      .from('snapshots')
+      .from('reports')
       .upload(uploadedFilename, pdf, {
         contentType: 'application/pdf',
         cacheControl: '3600',
@@ -102,7 +116,7 @@ export async function POST(request: Request) {
     }
 
     const { data: signedUrlData, error: signedUrlError } = await supabaseAdmin.storage
-      .from('snapshots')
+      .from('reports')
       .createSignedUrl(uploadedFilename, SIGNED_URL_EXPIRES_IN_SECONDS);
 
     if (signedUrlError || !signedUrlData?.signedUrl) {
@@ -116,13 +130,15 @@ export async function POST(request: Request) {
 
     try {
       const { error: leadSaveError } = await supabaseAdmin
-        .from('leads_snapshot')
+        .from('leads')
         .insert({
           email,
           company: company || null,
           indication,
           phase,
-          geo,
+          country: country_name, // Changed from geo
+          country_code: country_code || null, // New field
+          user_question: user_question || null, // New field
           pdf_path: uploadedFilename,
         });
 
@@ -140,7 +156,7 @@ export async function POST(request: Request) {
     if (uploadedFilename && supabaseAdmin) {
       try {
         const { error: cleanupError } = await supabaseAdmin.storage
-          .from('snapshots')
+          .from('reports')
           .remove([uploadedFilename]);
 
         if (cleanupError) {

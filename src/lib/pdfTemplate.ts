@@ -1,6 +1,6 @@
 import type { FetchTrialsResponse, NormalizedStudy } from '@/types';
 
-export function generatePdfContent(data: FetchTrialsResponse & { error: false }) {
+export function generatePdfContent(data: FetchTrialsResponse & { error: false, country_name: string, country_code?: string }) {
   return `
     <!DOCTYPE html>
     <html>
@@ -48,7 +48,7 @@ export function generatePdfContent(data: FetchTrialsResponse & { error: false })
       
       <p><strong>Indication:</strong> ${data.indication}</p>
       <p><strong>Phase:</strong> ${data.phase}</p>
-      <p><strong>Geography:</strong> ${data.geo}</p>
+      <p><strong>Geography:</strong> ${data.country_name}</p>
 
       <div class="metrics">
         <div class="metric-card">
@@ -60,97 +60,65 @@ export function generatePdfContent(data: FetchTrialsResponse & { error: false })
           <div class="metric-value">
             ${data.preview.recruitingTrials}
             <span style="font-size: 16px; color: #64748b">
-              (${data.preview.recruitingPct}%)
+              (${data.preview.recruitingPct}% recruiting)
             </span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Recruitment Competition</div>
+          <div class="metric-value">
+            ${data.preview.totalTrials <= 3 ? 'LOW' : data.preview.totalTrials <= 10 ? 'MEDIUM' : 'HIGH'}
           </div>
         </div>
       </div>
 
-      <h2>Geographic Distribution</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Country</th>
-            <th>Trial Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${data.preview.countryDistribution.map(c => `
-            <tr>
-              <td>${c.country}</td>
-              <td>${c.count}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
+      <div style="page-break-after: always;"></div>
 
-      <h2>Top Study Sites</h2>
+      <h2>2. Landscape</h2>
       <table>
         <thead>
           <tr>
-            <th>Facility</th>
-            <th>Trial Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${data.preview.topStudySites.map(s => `
-            <tr>
-              <td>${s.facility}</td>
-              <td>${s.count}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-
-      <h2>Top Sponsors</h2>
-      <table>
-        <thead>
-          <tr>
+            <th>NCT ID</th>
             <th>Sponsor</th>
-            <th>Trial Count</th>
+            <th>Phase</th>
+            <th>Status</th>
+            <th>Countries</th>
           </tr>
         </thead>
         <tbody>
-          ${data.preview.topSponsors.map(s => `
+          ${data.studies.slice(0, 10).map((study: NormalizedStudy) => `
             <tr>
-              <td>${s.sponsor}</td>
-              <td>${s.count}</td>
+              <td>${study.nctId}</td>
+              <td>${study.leadSponsorName || 'N/A'}</td>
+              <td>${study.phases.join(', ') || 'N/A'}</td>
+              <td>${study.overallStatus}</td>
+              <td>${study.countries.join(', ')}</td>
             </tr>
           `).join('')}
         </tbody>
       </table>
 
-      <h2>Trial Details</h2>
-      ${data.studies.map((study: NormalizedStudy) => `
-        <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
-          <h3>${study.nctId}</h3>
-          <p><strong>Status:</strong> ${study.overallStatus}</p>
-          <p><strong>Start Date:</strong> ${study.startDate || 'Not specified'}</p>
-          <p><strong>Lead Sponsor:</strong> ${study.leadSponsorName || 'Not specified'}</p>
-          <p><strong>Phases:</strong> ${study.phases.join(', ') || 'Not specified'}</p>
-          <p><strong>Countries:</strong> ${study.countries.join(', ')}</p>
-          
-          <h4 style="margin-top: 15px;">Study Sites:</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Facility</th>
-                <th>City</th>
-                <th>Country</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${study.studySites.map(site => `
-                <tr>
-                  <td>${site.facility}</td>
-                  <td>${site.city}</td>
-                  <td>${site.country}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `).join('')}
+      <div style="page-break-after: always;"></div>
+
+      <h2>3. Distribution</h2>
+      <h3 style="margin-top: 20px; margin-bottom: 10px;">Trials by Country</h3>
+      <ul>
+        ${data.preview.countryDistribution.slice(0, 10).map(c => `
+          <li>${c.country}: ${c.count} trials</li>
+        `).join('')}
+      </ul>
+
+      <h3 style="margin-top: 20px; margin-bottom: 10px;">Trials by Sponsor</h3>
+      <ul>
+        ${data.preview.topSponsors.slice(0, 10).map(s => `
+          <li>${s.sponsor}: ${s.count} trials</li>
+        `).join('')}
+      </ul>
+
+      <div style="page-break-after: always;"></div>
+
+      <h2>4. Key Insight</h2>
+      <p>${data.key_insight || 'No key insight available for this snapshot.'}</p>
 
       <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
         <p>Generated by Miterion on ${new Date().toLocaleDateString()}</p>

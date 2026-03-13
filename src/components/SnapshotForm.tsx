@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, useEffect, useMemo } from 'react';
+import conditions from '@/lib/data/clinicaltrials_conditions.json';
+import countries from '@/lib/data/iso_countries.json';
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { snapshotFormSchema } from '@/lib/validation';
@@ -19,22 +21,82 @@ function parseJsonSafely(raw: string): unknown | null {
 }
 
 export default function SnapshotForm() {
-  const t = useTranslations('Index.snapshot.form');
+
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<FetchTrialsResponse | null>(null);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Indication Autocomplete State
+  const [indicationInput, setIndicationInput] = useState<string>('');
+  const [indicationSuggestions, setIndicationSuggestions] = useState<string[]>([]);
+  const [selectedIndication, setSelectedIndication] = useState<string | null>(null);
+
+  // Country Autocomplete State
+  const [countryInput, setCountryInput] = useState<string>('');
+  const [countrySuggestions, setCountrySuggestions] = useState<Array<{ name: string; code: string }>>([]);
+  const [selectedCountry, setSelectedCountry] = useState<{ name: string; code: string } | null>(null);
+
+  // Fuzzy search function for conditions
+  const filterConditions = useMemo(() => (input: string) => {
+    if (input.length < 2) return [];
+    const lowerInput = input.toLowerCase();
+    return (conditions as string[])
+      .filter((condition) => condition.toLowerCase().includes(lowerInput))
+      .slice(0, 10);
+  }, [conditions]);
+
+  // Fuzzy search function for countries
+  const filterCountries = useMemo(() => (input: string) => {
+    if (input.length < 2) return [];
+    const lowerInput = input.toLowerCase();
+    return (countries as Array<{ name: string; code: string }>)
+      .filter((country) => country.name.toLowerCase().includes(lowerInput))
+      .slice(0, 10);
+  }, [countries]);
+
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<SnapshotFormData>({
     resolver: zodResolver(snapshotFormSchema),
   });
 
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      if (name === 'indication') {
+        const input = value.indication || '';
+        setIndicationInput(input);
+        setIndicationSuggestions(filterConditions(input));
+        if (selectedIndication && selectedIndication !== input) {
+          setSelectedIndication(null);
+        }
+      }
+      if (name === 'country_name') {
+        const input = value.country_name || '';
+        setCountryInput(input);
+        setCountrySuggestions(filterCountries(input));
+        if (selectedCountry && selectedCountry.name !== input) {
+          setSelectedCountry(null);
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, filterConditions, filterCountries, selectedIndication, selectedCountry, setValue]);
+
   const onPreview = async (data: SnapshotFormData) => {
+    if (!selectedIndication) {
+        setError('Please select a valid indication from the suggestions.');
+        return;
+    }
+    if (!selectedCountry) {
+        setError('Please select a valid country from the suggestions.');
+        return;
+    }
     setIsLoading(true);
     setError(null);
 
@@ -43,9 +105,10 @@ export default function SnapshotForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          indication: data.indication,
+          indication: selectedIndication,
           phase: data.phase,
-          geo: data.geo,
+          country_name: selectedCountry?.name || '',
+          country_code: selectedCountry?.code || '',
         }),
       });
 
@@ -66,7 +129,7 @@ export default function SnapshotForm() {
 
       setPreview(json as FetchTrialsResponse);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.preview'));
+      setError(err instanceof Error ? err.message : 'Failed to generate preview. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +139,7 @@ export default function SnapshotForm() {
     if (!preview || preview.error) return;
 
     if (!data.email?.trim()) {
-      setError(t('errors.emailRequired'));
+      setError('Email is required.');
       return;
     }
 
@@ -92,7 +155,9 @@ export default function SnapshotForm() {
           company: data.company,
           indication: preview.indication,
           phase: preview.phase,
-          geo: preview.geo,
+          country_name: preview.country_name,
+          country_code: preview.country_code,
+          user_question: data.user_question,
           data: preview,
         }),
       });
@@ -109,7 +174,7 @@ export default function SnapshotForm() {
       const { downloadUrl } = unwrapApi<{ downloadUrl: string }>(res, json);
       setDownloadUrl(downloadUrl);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.pdfGeneration'));
+      setError(err instanceof Error ? err.message : 'Failed to generate PDF. Please try again.');
     } finally {
       setIsPdfGenerating(false);
     }
@@ -122,44 +187,104 @@ export default function SnapshotForm() {
 
         {!preview ? (
           <form onSubmit={handleSubmit(onPreview)} noValidate>
-            <h3 className="text-xl font-semibold mb-6">{t('step1.title')}</h3>
+            <h3 className="text-xl font-semibold mb-6">Generate Snapshot Preview</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block mb-1">{t('step1.indication')}</label>
-                <input
-                  {...register('indication')}
-                  placeholder={t('step1.indicationPlaceholder')}
-                  className="input-field"
-                />
+                <label className="block mb-1">Indication</label>
+                <div className="relative">
+                  <input
+                    {...register('indication')}
+                    value={indicationInput}
+                    onChange={(e) => {
+                      setIndicationInput(e.target.value);
+                      setValue('indication', e.target.value);
+                    }}
+                    placeholder="Enter indication"
+                    className="input-field"
+                    onBlur={() => {
+                      // Optional: clear suggestions if input doesn't match a selection
+                      setTimeout(() => setIndicationSuggestions([]), 100);
+                    }}
+                  />
+                  {indicationSuggestions.length > 0 && indicationInput.length >= 2 && !selectedIndication && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                      {indicationSuggestions.map((suggestion, index) => (
+                        <li
+                          key={index}
+                          className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                          onClick={() => {
+                            setIndicationInput(suggestion);
+                            setSelectedIndication(suggestion);
+                            setValue('indication', suggestion, { shouldValidate: true });
+                            setIndicationSuggestions([]);
+                          }}
+                        >
+                          {suggestion}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
                 {errors.indication && (
                   <p className="text-red-500 text-sm mt-1">{errors.indication.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block mb-1">{t('step1.phase')}</label>
+                <label className="block mb-1">Phase</label>
                 <select {...register('phase')} className="input-field">
-                  <option value="All">{t('step1.phases.all')}</option>
-                  <option value="Phase 1">{t('step1.phases.phase1')}</option>
-                  <option value="Phase 2">{t('step1.phases.phase2')}</option>
-                  <option value="Phase 3">{t('step1.phases.phase3')}</option>
-                  <option value="Phase 4">{t('step1.phases.phase4')}</option>
+                  <option value="All">All</option>
+                  <option value="Phase 1">Phase 1</option>
+                  <option value="Phase 2">Phase 2</option>
+                  <option value="Phase 3">Phase 3</option>
+                  <option value="Phase 4">Phase 4</option>
                 </select>
               </div>
 
               <div>
-                <label className="block mb-1">{t('step1.geo')}</label>
-                <select {...register('geo')} className="input-field">
-                  <option value="Global">{t('step1.geos.global')}</option>
-                  <option value="US">{t('step1.geos.us')}</option>
-                  <option value="EU">{t('step1.geos.eu')}</option>
-                  <option value="UK">{t('step1.geos.uk')}</option>
-                </select>
+                <label className="block mb-1">Country</label>
+                <div className="relative">
+                  <input
+                    {...register('country_name')}
+                    value={countryInput}
+                    onChange={(e) => {
+                      setCountryInput(e.target.value);
+                      setValue('country_name', e.target.value);
+                    }}
+                    placeholder="Enter country"
+                    className="input-field"
+                    onBlur={() => {
+                      setTimeout(() => setCountrySuggestions([]), 100);
+                    }}
+                  />
+                  {countrySuggestions.length > 0 && countryInput.length >= 2 && !selectedCountry && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                      {countrySuggestions.map((country, index) => (
+                        <li
+                          key={index}
+                          className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                          onClick={() => {
+                            setCountryInput(country.name);
+                            setSelectedCountry(country);
+                            setValue('country_name', country.name, { shouldValidate: true });
+                            setValue('country_code', country.code, { shouldValidate: true });
+                            setCountrySuggestions([]);
+                          }}
+                        >
+                          {country.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                {errors.country_name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.country_name.message}</p>
+                )}
               </div>
 
               <button type="submit" disabled={isLoading} className="btn-primary w-full">
-                {isLoading ? t('step1.loading') : t('step1.submit')}
+                {isLoading ? 'Generating Preview...' : 'Generate Preview'}
               </button>
             </div>
           </form>
@@ -173,16 +298,16 @@ export default function SnapshotForm() {
             ) : (
               <>
                 <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-4">{t('preview.title')}</h3>
+                  <h3 className="text-xl font-semibold mb-4">Snapshot Preview</h3>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-4 bg-gray-50 rounded">
-                      <div className="font-semibold">{t('preview.totalTrials')}</div>
+                      <div className="font-semibold">Total Trials</div>
                       <div className="text-2xl">{preview.preview.totalTrials}</div>
                     </div>
 
                     <div className="p-4 bg-gray-50 rounded">
-                      <div className="font-semibold">{t('preview.recruitingTrials')}</div>
+                      <div className="font-semibold">Recruiting Trials</div>
                       <div className="text-2xl">
                         {preview.preview.recruitingTrials}
                         <span className="text-sm text-gray-600 ml-2">
@@ -192,43 +317,77 @@ export default function SnapshotForm() {
                     </div>
 
                     <div className="p-4 bg-gray-50 rounded">
-                      <div className="font-semibold">{t('preview.topCountry')}</div>
+                      <div className="font-semibold">Top Country</div>
                       <div className="text-xl">
                         {preview.preview.countryDistribution[0]?.country || 'N/A'}
                       </div>
                     </div>
 
                     <div className="p-4 bg-gray-50 rounded">
-                      <div className="font-semibold">{t('preview.topSponsor')}</div>
+                      <div className="font-semibold">Top Sponsor</div>
                       <div className="text-xl">
                         {preview.preview.topSponsors[0]?.sponsor || 'N/A'}
                       </div>
                     </div>
+
+                    <div className="p-4 bg-gray-50 rounded">
+                      <div className="font-semibold">Recruitment Competition</div>
+                      <div className="text-xl">
+                        {(() => {
+                          const totalTrials = preview.preview.totalTrials;
+                          if (totalTrials > 10) return 'HIGH';
+                          if (totalTrials >= 4) return 'MEDIUM';
+                          return 'LOW';
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-6 mt-6">
+                    <h4 className="text-lg font-semibold mb-2">Country Distribution</h4>
+                    <ul className="list-disc pl-5">
+                      {preview.preview.countryDistribution.slice(0, 5).map((dist, index) => (
+                        <li key={index}>{dist.country}: {dist.count} trials</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold mb-2">Key Insight</h4>
+                    <p>{preview.key_insight || 'No key insight available.'}</p>
                   </div>
                 </div>
 
                 {downloadUrl ? (
-                  <div className="text-center">
+                  <div className="text-center space-y-4">
                     <a
                       href={downloadUrl}
-                      className="btn-primary inline-block"
+                      className="btn-primary inline-block w-full sm:w-auto"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {t('step2.download')}
+                      Download Snapshot Report
+                    </a>
+                    <a
+                      href="https://calendly.com/miterion/15min"
+                      className="btn-secondary inline-block w-full sm:w-auto ml-0 sm:ml-4"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Book a 15-minute call
                     </a>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit(onUnlock)} noValidate>
-                    <h3 className="text-xl font-semibold mb-6">{t('step2.title')}</h3>
+                    <h3 className="text-xl font-semibold mb-6">Unlock Full Report</h3>
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block mb-1">{t('step2.email')}</label>
+                        <label className="block mb-1">Email</label>
                         <input
                           {...register('email')}
                           type="email"
-                          placeholder={t('step2.emailPlaceholder')}
+                          placeholder="Enter your email"
                           className="input-field"
                         />
                         {errors.email && (
@@ -237,11 +396,20 @@ export default function SnapshotForm() {
                       </div>
 
                       <div>
-                        <label className="block mb-1">{t('step2.company')}</label>
+                        <label className="block mb-1">Company (optional)</label>
                         <input
                           {...register('company')}
-                          placeholder={t('step2.companyPlaceholder')}
+                          placeholder="Enter your company name"
                           className="input-field"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1">What decision are you trying to make? (optional)</label>
+                        <textarea
+                          {...register('user_question')}
+                          placeholder="Example: site selection, protocol feasibility, recruitment risk"
+                          className="input-field min-h-[80px]"
                         />
                       </div>
 
@@ -250,7 +418,7 @@ export default function SnapshotForm() {
                         disabled={isPdfGenerating}
                         className="btn-primary w-full"
                       >
-                        {isPdfGenerating ? t('step2.generating') : t('step2.submit')}
+                        {isPdfGenerating ? 'Generating PDF...' : 'Unlock Report'}
                       </button>
                     </div>
                   </form>

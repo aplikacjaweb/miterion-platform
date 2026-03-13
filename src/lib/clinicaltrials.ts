@@ -37,21 +37,10 @@ type RawStudy = {
 interface SearchParams {
   indication: string;
   phase: string;
-  geo: 'Global' | 'US' | 'EU' | 'UK';
+  country_name: string;
+  country_code?: string;
 }
 
-function buildGeoQuery(indication: string, geo: string): string {
-  switch (geo) {
-    case 'US':
-      return `${indication}[condition] AND AREA[LocationCountry] United States`;
-    case 'EU':
-      return `${indication}[condition] AND (AREA[LocationCountry] European Union)`;
-    case 'UK':
-      return `${indication}[condition] AND AREA[LocationCountry] United Kingdom`;
-    default:
-      return `${indication}[condition]`;
-  }
-}
 
 function normalizeStudy(raw: RawStudy): NormalizedStudy {
   const proto = raw.protocolSection;
@@ -121,7 +110,40 @@ function generatePreviewMetrics(studies: NormalizedStudy[]): PreviewMetrics {
   };
 }
 
-export async function fetchTrials({ indication, phase, geo }: SearchParams) {
+function generateKeyInsight({
+  indication,
+  phase,
+  country_name,
+  preview,
+}: { indication: string; phase: string; country_name: string; preview: PreviewMetrics }): string {
+  const competitionLevel = (() => {
+    if (preview.totalTrials > 10) return 'high';
+    if (preview.totalTrials >= 4) return 'medium';
+    return 'low';
+  })();
+
+  const topCountry = preview.countryDistribution[0]?.country;
+  const topSponsor = preview.topSponsors[0]?.sponsor;
+
+  let insight = `Recruitment competition for ${indication} in ${country_name} is ${competitionLevel}`;;
+
+  if (phase !== 'All') {
+    insight += ` for Phase ${phase.replace('Phase ','')} trials`;
+  }
+
+  if (topCountry && preview.countryDistribution[0].count > 1) {
+    insight += ` with ${preview.countryDistribution[0].count} trials in ${topCountry}`;;
+  }
+
+  if (topSponsor) {
+    insight += ` and ${topSponsor} as a top sponsor`;
+  }
+
+  insight += '.';
+  return insight;
+}
+
+export async function fetchTrials({ indication, phase, country_name, country_code }: SearchParams) {
   // Build query string — URLSearchParams only accepts string values
   const params = new URLSearchParams({
     'query.cond': indication,
@@ -129,9 +151,9 @@ export async function fetchTrials({ indication, phase, geo }: SearchParams) {
     pageSize: '100',
   });
 
-  // Add geo filter via fields query
-  // geo filter disabled for now
-  
+  if (country_name) {
+    params.append('filter.advanced', `AREA[LocationCountry] ${country_name}`);
+  }
 
   if (phase !== 'All') {
     // Map phase label to API enum value
@@ -163,10 +185,12 @@ export async function fetchTrials({ indication, phase, geo }: SearchParams) {
       error: false as const,
       indication,
       phase,
-      geo,
+      country_name,
+      country_code,
       studies,
       sampledStudyCount: studies.length,
       preview: generatePreviewMetrics(studies),
+      key_insight: generateKeyInsight({ indication, phase, country_name, preview: generatePreviewMetrics(studies) }),
       note: studies.length === 100 ? 'Limited to first 100 results' : '',
     };
   } catch (error) {
