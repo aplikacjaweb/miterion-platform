@@ -63,10 +63,10 @@ export default function CookiesPage() {
           <p>You have the right to decide whether to accept or reject cookies. You can exercise your cookie preferences by modifying the settings within your web browser. Each browser offers different methods to manage cookies. You can typically find these settings in the "options" or "preferences" menu of your browser.</p>
           <h3 className="text-xl font-semibold text-navy mt-4 mb-2">Here’s how to manage cookies in popular browsers:</h3>
           <ul className="list-disc pl-6 space-y-1">
-            <li><strong>Google Chrome:</strong> Go to Settings > Privacy and security > Site Settings > Cookies and site data. You can block third-party cookies, clear cookies, or manage exceptions for specific sites.</li>
-            <li><strong>Mozilla Firefox:</strong> Go to Options > Privacy & Security > Enhanced Tracking Protection. You can choose between Standard, Strict, or Custom protection.</li>
-            <li><strong>Microsoft Edge:</strong> Go to Settings > Privacy, search, and services > Tracking prevention. You can configure tracking prevention levels and clear browsing data.</li>
-            <li><strong>Safari (for macOS and iOS):</strong> On macOS: Safari > Preferences > Privacy. On iOS: Settings > Safari > Privacy & Security. You can block all cookies or prevent cross-site tracking.</li>
+            <li><strong>Google Chrome:</strong> Go to Settings &gt; Privacy and security &gt; Site Settings &gt; Cookies and site data. You can block third-party cookies, clear cookies, or manage exceptions for specific sites.</li>
+            <li><strong>Mozilla Firefox:</strong> Go to Options &gt; Privacy &amp; Security &gt; Enhanced Tracking Protection. You can choose between Standard, Strict, or Custom protection.</li>
+            <li><strong>Microsoft Edge:</strong> Go to Settings &gt; Privacy, search, and services &gt; Tracking prevention. You can configure tracking prevention levels and clear browsing data.</li>
+            <li><strong>Safari (for macOS and iOS):</strong> On macOS: Safari &gt; Preferences &gt; Privacy. On iOS: Settings &gt; Safari &gt; Privacy &amp; Security. You can block all cookies or prevent cross-site tracking.</li>
           </ul>
           <p className="mt-2">Please note that if you choose to set your browser to reject cookies, you may still use our Website, but your access to some functionality and areas of our Website may be restricted or impaired.</p>
         </section>
