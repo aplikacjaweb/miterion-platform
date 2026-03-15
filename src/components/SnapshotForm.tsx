@@ -40,19 +40,21 @@ export default function SnapshotForm() {
 
   // Fuzzy search function for conditions
   const filterConditions = useMemo(() => (input: string) => {
-    if (input.length < 2) return [];
+    if (input.length < 1) return [];
     const lowerInput = input.toLowerCase();
     return (conditions as string[])
-      .filter((condition) => condition.toLowerCase().includes(lowerInput))
+      .filter((condition) => condition.toLowerCase().startsWith(lowerInput))
+      .sort((a, b) => a.localeCompare(b))
       .slice(0, 10);
   }, [conditions]);
 
   // Fuzzy search function for countries
   const filterCountries = useMemo(() => (input: string) => {
-    if (input.length < 2) return [];
+    if (input.length < 1) return [];
     const lowerInput = input.toLowerCase();
     return (countries as Array<{ name: string; code: string }>)
-      .filter((country) => country.name.toLowerCase().includes(lowerInput))
+      .filter((country) => country.name.toLowerCase().startsWith(lowerInput))
+      .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, 10);
   }, [countries]);
 
