@@ -1,1 +1,8 @@
-module.exports = { experimental: { serverComponentsExternalPackages: ['@sparticuz/chromium'] } }
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['@sparticuz/chromium', '@react-pdf/renderer'],
+  },
+};
+
+module.exports = nextConfig;
