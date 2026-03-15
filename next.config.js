@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['@react-pdf/renderer'],
   experimental: {
-    serverComponentsExternalPackages: ['@sparticuz/chromium', '@react-pdf/renderer'],
+    serverComponentsExternalPackages: ['@react-pdf/renderer'],
   },
 };
 
