@@ -218,9 +218,12 @@ export default function SnapshotForm() {
                           onClick={() => {
                             console.log('Suggestion clicked:', suggestion);
                             setIndicationInput(suggestion);
+                            console.log('After setIndicationInput:', indicationInput);
                             setSelectedIndication(suggestion);
+                            console.log('After setSelectedIndication:', selectedIndication);
                             setValue('indication', suggestion, { shouldValidate: true });
                             setIndicationSuggestions([]);
+                            console.log('After setIndicationSuggestions (should be empty):', indicationSuggestions);
                           }}
                         >
                           {suggestion}
