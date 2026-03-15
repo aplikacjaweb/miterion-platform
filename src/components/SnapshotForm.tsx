@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import conditions from '@/lib/data/clinicaltrials_conditions.json';
 import countries from '@/lib/data/iso_countries.json';
 
@@ -69,6 +69,14 @@ export default function SnapshotForm() {
     },
   });
 
+  useEffect(() => {
+    return () => {
+      if (downloadUrl) {
+        window.URL.revokeObjectURL(downloadUrl);
+      }
+    };
+  }, [downloadUrl]);
+
   const indicationSuggestions = useMemo(() => {
     if (indicationInput.trim().length < 1 || selectedIndication === indicationInput) {
       return [];
@@ -108,7 +116,11 @@ export default function SnapshotForm() {
 
     setIsLoading(true);
     setError(null);
-    setDownloadUrl(null);
+
+    if (downloadUrl) {
+      window.URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+    }
 
     try {
       const res = await fetch('/api/fetch-trials', {
@@ -149,6 +161,11 @@ export default function SnapshotForm() {
     setIsPdfGenerating(true);
     setError(null);
 
+    if (downloadUrl) {
+      window.URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+    }
+
     try {
       const res = await fetch('/api/generate-pdf', {
         method: 'POST',
@@ -165,19 +182,31 @@ export default function SnapshotForm() {
         }),
       });
 
-      const raw = await res.text();
-      const json = parseJsonSafely(raw);
+      const contentType = res.headers.get('content-type') || '';
 
-      if (!json) {
-        throw new Error(
-          `API /api/generate-pdf zwróciło pusty lub niepoprawny JSON (${res.status} ${res.statusText}). Fragment odpowiedzi: ${raw.slice(0, 300)}`
-        );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || 'Failed to generate PDF.');
       }
 
-      const { downloadUrl } = unwrapApi<{ downloadUrl: string }>(res, json);
-      setDownloadUrl(downloadUrl);
+      if (!contentType.includes('application/pdf')) {
+        const responseText = await res.text();
+        throw new Error(`Unexpected response type: ${contentType}. ${responseText}`);
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      setDownloadUrl(url);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'snapshot-report.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate PDF. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to generate PDF.');
     } finally {
       setIsPdfGenerating(false);
     }
@@ -412,9 +441,8 @@ export default function SnapshotForm() {
                   <div className="space-y-4 text-center">
                     <a
                       href={downloadUrl}
+                      download="snapshot-report.pdf"
                       className="btn-primary inline-block w-full sm:w-auto"
-                      target="_blank"
-                      rel="noopener noreferrer"
                     >
                       Download Snapshot Report
                     </a>
