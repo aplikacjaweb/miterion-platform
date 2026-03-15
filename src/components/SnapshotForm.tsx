@@ -293,6 +293,12 @@ export default function SnapshotForm() {
                 {isLoading ? 'Generating Preview...' : 'Generate Preview'}
               </button>
             </div>
+            {Object.keys(errors).length > 0 && (
+              <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
+                <p className="font-semibold">Validation Errors:</p>
+                <pre className="mt-2 text-sm">{JSON.stringify(errors, null, 2)}</pre>
+              </div>
+            )}
           </form>
         ) : (
           <div>
