@@ -213,17 +213,17 @@ export default function SnapshotForm() {
                     <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
                       {indicationSuggestions.map((suggestion, index) => (
                         <li
-                          key={index}
+                          key={suggestion}
                           className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                           onClick={() => {
                             console.log('Suggestion clicked:', suggestion);
                             setIndicationInput(suggestion);
-                            console.log('After setIndicationInput:', indicationInput);
+                            console.log('After setIndicationInput:', suggestion);
                             setSelectedIndication(suggestion);
-                            console.log('After setSelectedIndication:', selectedIndication);
+                            console.log('After setSelectedIndication:', suggestion);
                             setValue('indication', suggestion, { shouldValidate: true });
                             setIndicationSuggestions([]);
-                            console.log('After setIndicationSuggestions (should be empty):', indicationSuggestions);
+                            console.log('After setIndicationSuggestions (should be empty):', []);
                           }}
                         >
                           {suggestion}
