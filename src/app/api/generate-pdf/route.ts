@@ -1,8 +1,7 @@
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { renderToBuffer } from '@react-pdf/renderer';
-import { PdfDocument } from '@/lib/pdfDocument'; // Corrected import for the PDF component
-import React from 'react';
+import { buildPdfDocument } from '@/lib/pdfDocument';
 
 export const runtime = "nodejs";
 
@@ -55,7 +54,7 @@ export async function POST(request: Request) {
 
   try {
     // Generate PDF using @react-pdf/renderer
-    const pdfBuffer = await renderToBuffer(React.createElement(PdfDocument, { data: data as any }) as any);
+    const pdfBuffer = await renderToBuffer(buildPdfDocument(data as any));
 
     const slug = String(indication ?? 'report')
       .toLowerCase()
@@ -129,13 +128,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const debugMessage =
-      process.env.NODE_ENV === 'development'
-        ? error instanceof Error
-          ? `Failed to generate PDF: ${error.message}`
-          : 'Failed to generate PDF: unknown error'
-        : 'Failed to generate PDF. Please try again.';
-
-    return apiError('PDF_FAILED', debugMessage, 500);
+    return apiError('PDF_FAILED', error instanceof Error ? error.message : 'Unknown error', 500);
   }
 }
+
