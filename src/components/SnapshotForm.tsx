@@ -1,14 +1,21 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import conditions from '@/lib/data/clinicaltrials_conditions.json';
 import countries from '@/lib/data/iso_countries.json';
 
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { snapshotFormSchema } from '@/lib/validation';
+import {
+  snapshotPreviewSchema,
+  snapshotUnlockSchema,
+  type SnapshotPreviewFormData,
+  type SnapshotUnlockFormData,
+} from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
-import type { SnapshotFormData, FetchTrialsResponse } from '@/types';
+import type { FetchTrialsResponse } from '@/types';
+
+type CountryOption = { name: string; code: string };
 
 function parseJsonSafely(raw: string): unknown | null {
   if (!raw.trim()) return null;
@@ -21,86 +28,87 @@ function parseJsonSafely(raw: string): unknown | null {
 }
 
 export default function SnapshotForm() {
-
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<FetchTrialsResponse | null>(null);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Indication Autocomplete State
-  const [indicationInput, setIndicationInput] = useState<string>('');
-  const [indicationSuggestions, setIndicationSuggestions] = useState<string[]>([]);
+  const [indicationInput, setIndicationInput] = useState('');
   const [selectedIndication, setSelectedIndication] = useState<string | null>(null);
 
-  // Country Autocomplete State
-  const [countryInput, setCountryInput] = useState<string>('');
-  const [countrySuggestions, setCountrySuggestions] = useState<Array<{ name: string; code: string }>>([]);
-  const [selectedCountry, setSelectedCountry] = useState<{ name: string; code: string } | null>(null);
+  const [countryInput, setCountryInput] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState<CountryOption | null>(null);
 
-  // Fuzzy search function for conditions
-  const filterConditions = useMemo(() => (input: string) => {
-    if (input.length < 1) return [];
-    const lowerInput = input.toLowerCase();
+  const {
+    control: previewControl,
+    register: registerPreview,
+    handleSubmit: handleSubmitPreview,
+    setValue: setValuePreview,
+    formState: { errors: errorsPreview },
+  } = useForm<SnapshotPreviewFormData>({
+    resolver: zodResolver(snapshotPreviewSchema),
+    defaultValues: {
+      indication: '',
+      phase: 'All',
+      country_name: '',
+      country_code: undefined,
+    },
+  });
+
+  const {
+    register: registerUnlock,
+    handleSubmit: handleSubmitUnlock,
+    formState: { errors: errorsUnlock },
+  } = useForm<SnapshotUnlockFormData>({
+    resolver: zodResolver(snapshotUnlockSchema),
+    defaultValues: {
+      email: '',
+      company: '',
+      user_question: '',
+    },
+  });
+
+  const indicationSuggestions = useMemo(() => {
+    if (indicationInput.trim().length < 1 || selectedIndication === indicationInput) {
+      return [];
+    }
+
+    const lowerInput = indicationInput.toLowerCase();
+
     return (conditions as string[])
       .filter((condition) => condition.toLowerCase().startsWith(lowerInput))
       .sort((a, b) => a.localeCompare(b))
       .slice(0, 10);
-  }, [conditions]);
+  }, [indicationInput, selectedIndication]);
 
-  // Fuzzy search function for countries
-  const filterCountries = useMemo(() => (input: string) => {
-    if (input.length < 1) return [];
-    const lowerInput = input.toLowerCase();
-    return (countries as Array<{ name: string; code: string }>)
+  const countrySuggestions = useMemo(() => {
+    if (countryInput.trim().length < 1 || selectedCountry?.name === countryInput) {
+      return [];
+    }
+
+    const lowerInput = countryInput.toLowerCase();
+
+    return (countries as CountryOption[])
       .filter((country) => country.name.toLowerCase().startsWith(lowerInput))
       .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, 10);
-  }, [countries]);
+  }, [countryInput, selectedCountry]);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<SnapshotFormData>({
-    resolver: zodResolver(snapshotFormSchema),
-  });
-
-  useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
-      if (name === 'indication') {
-        const input = value.indication || '';
-        setIndicationInput(input);
-        setIndicationSuggestions(filterConditions(input));
-        if (selectedIndication && selectedIndication !== input) {
-          setSelectedIndication(null);
-        }
-      }
-      if (name === 'country_name') {
-        const input = value.country_name || '';
-        setCountryInput(input);
-        setCountrySuggestions(filterCountries(input));
-        if (selectedCountry && selectedCountry.name !== input) {
-          setSelectedCountry(null);
-        }
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, filterConditions, filterCountries, selectedIndication, selectedCountry, setValue]);
-
-  const onPreview = async (data: SnapshotFormData) => {
+  const onPreview = async (data: SnapshotPreviewFormData) => {
     if (!selectedIndication) {
-        setError('Please select a valid indication from the suggestions.');
-        return;
+      setError('Please select a valid indication from the suggestions.');
+      return;
     }
+
     if (!selectedCountry) {
-        setError('Please select a valid country from the suggestions.');
-        return;
+      setError('Please select a valid country from the suggestions.');
+      return;
     }
+
     setIsLoading(true);
     setError(null);
+    setDownloadUrl(null);
 
     try {
       const res = await fetch('/api/fetch-trials', {
@@ -109,16 +117,14 @@ export default function SnapshotForm() {
         body: JSON.stringify({
           indication: selectedIndication,
           phase: data.phase,
-          country_name: selectedCountry?.name || '',
-          country_code: selectedCountry?.code || '',
+          country_name: selectedCountry.name,
+          country_code: selectedCountry.code,
         }),
       });
 
       const raw = await res.text();
       const json = parseJsonSafely(raw);
 
-      // fetch-trials to wyjątek: zwraca FetchTrialsResponse bez wrappera apiSuccess.
-      // Jeśli status HTTP jest błędny, próbujemy rozpakować nasz standardowy error shape.
       if (!res.ok) {
         unwrapApi(res, json);
       }
@@ -137,13 +143,8 @@ export default function SnapshotForm() {
     }
   };
 
-  const onUnlock = async (data: SnapshotFormData) => {
+  const onUnlock = async (data: SnapshotUnlockFormData) => {
     if (!preview || preview.error) return;
-
-    if (!data.email?.trim()) {
-      setError('Email is required.');
-      return;
-    }
 
     setIsPdfGenerating(true);
     setError(null);
@@ -185,43 +186,54 @@ export default function SnapshotForm() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white p-8 rounded-lg shadow">
-        {error && <div className="mb-4 p-4 bg-red-50 text-red-600 rounded">{error}</div>}
+        {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
 
         {!preview ? (
-          <form onSubmit={handleSubmit(onPreview)} noValidate>
-            <h3 className="text-xl font-semibold mb-6">Generate Snapshot Preview</h3>
+          <form onSubmit={handleSubmitPreview(onPreview)} noValidate>
+            <h3 className="mb-6 text-xl font-semibold">Generate Snapshot Preview</h3>
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="indication-input" className="block mb-1">Indication</label>
+                <label htmlFor="indication-input" className="mb-1 block">
+                  Indication
+                </label>
+
                 <div className="relative">
-                  <input
-                    id="indication-input"
-                    {...register('indication')}
-                    value={indicationInput}
-                    onChange={(e) => {
-                      setIndicationInput(e.target.value);
-                      setValue('indication', e.target.value);
-                    }}
-                    placeholder="Enter indication"
-                    className="input-field"
-                    autoComplete="off"
-                    onBlur={() => {
-                      // Optional: clear suggestions if input doesn't match a selection
-                      setTimeout(() => setIndicationSuggestions([]), 100);
-                    }}
+                  <Controller
+                    control={previewControl}
+                    name="indication"
+                    render={({ field }) => (
+                      <input
+                        id="indication-input"
+                        value={indicationInput}
+                        onChange={(e) => {
+                          const nextValue = e.target.value;
+                          setIndicationInput(nextValue);
+                          setSelectedIndication(null);
+                          field.onChange(nextValue);
+                        }}
+                        placeholder="Enter indication"
+                        className="input-field"
+                        autoComplete="off"
+                        onBlur={field.onBlur}
+                      />
+                    )}
                   />
-                  {indicationSuggestions.length > 0 && indicationInput.length >= 2 && !selectedIndication && (
-                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                      {indicationSuggestions.map((suggestion, index) => (
+
+                  {indicationSuggestions.length > 0 && (
+                    <ul className="absolute z-10 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                      {indicationSuggestions.map((suggestion) => (
                         <li
                           key={suggestion}
-                          className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                          onClick={() => {
+                          className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
                             setIndicationInput(suggestion);
                             setSelectedIndication(suggestion);
-                            setValue('indication', suggestion, { shouldValidate: true });
-                            setIndicationSuggestions([]);
+                            setValuePreview('indication', suggestion, {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
                           }}
                         >
                           {suggestion}
@@ -230,14 +242,17 @@ export default function SnapshotForm() {
                     </ul>
                   )}
                 </div>
-                {errors.indication && (
-                  <p className="text-red-500 text-sm mt-1">{errors.indication.message}</p>
+
+                {errorsPreview.indication && (
+                  <p className="mt-1 text-sm text-red-500">{errorsPreview.indication.message}</p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="phase-select" className="block mb-1">Phase</label>
-                <select id="phase-select" {...register('phase')} className="input-field">
+                <label htmlFor="phase-select" className="mb-1 block">
+                  Phase
+                </label>
+                <select id="phase-select" {...registerPreview('phase')} className="input-field">
                   <option value="All">All</option>
                   <option value="Phase 1">Phase 1</option>
                   <option value="Phase 2">Phase 2</option>
@@ -247,35 +262,54 @@ export default function SnapshotForm() {
               </div>
 
               <div>
-                <label htmlFor="country-input" className="block mb-1">Country</label>
+                <label htmlFor="country-input" className="mb-1 block">
+                  Country
+                </label>
+
                 <div className="relative">
-                  <input
-                    id="country-input"
-                    {...register('country_name')}
-                    value={countryInput}
-                    onChange={(e) => {
-                      setCountryInput(e.target.value);
-                      setValue('country_name', e.target.value);
-                    }}
-                    placeholder="Enter country"
-                    className="input-field"
-                    autoComplete="off"
-                    onBlur={() => {
-                      setTimeout(() => setCountrySuggestions([]), 100);
-                    }}
+                  <Controller
+                    control={previewControl}
+                    name="country_name"
+                    render={({ field }) => (
+                      <input
+                        id="country-input"
+                        value={countryInput}
+                        onChange={(e) => {
+                          const nextValue = e.target.value;
+                          setCountryInput(nextValue);
+                          setSelectedCountry(null);
+                          field.onChange(nextValue);
+                          setValuePreview('country_code', undefined, {
+                            shouldValidate: false,
+                            shouldDirty: true,
+                          });
+                        }}
+                        placeholder="Enter country"
+                        className="input-field"
+                        autoComplete="off"
+                        onBlur={field.onBlur}
+                      />
+                    )}
                   />
-                  {countrySuggestions.length > 0 && countryInput.length >= 2 && !selectedCountry && (
-                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                      {countrySuggestions.map((country, index) => (
+
+                  {countrySuggestions.length > 0 && (
+                    <ul className="absolute z-10 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                      {countrySuggestions.map((country) => (
                         <li
-                          key={index}
-                          className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                          onClick={() => {
+                          key={country.code}
+                          className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
                             setCountryInput(country.name);
                             setSelectedCountry(country);
-                            setValue('country_name', country.name, { shouldValidate: true });
-                            setValue('country_code', country.code, { shouldValidate: true });
-                            setCountrySuggestions([]);
+                            setValuePreview('country_name', country.name, {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
+                            setValuePreview('country_code', country.code, {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
                           }}
                         >
                           {country.name}
@@ -284,8 +318,9 @@ export default function SnapshotForm() {
                     </ul>
                   )}
                 </div>
-                {errors.country_name && (
-                  <p className="text-red-500 text-sm mt-1">{errors.country_name.message}</p>
+
+                {errorsPreview.country_name && (
+                  <p className="mt-1 text-sm text-red-500">{errorsPreview.country_name.message}</p>
                 )}
               </div>
 
@@ -293,56 +328,57 @@ export default function SnapshotForm() {
                 {isLoading ? 'Generating Preview...' : 'Generate Preview'}
               </button>
             </div>
-            {Object.keys(errors).length > 0 && (
-              <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
+
+            {Object.keys(errorsPreview).length > 0 && (
+              <div className="mt-4 rounded bg-red-100 p-4 text-red-700">
                 <p className="font-semibold">Validation Errors:</p>
-                <pre className="mt-2 text-sm">{JSON.stringify(errors, null, 2)}</pre>
+                <pre className="mt-2 text-sm">{JSON.stringify(errorsPreview, null, 2)}</pre>
               </div>
             )}
           </form>
         ) : (
           <div>
             {preview.error ? (
-              <div className="text-red-600 p-4 bg-red-50 rounded mb-4">
+              <div className="mb-4 rounded bg-red-50 p-4 text-red-600">
                 <p className="font-semibold">{preview.reason}</p>
                 {preview.suggestion && <p className="mt-2">{preview.suggestion}</p>}
               </div>
             ) : (
               <>
                 <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-4">Snapshot Preview</h3>
+                  <h3 className="mb-4 text-xl font-semibold">Snapshot Preview</h3>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 bg-gray-50 rounded">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="rounded bg-gray-50 p-4">
                       <div className="font-semibold">Total Trials</div>
                       <div className="text-2xl">{preview.preview.totalTrials}</div>
                     </div>
 
-                    <div className="p-4 bg-gray-50 rounded">
+                    <div className="rounded bg-gray-50 p-4">
                       <div className="font-semibold">Recruiting Trials</div>
                       <div className="text-2xl">
                         {preview.preview.recruitingTrials}
-                        <span className="text-sm text-gray-600 ml-2">
+                        <span className="ml-2 text-sm text-gray-600">
                           ({preview.preview.recruitingPct}%)
                         </span>
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gray-50 rounded">
+                    <div className="rounded bg-gray-50 p-4">
                       <div className="font-semibold">Top Country</div>
                       <div className="text-xl">
                         {preview.preview.countryDistribution[0]?.country || 'N/A'}
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gray-50 rounded">
+                    <div className="rounded bg-gray-50 p-4">
                       <div className="font-semibold">Top Sponsor</div>
                       <div className="text-xl">
                         {preview.preview.topSponsors[0]?.sponsor || 'N/A'}
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gray-50 rounded">
+                    <div className="rounded bg-gray-50 p-4">
                       <div className="font-semibold">Recruitment Competition</div>
                       <div className="text-xl">
                         {(() => {
@@ -355,23 +391,25 @@ export default function SnapshotForm() {
                     </div>
                   </div>
 
-                  <div className="mb-6 mt-6">
-                    <h4 className="text-lg font-semibold mb-2">Country Distribution</h4>
+                  <div className="mt-6 mb-6">
+                    <h4 className="mb-2 text-lg font-semibold">Country Distribution</h4>
                     <ul className="list-disc pl-5">
                       {preview.preview.countryDistribution.slice(0, 5).map((dist, index) => (
-                        <li key={index}>{dist.country}: {dist.count} trials</li>
+                        <li key={index}>
+                          {dist.country}: {dist.count} trials
+                        </li>
                       ))}
                     </ul>
                   </div>
 
                   <div className="mb-6">
-                    <h4 className="text-lg font-semibold mb-2">Key Insight</h4>
+                    <h4 className="mb-2 text-lg font-semibold">Key Insight</h4>
                     <p>{preview.key_insight || 'No key insight available.'}</p>
                   </div>
                 </div>
 
                 {downloadUrl ? (
-                  <div className="text-center space-y-4">
+                  <div className="space-y-4 text-center">
                     <a
                       href={downloadUrl}
                       className="btn-primary inline-block w-full sm:w-auto"
@@ -382,7 +420,7 @@ export default function SnapshotForm() {
                     </a>
                     <a
                       href="https://calendly.com/miterion/15min"
-                      className="btn-secondary inline-block w-full sm:w-auto ml-0 sm:ml-4"
+                      className="btn-secondary ml-0 inline-block w-full sm:ml-4 sm:w-auto"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -390,30 +428,34 @@ export default function SnapshotForm() {
                     </a>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit(onUnlock)} noValidate>
-                    <h3 className="text-xl font-semibold mb-6">Unlock Full Report</h3>
+                  <form onSubmit={handleSubmitUnlock(onUnlock)} noValidate>
+                    <h3 className="mb-6 text-xl font-semibold">Unlock Full Report</h3>
 
                     <div className="space-y-4">
                       <div>
-                        <label htmlFor="email-input" className="block mb-1">Email</label>
+                        <label htmlFor="email-input" className="mb-1 block">
+                          Email
+                        </label>
                         <input
                           id="email-input"
-                          {...register('email')}
+                          {...registerUnlock('email')}
                           type="email"
                           placeholder="Enter your email"
                           className="input-field"
                           autoComplete="email"
                         />
-                        {errors.email && (
-                          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                        {errorsUnlock.email && (
+                          <p className="mt-1 text-sm text-red-500">{errorsUnlock.email.message}</p>
                         )}
                       </div>
 
                       <div>
-                        <label htmlFor="company-input" className="block mb-1">Company (optional)</label>
+                        <label htmlFor="company-input" className="mb-1 block">
+                          Company (optional)
+                        </label>
                         <input
                           id="company-input"
-                          {...register('company')}
+                          {...registerUnlock('company')}
                           placeholder="Enter your company name"
                           className="input-field"
                           autoComplete="organization"
@@ -421,10 +463,12 @@ export default function SnapshotForm() {
                       </div>
 
                       <div>
-                        <label htmlFor="user-question-textarea" className="block mb-1">What decision are you trying to make? (optional)</label>
+                        <label htmlFor="user-question-textarea" className="mb-1 block">
+                          What decision are you trying to make? (optional)
+                        </label>
                         <textarea
                           id="user-question-textarea"
-                          {...register('user_question')}
+                          {...registerUnlock('user_question')}
                           placeholder="Example: site selection, protocol feasibility, recruitment risk"
                           className="input-field min-h-[80px]"
                           autoComplete="off"
@@ -439,6 +483,15 @@ export default function SnapshotForm() {
                         {isPdfGenerating ? 'Generating PDF...' : 'Unlock Report'}
                       </button>
                     </div>
+
+                    {Object.keys(errorsUnlock).length > 0 && (
+                      <div className="mt-4 rounded bg-red-100 p-4 text-red-700">
+                        <p className="font-semibold">Validation Errors:</p>
+                        <pre className="mt-2 text-sm">
+                          {JSON.stringify(errorsUnlock, null, 2)}
+                        </pre>
+                      </div>
+                    )}
                   </form>
                 )}
               </>
