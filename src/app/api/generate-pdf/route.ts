@@ -35,10 +35,10 @@ export async function POST(request: Request) {
     const pdfInstance = pdf(doc);
     console.log('API generate-pdf: pdf() instance created.');
 
-    const buffer = await pdfInstance.toBuffer();
-    console.log('API generate-pdf: PDF buffer generated successfully.');
+    const pdfStream = await pdfInstance.toBuffer();
+    console.log('API generate-pdf: PDF stream generated successfully.');
 
-    return new Response(buffer as BodyInit, {
+    return new Response(pdfStream as unknown as BodyInit, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
