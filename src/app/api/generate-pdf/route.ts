@@ -1,8 +1,8 @@
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { renderToBuffer } from '@react-pdf/renderer';
-import { PdfDocument } from '@/lib/pdfDocument'; // New import for the PDF component
-import React from 'react'; // Dodano import React
+import { PdfDocument } from '@/lib/pdfDocument'; // Corrected import for the PDF component
+import React from 'react';
 
 export const runtime = "nodejs";
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
   try {
     // Generate PDF using @react-pdf/renderer
-    const pdfBuffer = await renderToBuffer(React.createElement(PdfDocument, { data: data as any }) as any); // Użyto React.createElement
+    const pdfBuffer = await renderToBuffer(React.createElement(PdfDocument, { data: data as any }) as any);
 
     const slug = String(indication ?? 'report')
       .toLowerCase()
