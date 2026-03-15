@@ -9,8 +9,7 @@ export const snapshotFormSchema = z.object({
   phase: z.enum(['All', 'Phase 1', 'Phase 2', 'Phase 3', 'Phase 4']),
   country_name: z.string().min(1, 'Country is required').max(100),
   country_code: z.string().length(2).optional(), // ISO 3166-1 alpha-2 code
-  email: z.string().email('Invalid email address'),
-  company: z.string().max(100).optional().or(z.literal('')),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
   user_question: z.string().max(1000).optional().or(z.literal('')),
 });
 
