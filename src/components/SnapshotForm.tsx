@@ -191,9 +191,10 @@ export default function SnapshotForm() {
 
             <div className="space-y-4">
               <div>
-                <label className="block mb-1">Indication</label>
+                <label htmlFor="indication-input" className="block mb-1">Indication</label>
                 <div className="relative">
                   <input
+                    id="indication-input"
                     {...register('indication')}
                     value={indicationInput}
                     onChange={(e) => {
@@ -202,6 +203,7 @@ export default function SnapshotForm() {
                     }}
                     placeholder="Enter indication"
                     className="input-field"
+                    autoComplete="off"
                     onBlur={() => {
                       // Optional: clear suggestions if input doesn't match a selection
                       setTimeout(() => setIndicationSuggestions([]), 100);
@@ -232,8 +234,8 @@ export default function SnapshotForm() {
               </div>
 
               <div>
-                <label className="block mb-1">Phase</label>
-                <select {...register('phase')} className="input-field">
+                <label htmlFor="phase-select" className="block mb-1">Phase</label>
+                <select id="phase-select" {...register('phase')} className="input-field">
                   <option value="All">All</option>
                   <option value="Phase 1">Phase 1</option>
                   <option value="Phase 2">Phase 2</option>
@@ -243,9 +245,10 @@ export default function SnapshotForm() {
               </div>
 
               <div>
-                <label className="block mb-1">Country</label>
+                <label htmlFor="country-input" className="block mb-1">Country</label>
                 <div className="relative">
                   <input
+                    id="country-input"
                     {...register('country_name')}
                     value={countryInput}
                     onChange={(e) => {
@@ -254,6 +257,7 @@ export default function SnapshotForm() {
                     }}
                     placeholder="Enter country"
                     className="input-field"
+                    autoComplete="off"
                     onBlur={() => {
                       setTimeout(() => setCountrySuggestions([]), 100);
                     }}
@@ -383,12 +387,14 @@ export default function SnapshotForm() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block mb-1">Email</label>
+                        <label htmlFor="email-input" className="block mb-1">Email</label>
                         <input
+                          id="email-input"
                           {...register('email')}
                           type="email"
                           placeholder="Enter your email"
                           className="input-field"
+                          autoComplete="email"
                         />
                         {errors.email && (
                           <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -396,20 +402,24 @@ export default function SnapshotForm() {
                       </div>
 
                       <div>
-                        <label className="block mb-1">Company (optional)</label>
+                        <label htmlFor="company-input" className="block mb-1">Company (optional)</label>
                         <input
+                          id="company-input"
                           {...register('company')}
                           placeholder="Enter your company name"
                           className="input-field"
+                          autoComplete="organization"
                         />
                       </div>
 
                       <div>
-                        <label className="block mb-1">What decision are you trying to make? (optional)</label>
+                        <label htmlFor="user-question-textarea" className="block mb-1">What decision are you trying to make? (optional)</label>
                         <textarea
+                          id="user-question-textarea"
                           {...register('user_question')}
                           placeholder="Example: site selection, protocol feasibility, recruitment risk"
                           className="input-field min-h-[80px]"
+                          autoComplete="off"
                         />
                       </div>
 
