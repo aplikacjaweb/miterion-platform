@@ -1,7 +1,7 @@
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { renderToBuffer } from '@react-pdf/renderer';
-import { PdfDocument } from '@/lib/pdfDocument'; // New import for the PDF component
+import PdfDocument from '@/lib/pdfDocument'; // New import for the PDF component
 import React from 'react'; // Dodano import React
 
 export const runtime = "nodejs";
