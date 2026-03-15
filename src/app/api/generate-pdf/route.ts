@@ -1,39 +1,12 @@
-import puppeteer from 'puppeteer-core';
-import type { Browser } from 'puppeteer-core';
-import { generatePdfContent } from '@/lib/pdfTemplate';
-import { supabaseAdmin } from '@/lib/supabaseServer';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
+import { supabaseAdmin } from '@/lib/supabaseServer';
+import { renderToBuffer } from '@react-pdf/renderer';
+import { PdfDocument } from '@/lib/pdfDocument'; // New import for the PDF component
+import React from 'react'; // Dodano import React
 
 export const runtime = "nodejs";
 
-const PAGE_TIMEOUT_MS = 25_000;
-const LAUNCH_TIMEOUT_MS = 15_000;
 const SIGNED_URL_EXPIRES_IN_SECONDS = 60 * 60; // 1 hour
-
-type PuppeteerLaunchOptions = Parameters<typeof puppeteer.launch>[0];
-
-async function getLaunchOptions(): Promise<PuppeteerLaunchOptions> {
-  const localExecutablePath = process.env.CHROMIUM_EXECUTABLE_PATH;
-
-  if (localExecutablePath) {
-    return {
-      executablePath: localExecutablePath,
-      headless: true,
-      timeout: LAUNCH_TIMEOUT_MS,
-    };
-  }
-
-  const chromium = (await import('@sparticuz/chromium-min')).default;
-  const executablePath = await chromium.executablePath();
-
-  return {
-    args: chromium.args,
-    executablePath,
-    headless: true,
-    defaultViewport: chromium.defaultViewport,
-    timeout: LAUNCH_TIMEOUT_MS,
-  };
-}
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -63,37 +36,26 @@ export async function POST(request: Request) {
     return apiError('INVALID_REQUEST', 'Country name is required', 400);
   }
 
-  if (!data || typeof data !== 'object' || (data as { error?: boolean }).error) {
-    return apiError('INVALID_REQUEST', 'Invalid trial data', 400);
+  // Ensure data structure matches expected PdfDocument props
+  if (
+    !data ||
+    typeof data !== 'object' ||
+    (data as { error?: boolean }).error ||
+    !('preview' in (data as any)) || // Basic check for preview
+    !('studies' in (data as any)) // Basic check for studies
+  ) {
+    return apiError('INVALID_REQUEST', 'Invalid or incomplete trial data for PDF generation', 400);
   }
 
   if (!supabaseAdmin) {
     return apiError('SERVICE_UNAVAILABLE', 'Storage service is not configured', 503);
   }
 
-  let browser: Browser | null = null;
   let uploadedFilename: string | null = null;
 
   try {
-    const html = generatePdfContent(
-      data as Parameters<typeof generatePdfContent>[0]
-    );
-
-    const launchOptions = await getLaunchOptions();
-    browser = await puppeteer.launch(launchOptions);
-
-    const page = await browser.newPage();
-    page.setDefaultNavigationTimeout(PAGE_TIMEOUT_MS);
-    page.setDefaultTimeout(PAGE_TIMEOUT_MS);
-
-    await page.setContent(html, { waitUntil: 'domcontentloaded' });
-
-    const pdf = await page.pdf({
-      format: 'A4',
-      margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
-      printBackground: true,
-      timeout: PAGE_TIMEOUT_MS,
-    });
+    // Generate PDF using @react-pdf/renderer
+    const pdfBuffer = await renderToBuffer(React.createElement(PdfDocument, { data: data as any }) as any); // Użyto React.createElement
 
     const slug = String(indication ?? 'report')
       .toLowerCase()
@@ -103,7 +65,7 @@ export async function POST(request: Request) {
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from('reports')
-      .upload(uploadedFilename, pdf, {
+      .upload(uploadedFilename, pdfBuffer, {
         contentType: 'application/pdf',
         cacheControl: '3600',
       });
@@ -136,9 +98,9 @@ export async function POST(request: Request) {
           company: company || null,
           indication,
           phase,
-          country: country_name, // Changed from geo
-          country_code: country_code || null, // New field
-          user_question: user_question || null, // New field
+          country: country_name,
+          country_code: country_code || null,
+          user_question: user_question || null,
           pdf_path: uploadedFilename,
         });
 
@@ -167,18 +129,6 @@ export async function POST(request: Request) {
       }
     }
 
-    const isTimeout =
-      error instanceof Error &&
-      (error.message.includes('timeout') || error.message.includes('Timeout'));
-
-    if (isTimeout) {
-      return apiError(
-        'PDF_FAILED',
-        'PDF generation timed out. Please try again. If this persists, try a narrower indication or geography.',
-        504
-      );
-    }
-
     const debugMessage =
       process.env.NODE_ENV === 'development'
         ? error instanceof Error
@@ -187,9 +137,5 @@ export async function POST(request: Request) {
         : 'Failed to generate PDF. Please try again.';
 
     return apiError('PDF_FAILED', debugMessage, 500);
-  } finally {
-    if (browser) {
-      await browser.close().catch((e) => console.error('Browser close failed:', e));
-    }
   }
 }

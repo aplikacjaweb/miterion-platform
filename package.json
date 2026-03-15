@@ -10,12 +10,11 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
-    "@sparticuz/chromium-min": "^121.0.0",
+    "@react-pdf/renderer": "^3.4.5",
     "@supabase/supabase-js": "^2.39.3",
     "js-cookie": "^3.0.5",
     "next": "14.1.0",
     "next-intl": "^4.8.3",
-    "puppeteer-core": "^21.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.0",
