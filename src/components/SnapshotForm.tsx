@@ -136,7 +136,7 @@ function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) 
     setError(null);
     try {
       // Upload file to Supabase Storage
-      const file = data.rfp_file[0];
+      const file = data.rfp_file as File;
       const filePath = `rfp_uploads/${Date.now()}-${file.name}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('rfp-files')
