@@ -24,7 +24,10 @@ import { Button } from './ui/button';
 
 type CountryOption = { name: string; code: string };
 
-const supabase = createClientComponentClient();
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
 function parseJsonSafely(raw: string): unknown | null {
   if (!raw.trim()) return null;
