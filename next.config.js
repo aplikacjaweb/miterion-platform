@@ -1,9 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['@react-pdf/renderer'],
-  experimental: {
-    serverComponentsExternalPackages: ['@react-pdf/renderer'],
-  },
+ reactStrictMode: true,
+ experimental: {
+ serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+ },
+ outputFileTracingIncludes: {
+ '/api/generate-pdf': ['./node_modules/@sparticuz/chromium/bin/**'],
+ },
 };
 
 module.exports = nextConfig;
