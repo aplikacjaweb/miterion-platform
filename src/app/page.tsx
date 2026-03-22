@@ -4,8 +4,8 @@ import RfpForm from '@/components/RfpForm';
 import DctWaitlistForm from '@/components/DctWaitlistForm';
 
 export const metadata: Metadata = {
-  title: 'Miterion - Clinical Trial Intelligence',
-  description: 'Uncover real-world insights into clinical trial landscapes.'
+  title: 'Miterion - Clinical Trial Intelligence & Decision Support',
+  description: 'Transform public data into actionable recruitment and budget strategies.'
 };
 
 export default async function Home() {
@@ -13,10 +13,10 @@ export default async function Home() {
     <div className="space-y-24 py-12">
       <section className="container mx-auto px-4 text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Accelerate Your Clinical Trial Decisions
+          Clinical Trial Intelligence & Decision Support.
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Uncover real-world insights into clinical trial landscapes to optimize your strategy.
+          Transform public data into actionable recruitment and budget strategies. Instant Snapshot. Expert Intelligence. Budget Control.
         </p>
       </section>
 

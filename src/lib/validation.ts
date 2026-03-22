@@ -13,9 +13,35 @@ export const snapshotPreviewSchema = z.object({
 
 export const snapshotUnlockSchema = z.object({
   email: z.string().email('Invalid email address'),
-  company: z.string().max(100).optional().or(z.literal('')),
-  user_question: z.string().max(1000).optional().or(z.literal('')),
 });
+
+export const fullReportSchema = z.object({
+  mechanism_approach: z.string().max(500).optional().or(z.literal('')),
+  planned_start: z.string().max(100).optional().or(z.literal('')),
+  major_finding_concern: z.string().min(10, 'This field is required and must be at least 10 characters').max(2000),
+});
+
+export type FullReportFormData = z.infer<typeof fullReportSchema>;
+
+const rfpAllowedFileTypes = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+];
+
+export const rfpUploadSchema = z.object({
+  rfp_file: z
+    .custom<File>((val) => {
+      if (typeof File === 'undefined') return false;
+      return val instanceof File;
+    })
+    .refine((file) => file.size > 0, 'File cannot be empty')
+    .refine((file) => file.size <= 20 * 1024 * 1024, 'File must be less than 20MB')
+    .refine((file) => rfpAllowedFileTypes.includes(file.type), 'File must be PDF or XLSX'),
+  target_geography: z.string().min(2, 'Target Geography is required').max(100),
+  uncertainty_question: z.string().min(10, 'This field is required and must be at least 10 characters').max(2000),
+});
+
+export type RfpUploadFormData = z.infer<typeof rfpUploadSchema>;
 
 export type SnapshotPreviewFormData = z.infer<typeof snapshotPreviewSchema>;
 export type SnapshotUnlockFormData = z.infer<typeof snapshotUnlockSchema>;

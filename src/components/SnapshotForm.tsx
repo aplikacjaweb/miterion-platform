@@ -3,19 +3,28 @@
 import { useEffect, useMemo, useState } from 'react';
 import conditions from '@/lib/data/clinicaltrials_conditions.json';
 import countries from '@/lib/data/iso_countries.json';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   snapshotPreviewSchema,
   snapshotUnlockSchema,
+  fullReportSchema,
+  rfpUploadSchema,
   type SnapshotPreviewFormData,
   type SnapshotUnlockFormData,
+  type FullReportFormData,
+  type RfpUploadFormData,
 } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
 import type { FetchTrialsResponse } from '@/types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Button } from './ui/button';
 
 type CountryOption = { name: string; code: string };
+
+const supabase = createClientComponentClient();
 
 function parseJsonSafely(raw: string): unknown | null {
   if (!raw.trim()) return null;
@@ -27,12 +36,175 @@ function parseJsonSafely(raw: string): unknown | null {
   }
 }
 
+// Flow B: Full Report Modal
+interface FullReportModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+}
+
+function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FullReportFormData>({
+    resolver: zodResolver(fullReportSchema),
+    defaultValues: {
+      mechanism_approach: '',
+      planned_start: '',
+      major_finding_concern: '',
+    },
+  });
+
+  const onSubmit = async (data: FullReportFormData) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const { error } = await supabase.from('leads_full').insert([data]);
+      if (error) throw error;
+      onSuccess();
+      reset();
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit full report request.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Request Full Intelligence Report</DialogTitle>
+          <DialogDescription>
+            Provide additional details for a comprehensive analysis (4500 EUR+).
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
+          <div>
+            <label htmlFor="mechanism_approach" className="text-right">Mechanism / Approach (Optional)</label>
+            <input id="mechanism_approach" {...register('mechanism_approach')} className="col-span-3" />
+          </div>
+          <div>
+            <label htmlFor="planned_start" className="text-right">Planned Start (Optional)</label>
+            <input id="planned_start" {...register('planned_start')} className="col-span-3" />
+          </div>
+          <div>
+            <label htmlFor="major_finding_concern" className="text-right">What is the single 'Major Finding' you are most concerned about in your next audit? <span className="text-red-500">*</span></label>
+            <textarea id="major_finding_concern" {...register('major_finding_concern')} className="col-span-3 h-24" />
+            {errors.major_finding_concern && <p className="text-red-500 text-sm">{errors.major_finding_concern.message}</p>}
+          </div>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit Request'}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Flow C: RFP Upload Modal
+interface RfpUploadModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+}
+
+function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<RfpUploadFormData>({
+    resolver: zodResolver(rfpUploadSchema),
+  });
+
+  const onSubmit = async (data: RfpUploadFormData) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      // Upload file to Supabase Storage
+      const file = data.rfp_file[0];
+      const filePath = `rfp_uploads/${Date.now()}-${file.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('rfp-files')
+        .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+      if (uploadError) throw uploadError;
+
+      // Save data to Supabase DB
+      const { error: dbError } = await supabase.from('rfp_requests').insert([
+        {
+          file_path: uploadData.path,
+          target_geography: data.target_geography,
+          uncertainty_question: data.uncertainty_question,
+        },
+      ]);
+
+      if (dbError) throw dbError;
+
+      onSuccess();
+      reset();
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload RFP and submit request.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>RFP Harmonization</DialogTitle>
+          <DialogDescription>
+            Upload your RFP documents for harmonization analysis (1800 EUR+).
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
+          <div>
+            <label htmlFor="rfp_file" className="text-right">File Upload (PDF/Excel, max 20MB) <span className="text-red-500">*</span></label>
+            <input id="rfp_file" type="file" {...register('rfp_file')} className="col-span-3" accept=".pdf,.xlsx" />
+            {errors.rfp_file && <p className="text-red-500 text-sm">{errors.rfp_file.message as string}</p>}
+          </div>
+          <div>
+            <label htmlFor="target_geography" className="text-right">Target Geography <span className="text-red-500">*</span></label>
+            <input id="target_geography" {...register('target_geography')} className="col-span-3" />
+            {errors.target_geography && <p className="text-red-500 text-sm">{errors.target_geography.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="uncertainty_question" className="text-right">What are you unsure about in these proposals? <span className="text-red-500">*</span></label>
+            <textarea id="uncertainty_question" {...register('uncertainty_question')} className="col-span-3 h-24" />
+            {errors.uncertainty_question && <p className="text-red-500 text-sm">{errors.uncertainty_question.message}</p>}
+          </div>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Uploading...' : 'Submit RFP'}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function SnapshotForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<FetchTrialsResponse | null>(null);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showFullReportModal, setShowFullReportModal] = useState(false);
+  const [showRfpUploadModal, setShowRfpUploadModal] = useState(false);
 
   const [indicationInput, setIndicationInput] = useState('');
   const [selectedIndication, setSelectedIndication] = useState<string | null>(null);
@@ -59,13 +231,12 @@ export default function SnapshotForm() {
   const {
     register: registerUnlock,
     handleSubmit: handleSubmitUnlock,
+    setValue: setValueUnlock,
     formState: { errors: errorsUnlock },
   } = useForm<SnapshotUnlockFormData>({
     resolver: zodResolver(snapshotUnlockSchema),
     defaultValues: {
       email: '',
-      company: '',
-      user_question: '',
     },
   });
 
@@ -155,7 +326,7 @@ export default function SnapshotForm() {
     }
   };
 
-  const onUnlock = async (data: SnapshotUnlockFormData) => {
+  const onGeneratePdf = async (data: SnapshotUnlockFormData) => {
     if (!preview || preview.error) return;
 
     setIsPdfGenerating(true);
@@ -172,12 +343,9 @@ export default function SnapshotForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: data.email,
-          company: data.company,
           indication: preview.indication,
           phase: preview.phase,
-          country_name: preview.country_name,
-          country_code: preview.country_code,
-          user_question: data.user_question,
+          geography: preview.country_name, // Changed from country_name to geography for clarity in PDF API
           data: preview,
         }),
       });
@@ -199,12 +367,6 @@ export default function SnapshotForm() {
 
       setDownloadUrl(url);
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'snapshot-report.pdf';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate PDF.');
     } finally {
@@ -292,7 +454,7 @@ export default function SnapshotForm() {
 
               <div>
                 <label htmlFor="country-input" className="mb-1 block">
-                  Country
+                  Geography
                 </label>
 
                 <div className="relative">
@@ -313,7 +475,7 @@ export default function SnapshotForm() {
                             shouldDirty: true,
                           });
                         }}
-                        placeholder="Enter country"
+                        placeholder="Enter geography"
                         className="input-field"
                         autoComplete="off"
                         onBlur={field.onBlur}
@@ -366,7 +528,7 @@ export default function SnapshotForm() {
             )}
           </form>
         ) : (
-          <div>
+          <div className="space-y-6">
             {preview.error ? (
               <div className="mb-4 rounded bg-red-50 p-4 text-red-600">
                 <p className="font-semibold">{preview.reason}</p>
@@ -437,96 +599,70 @@ export default function SnapshotForm() {
                   </div>
                 </div>
 
-                {downloadUrl ? (
-                  <div className="space-y-4 text-center">
-                    <a
-                      href={downloadUrl}
-                      download="snapshot-report.pdf"
-                      className="btn-primary inline-block w-full sm:w-auto"
-                    >
-                      Download Snapshot Report
-                    </a>
-                    <a
-                      href="https://calendly.com/miterion/15min"
-                      className="btn-secondary ml-0 inline-block w-full sm:ml-4 sm:w-auto"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Book a 15-minute call
-                    </a>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmitUnlock(onUnlock)} noValidate>
-                    <h3 className="mb-6 text-xl font-semibold">Unlock Full Report</h3>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label htmlFor="email-input" className="mb-1 block">
-                          Email
-                        </label>
-                        <input
-                          id="email-input"
-                          {...registerUnlock('email')}
-                          type="email"
-                          placeholder="Enter your email"
-                          className="input-field"
-                          autoComplete="email"
-                        />
-                        {errorsUnlock.email && (
-                          <p className="mt-1 text-sm text-red-500">{errorsUnlock.email.message}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label htmlFor="company-input" className="mb-1 block">
-                          Company (optional)
-                        </label>
-                        <input
-                          id="company-input"
-                          {...registerUnlock('company')}
-                          placeholder="Enter your company name"
-                          className="input-field"
-                          autoComplete="organization"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="user-question-textarea" className="mb-1 block">
-                          What decision are you trying to make? (optional)
-                        </label>
-                        <textarea
-                          id="user-question-textarea"
-                          {...registerUnlock('user_question')}
-                          placeholder="Example: site selection, protocol feasibility, recruitment risk"
-                          className="input-field min-h-[80px]"
-                          autoComplete="off"
-                        />
-                      </div>
-
-                      <button
+                {/* TASK 5: POST-GENERATION UI FUNNEL */}
+                <div className="space-y-4 mt-8">
+                  <h3 className="text-xl font-semibold text-center">Your Clinical Trial Intelligence</h3>
+                  
+                  {/* Card 1: Download Free Landscape Snapshot */}
+                  <div className="bg-gray-50 p-6 rounded-lg shadow-sm flex flex-col items-center text-center">
+                    <h4 className="text-lg font-semibold mb-2">Download Free Landscape Snapshot</h4>
+                    <p className="text-gray-600 mb-4">Get your instant PDF report with key market insights.</p>
+                    <form onSubmit={handleSubmitUnlock(onGeneratePdf)} noValidate className="w-full max-w-sm">
+                      <input
+                        id="email-input-card1"
+                        {...registerUnlock('email')}
+                        type="email"
+                        placeholder="Enter your email to download"
+                        className="input-field mb-2"
+                        autoComplete="email"
+                      />
+                      {errorsUnlock.email && (
+                        <p className="mt-1 text-sm text-red-500">{errorsUnlock.email.message}</p>
+                      )}
+                      <Button
                         type="submit"
                         disabled={isPdfGenerating}
-                        className="btn-primary w-full"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                       >
-                        {isPdfGenerating ? 'Generating PDF...' : 'Unlock Report'}
-                      </button>
-                    </div>
-
-                    {Object.keys(errorsUnlock).length > 0 && (
-                      <div className="mt-4 rounded bg-red-100 p-4 text-red-700">
-                        <p className="font-semibold">Validation Errors:</p>
-                        <pre className="mt-2 text-sm">
-                          {JSON.stringify(errorsUnlock, null, 2)}
-                        </pre>
-                      </div>
+                        {isPdfGenerating ? 'Generating PDF...' : 'Download Snapshot Report'}
+                      </Button>
+                    </form>
+                    {downloadUrl && !isPdfGenerating && ( // Only show download link after generation and if not currently generating
+                      <a
+                        href={downloadUrl}
+                        download="clinical-trial-snapshot.pdf"
+                        className="btn-secondary mt-2 inline-block"
+                      >
+                        Click here to download
+                      </a>
                     )}
-                  </form>
-                )}
+                  </div>
+
+                  {/* Card 2: Request Independent Intelligence Report */}
+                  <div className="bg-gray-50 p-6 rounded-lg shadow-sm flex flex-col items-center text-center">
+                    <h4 className="text-lg font-semibold mb-2">Request Independent Intelligence Report</h4>
+                    <p className="text-gray-600 mb-4">Unlock deeper insights for 4500 EUR+.</p>
+                    <Button onClick={() => setShowFullReportModal(true)} className="w-full max-w-sm bg-purple-600 hover:bg-purple-700 text-white">
+                      Request Full Report
+                    </Button>
+                  </div>
+
+                  {/* Card 3: Request RFP Harmonization */}
+                  <div className="bg-gray-50 p-6 rounded-lg shadow-sm flex flex-col items-center text-center">
+                    <h4 className="text-lg font-semibold mb-2">Request RFP Harmonization</h4>
+                    <p className="text-gray-600 mb-4">Optimize your budget with our RFP analysis (1800 EUR+).</p>
+                    <Button onClick={() => setShowRfpUploadModal(true)} className="w-full max-w-sm bg-green-600 hover:bg-green-700 text-white">
+                      Request RFP Harmonization
+                    </Button>
+                  </div>
+                </div>
               </>
             )}
           </div>
         )}
       </div>
+      <FullReportModal open={showFullReportModal} onOpenChange={setShowFullReportModal} onSuccess={() => alert('Full Report request submitted successfully!')} />
+      <RfpUploadModal open={showRfpUploadModal} onOpenChange={setShowRfpUploadModal} onSuccess={() => alert('RFP Upload submitted successfully!')} />
     </div>
   );
 }
