@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import conditions from '@/lib/data/clinicaltrials_conditions.json';
 import countries from '@/lib/data/iso_countries.json';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
