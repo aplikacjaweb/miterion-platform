@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       browser = await puppeteer.launch({
         args: chromium.args,
         executablePath: executablePathToUse,
-        headless: chromium.headless,
+        headless: true,
       });
     } else {
       browser = await puppeteer.launch({
