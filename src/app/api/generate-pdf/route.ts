@@ -29,9 +29,12 @@ export async function POST(req: NextRequest) {
 
     // VERCEL DEPLOYMENT GUARDRAILS
     if (process.env.VERCEL_ENV === 'production') {
+      const executablePathToUse = process.env.CHROME_BIN || await chromium.executablePath();
+      console.log('Using Chromium executablePath:', executablePathToUse);
       browser = await puppeteer.launch({
         args: chromium.args,
-        executablePath: await chromium.executablePath(),
+        executablePath: executablePathToUse,
+        headless: chromium.headless,
       });
     } else {
       browser = await puppeteer.launch({
