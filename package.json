@@ -21,7 +21,7 @@
     "lucide-react": "^0.577.0",
     "next": "14.1.0",
     "next-intl": "^4.8.3",
-    "puppeteer-core": "19.0.0",
+    "puppeteer-core": "24.40.0",
     "react": "18.2.0",
     "react-cookie-consent": "^10.0.1",
     "react-dom": "18.2.0",
