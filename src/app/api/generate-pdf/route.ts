@@ -28,22 +28,11 @@ export async function POST(req: NextRequest) {
     const recruitingPct = previewData?.preview?.recruitingPct || 0;
 
     // VERCEL DEPLOYMENT GUARDRAILS
-    if (process.env.VERCEL_ENV === 'production') {
-      const executablePathToUse = process.env.CHROME_BIN || await chromium.executablePath();
-      console.log('Using Chromium executablePath:', executablePathToUse);
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        executablePath: executablePathToUse,
-        headless: true,
-      });
-    } else {
-      browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: true,
-        // For local development, you might need to specify the path to your Chrome/Chromium executable
-        // executablePath: 'C:\Program Files\Google\Chrome\Application\chrome.exe', // Example for Windows
-      });
-    }
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
 
     const page = await browser.newPage();
 
