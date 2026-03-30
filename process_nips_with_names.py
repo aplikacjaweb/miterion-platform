@@ -1,0 +1,436 @@
+
+import csv
+
+nip_data_raw = '''
+9671181909
+Centrum Medyczne " Ikar" Sp.J.
+5621014484
+Agamed Agnieszka Łasecka
+5541834593
+Katarzyna Wysocka-Nowakowska
+8781680056
+Samodzielny Publiczny Zakład Opieki Zdrowotnej we Wrockach
+5562237224
+Gminna Przychodnia w Złotnikach Kujawskich
+5591697046
+Miejsko-Gminna Przychodnia w Świeciu
+5540239670
+Centrum Medyczne Intercor
+5571520586
+Samodzielny Publiczny Zakład Opieki Zdrowotnej
+8881702797
+NZOZ Primed Wiesława Kaczorowska
+8791207410
+NZOZ Praktyka Lekarza Rodzinnego Konrad Włodarczyk
+8881047364
+Witold Radzikowski
+8791207410
+NZOZ Praktyka Lekarza Rodzinnego Konrad Włodarczyk
+8792072136
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Obrowie z Siedzibą w Dobrzejewicach
+5571033863
+Bogumiła Kabata
+8792072627
+Samodzielny Publiczny Ośrodek Zdrowia w Zelgnie
+8762001172
+Wojskowa Specjalistyczna Przychodnia Lekarska SPZOZ w Grudziądzu
+6151341096
+Niepubliczny Zakład Opieki Zdrowotnej Artmed
+8841447488
+NZOZ ,,Centrum Medyczne Serafinmed" Halina Serafin
+9111699350
+Zespół Publicznych Zakładów Opieki Zdrowotnej w Bierutowie
+8992124286
+Dolnośląskie Centrum Medycyny Profilaktycznej i Bezpieczeństwa Pracy "Pro-Med" Sp. z o.o.
+8961554436
+Dr Ewa Spółka z Ograniczoną Odpowiedzialnością
+8811013437
+Elżbieta Nowicka
+9151557449
+NZOZ "Medyk" Spółka Partnerska- Lekarzy: B. Węgrzyn i J. Zielonka
+8951799946
+Praktyka Lekarza Rodzinnego A-Med
+6932190396
+Medica Głogów Spółka z Ograniczoną Odpowiedzialnością
+6931848712
+Niepubliczny Zakład Opieki Zdrowotnej Spółka z Ograniczoną Odpowiedzialnością
+
+6932175190
+Głogowski Szpital Powiatowy Spółka z Ograniczoną Odpowiedzialnością
+8822120987
+Dobicka-Laskowska&Zadorski Lekarska Spółka Partnerska
+6151706942
+Wielospecjalistyczny Szpital - Samodzielny Publiczny Zespół Opieki Zdrowotnej w Zgorzelcu
+6941514409
+Gminny Zespół Zakładów Opieki Podstawowej w Złotoryi
+8982231810
+Międzywojewódzka Przychodnia Sportowo-Lekarska Spółka Akcyjna
+6121545598
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Nowogrodźcu
+8842752466
+Medimex Sp z o.o.
+9131633644
+Hipokrates Środa Śląska Sp. z o.o.
+8971661719
+Niepubliczny Zakład Opieki Zdrowotnej Staromiejskie Centrum Medyczne -Starmed Sp. z o.o.
+9161393038
+Milickie Centrum Zdrowia Spółka z Ograniczoną Odpowiedzialnością Spółka Komandytowa
+6951532509
+NZOZ Arm-Med Spółka z Ograniczoną Odpowiedzialnością
+9251711950
+Praktyka Lekarzy Rodzinnych D. Gocha Chmielewska, J. Chmielewski Spółka z Ograniczoną Odpowiedzialnością
+9141419154
+Samodzielny Publiczny Gminny Zespół Opieki Zdrowotnej w Przewornie
+6951354002
+Ośrodek Zdrowia w Wądrożu Wielkim
+6131480564
+Niepubliczny Zakład Opieki Zdrowotnej Łużyckie Centrum Medyczne w Lubaniu Sp. z o.o.
+8942908910
+Hospital Service
+6121846897
+Gemini-Med. Sp. z o.o.
+8821191672
+Niepubliczny Zakład Opieki Zdrowotnej "Na Skałkach" Joanna Grzesiak Dynowska
+9160001036
+Praktyka Lekarska Andrzej Krężlewicz
+5891639550
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Żukowie
+8431032330
+Niepubliczny Zakład Opieki Zdrowotnej Przychodnia Lekarska Hipokrates Grażyna Herbowska
+5811936436
+Fundacja Delta
+5792128243
+Indywidualna Specjalistyczna Praktyka Lekarska Karolina Omańska
+8391732549
+Niepubliczny Zakład Opieki Zdrowotnej Krystyna Stus
+9570954882
+Przychodnia Słonimskiego B. Domosławski i Wsp. Sp. J.
+5811945300
+Niepubliczny Zakład Opieki Zdrowotnej Im. Św. Łukasza S.C.
+5792133296
+Powiatowe Centrum Zdrowia
+5552076156
+Therapeutica Sp. z o.o.
+5881951872
+Niepubliczny Zakład Opieki Zdrowotnej Zdrowy Checz Sp. z o. o.
+5811980348
+Palmed Nova Spółka z Ograniczoną Odpowiedzialnością
+5921854774
+Medpharma Zakład Opieki Zdrowotnej S.A.
+5832631044
+Przychodnia Lekarska "Jasień " Spółka z Ograniczoną Odpowiedzialnością
+8392558119
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Smołdzinie
+9581371457
+Przychodnia Lekarska Grabówek Sp. z o.o.
+5881951949
+Niepubliczny Zakład Opieki Zdrowotnej Cormed Sp. z o. o.
+5811960920
+Medipunkt Spółka z Ograniczoną Odpowiedzialnością Spółka Komandytowa
+5921963724
+Polmed Spółka Akcyjna
+5932181971
+Niepubliczny Zakład Opieki Zdrowotnej Pelmed Sp. z o.o.
+5922013870
+Niepubliczny Zakład Opieki Zdrowotnej Medyk Spółka z Ograniczoną Odpowiedzialnością
+5882134537
+Niepubliczny Zakład Opieki Zdrowotnej Nr 1, Katarzyna Szalewska
+5881962901
+Niepubliczny Zakład Opieki Zdrowotnej Nr 1 Bukowa Spółka z Ograniczoną Odpowiedzialnością
+9581371411
+Przychodnia Lekarska Obłuże II Spółka z Ograniczoną Odpowiedzialnością
+5833152707
+Przychodnia Na Wzgórzu Spółka z Ograniczoną Odpowiedzialnością
+5932639588
+Doktormed Sp. z o.o.
+5921871206
+Gminny Ośrodek Zdrowia w Skarszewach
+5911533956
+Niepubliczny Zakład Opieki Zdrowotnej ,,Przychodnia" Spółka z Ograniczoną Odpowiedzialnością
+5881955781
+Medycyna Rodzinna Hanna Cywińska, Mirosław Ruciński Spółka Jawna
+5891639679
+Samodzielny Publiczny Zakład Opieki Zdrowotnej z Siedzibą w Stężycy
+8393226678
+Medunit
+5871512881
+Remedia Spółka z Ograniczoną Odpowiedzialnością
+5881957739
+Panaceum Spółka z Ograniczoną Odpowiedzialnością
+5862059413
+Przychodnia Orłowo Spółka z Ograniczoną Odpowiedzialnością
+5791183056
+Grażyna Pietrzak, "Życie" Niepubliczny Zakład Opieki Zdrowotnej
+6751031872
+Kadłuczka Sławomir NZOZ "Centrum Promocji i Ochrony Zdrowia"
+9562304388
+Świat Zdrowia Operator Medyczny Spółka z Ograniczoną Odpowiedzialnością
+6412186201
+Przychodnia Rejonowa SPZOZ w Rudzie Śląskiej
+6412186885
+Przychodnia Rejonowa SPZOZ z Siedzibą Przy Ul. Makuszyńskiego 7
+6461285618
+Awicenna Sp. z o.o.
+6441026339
+Inter-Med. S.C.
+6271104571
+Mirosław Daniluk
+6411091800
+Med-Dental Wieczorek i Wspólnicy Spółka Jawna
+6462441569
+Centrum Medyczne Im. Janusza Mierzwy Sp. z o.o.
+6462455689
+Vita Med Spółka z Ograniczoną Odpowiedzialnością
+
+9542823435
+Silmedica Spółka z Ograniczoną Odpowiedzialnością
+6431620911
+Nzla "Alfamed" Niedźwiedzki, Pietrzycki, Trzaska. Lekarska Sp. Partnerska
+6412283588
+Lux-Med Spółka z Ograniczoną Odpowiedzialnością
+6342457154
+Urovita Spółka z Ograniczona Odpowiedzialnością
+4980236072
+Niepubliczny Zakład Opieki Zdrowotnej "Moja Poradnia" Sp. z o.o.
+6342616279
+Holsamed Spółka z Ograniczoną Odpowiedzialnością
+9541015153
+Amanda Lux Marek Papis
+6351836833
+Podmiot Leczniczy "Nasza Poradnia" Kalisz Dziuban Spółka Jawna
+6521019933
+Przybyła Majka Łucja NZOZ "Simed"
+5482286999
+Iwona Stępień, Bogdan Stępień Praktyka Grupowa Lekarzy S.C.
+5482659638
+Lekarska Praktyka Pierściec S.C. NZOZ
+5532514618
+Niepubliczny Zakład Opieki Zdrowotnej "Vita" T.Janota, B.Noga-Piecuch Spółka Jawna
+5482677240
+Salus Ustroń Spółka z Ograniczoną Odpowiedzialnością
+5771808027
+NZOZ "Medicor" Kowalski, Pilarski, Janas Spółka Jawna
+5771359842
+NZOZ Przychodnia Zdrowia "Światowit" - Jakubiec Adam
+5732577457
+Sanus Spółka z o. o.
+6272773096
+Centrum Medyczne Chorzów Stary Sp. z o.o.
+6391764005
+SP Zakład Lecznictwa Ambulatoryjnego z Siedzibą w Krzyżanowicach
+6332008041
+Salus Spółka z Ograniczoną Odpowiedzialnością
+6442868974
+Zakład Lecznictwa Ambulatoryjnego w Sosnowcu
+6492118494
+SPZOZ w Porębie
+6492297539
+Promed Łazy Spółka z Ograniczoną Odpowiedzialnością
+6492030753
+Medyk Daniel, Ciępka Spółka Jawna
+6442350160
+Deńca-Kuziemko Izabella NZOZ Praktyka Stomatologiczna, NZOZ "Nasza Przychodnia"
+6292077483
+Drzewiecka Wioletta NZOZ Duomedic Im. Św. Jana Pawła II
+9691226466
+Usługi Medyczne Pro-Med Spółka z Ograniczoną Odpowiedzialnością
+9691205518
+NZOZ Centrum Usług Medycznych Aa Remedium Awramienko Sp. J.
+9691258928
+Sano Sp. z o.o.
+6482772996
+Rw Medica Sp. z o.o.
+9371533209
+NZOZ Lekarz Rodzinny Andrzej Sieroń
+5361051381
+NZOZ Ber-Med. Wieliszew
+9562304388
+Świat Zdrowia Operator Medyczny Spółka z Ograniczoną Odpowiedzialnością
+9512367317
+Warszawskie Centrum Zdrowia Sp.Z o.o.
+1182232402
+Centrum Medyczne "Fm Clinic" Sp z o.o.
+7962274448
+NZOZ Lekarze Rodzinni "Salus Aegroti" Sp. z o.o.
+9710725467
+Dr Medyk
+5661019200
+Szpital Wojewódzki w Ciechanowie
+5321726683
+Primo Sp. z o.o.
+5711331691
+Ceryn Grzegorz Przychodnia Rodzinna 'Panaceum'
+1230955789
+Centrum Medyczne Puławska Spółka z Ograniczoną Odpowiedzialnością
+1130018111
+Lecznica Gocław Maria Kamela
+9512343110
+Centrum Medyczne Puławska Spółka z Ograniczoną Odpowiedzialnością Spółka Komandytowa
+5212953687
+Teragra S.C.
+5321743500
+NZOZ Przychodnia Medycyny Rodzinnej "Centrum" S.C.
+5361671675
+Niepubliczny Zakład Opieki Zdrowotnej "Sanitas" Sp. z o.o.
+9522209554
+Medical Dynamics Spółka z Ograniczoną Odpowiedzialnością
+7962309158
+Niepubliczny Zakład Opieki Zdrowotnej "Śródmieście 1" Sp. z o.o.
+6010008710
+Vita Medyk Spółka z Ograniczoną Odpowiedzialnością
+7971920764
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Goszczynie
+7581274457
+Przychodnia Lekarska "Zdrowie" Małgorzata Nawrot
+5222586517
+SPZOZ Bemowo- Włochy
+1251156869
+MSPZOZ Nr 1
+5291800439
+Niepubliczny Zakład Opieki Zdrowotnej Malvita Tuszyński i Wspólnicy Spółka Jawna
+7581091998
+NZOZ Przychodnia Lekarska w Rzekuniu Iwona Malinowska- Paździor
+7591447712
+Mak-Med Spółka z Ograniczoną Odpowiedzialnością
+5291613677
+Medicus S.C. Zofia Lipińska, Weronika Lipińska
+9511874710
+Samodzielny Zespół Publicznych Zakładów Lecznictwa Otwartego Warszawa-Mokotów
+1251165265
+Esculap Sp. z o.o.
+8111526610
+Samodzielny Publiczny Zakład Podstawowej Opieki Zdrowotnej w Lipsku
+5422004891
+Przychodnia Lekarza Rodzinnego Sylwia Figura-Mirońska
+1180059744
+Wojskowy Instytut Medycyny Lotniczej
+1131960020
+Samodzielny Zespół Publicznych Zakładów Lecznictwa Otwartego Warszawa Praga-Północ
+5361729127
+NZOZ "Zdrowie"
+5214004558
+Państwowy Instytut Medyczny MSWiA
+8121713654
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Gniewoszowie
+5340027058
+Zakład Opieki Zdrowotnej Przychodnia Lekarska Dom-Med
+7981480172
+Samorządowy Publiczny Zakład Opieki Zdrowotnej w Białobrzegach Sp. z o.o.
+5242748756
+Samodzielny Zespół Publicznych Zakładów Lecznictwa Otwartego Warszawa Białołęka Targówek
+8331406846
+Centrum Medyczne Polskie Zdrowie
+8221847147
+Samodzielny Zespół Publicznych Zakładów Lecznictwa Otwartego Warszawa Wesoła
+5681474060
+NZOZ Eskulap Sp. z o.o. Sp. K.
+9512349868
+Arnica Olszewski i Wspólnik
+7621348370
+Przychodnia Medyk Hanna Jachacy
+1130103905
+SZPZLO Warszawa Praga Południe
+1132045690
+Centrum Medyczne Med.-Expert Spółka z Ograniczoną Odpowiedzialnością
+7962956314
+Przychodnia Centrum Spółka z Ograniczoną Odpowiedzialnością
+1250931792
+Szpital Matki Bożej Nieustającej Pomocy w Wołominie
+7123229838
+Arion Med Spółka z Ograniczoną Odpowiedzialnością
+8221372974
+Beamed Przychodnia Lekarska Beata Bielecka
+5291468241
+Biovena Sp. z o.o
+5671034098
+Mikołajewska Jolanta, NZOZ Poradnia Rodzinna "Eskulap"
+5322043124
+Fam Medica Sp. z o.o.
+7743219768
+Centrum Medyczne Borowiczki Spółka z Ograniczoną Odpowiedzialnością
+5372553241
+Medica Spółka Jawna
+8381034708
+Centrum Optyczno-Okulistyczne Szeliga Anna Szeliga-Wójcik
+5361371677
+Eskulap Sławomir Konstantynowicz
+5311191312
+Bożena Borkowska-Rączka
+7581050982
+Zerhau Igor - Przychodnia Lekarska "Medical"
+5311422527
+Garnizonowa Przychodnia Lekarska SPZOZ w Modlinie
+5250007425
+Niepubliczny Zakład Opieki Zdrowotnej SGGW
+5242758370
+Stołeczne Centrum Opiekuńczo-Lecznicze Sp. z o.o.
+5242469588
+Krajowa Fundacja Medyczna
+8222206574
+PHU "Jaśminova" S.C. Dariusz Wiącek, Mariola Siedlczyńska-Wiącek
+1251108505
+Vital Sp. z o.o.
+8381031650
+Emilia Kotewska-Avramčeva NZOZ Przychodnia Lekarska Neuromedyka
+9482131483
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Przytyku
+8241545030
+Samodzielny Publiczny Zakład Opieki Zdrowotnej w Węgrowie
+7971019721
+NZOZ Amed
+'''
+
+nip_to_name = {}
+lines = nip_data_raw.strip().split('\n')
+i = 0
+while i < len(lines):
+    nip = lines[i].strip()
+    i += 1
+    if i < len(lines):
+        name = lines[i].strip()
+        nip_to_name[nip] = name
+        i += 1
+
+csv_file_path = "podmioty.csv"
+results = []
+
+try:
+    with open(csv_file_path, 'r', encoding='utf-8') as file:
+        reader = csv.reader(file, delimiter=';')
+        header = [h.strip().replace('"', '') for h in next(reader)]
+
+        # Find column indices
+        nip_idx = header.index("NIP")
+        name_idx = header.index("Nazwa podmiotu")
+        phone_idx = header.index("Telefon")
+        email_idx = header.index("Email")
+        website_idx = header.index("Strona WWW")
+
+        for row in reader:
+            if len(row) > max(nip_idx, name_idx, phone_idx, email_idx, website_idx):
+                current_nip = row[nip_idx].strip().replace('"', '')
+                
+                if current_nip in nip_to_name:
+                    nazwa_placowki = nip_to_name[current_nip]
+                    telefon = row[phone_idx].strip().replace('"', '') or "Brak danych"
+                    email = row[email_idx].strip().replace('"', '') or "Brak danych"
+                    strona_www = row[website_idx].strip().replace('"', '') or "Brak danych"
+
+                    results.append(f"Nazwa placówki: {nazwa_placowki}\n"
+                                   f"Tel: {telefon}\n"
+                                   f"E-mail: {email}\n"
+                                   f"Strona: {strona_www}\n"
+                                   f"NIP: {current_nip}\n---")
+                    
+except FileNotFoundError:
+    results.append(f"Błąd: Plik {csv_file_path} nie został znaleziony.")
+except Exception as e:
+    results.append(f"Wystąpił błąd podczas przetwarzania pliku CSV: {e}")
+
+# Check for NIPs not found in the CSV
+found_nips = {res.split('NIP: ')[1].split('\n')[0] for res in results if 'NIP: ' in res}
+for nip_key in nip_to_name.keys():
+    if nip_key not in found_nips:
+        results.append(f"Brak danych w CSV dla NIP: {nip_key}\n---")
+
+print('\n'.join(results))

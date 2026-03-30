@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "skills": {
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1772823753714
+    },
+    "notion": {
+      "version": "1.0.0",
+      "installedAt": 1772823767992
+    },
+    "terminal-command-execution": {
+      "version": "1.0.0",
+      "installedAt": 1772955624015
+    },
+    "file-writer-safe": {
+      "version": "1.0.0",
+      "installedAt": 1772955627272
+    }
+  }
+}
