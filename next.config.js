@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   experimental: {
+    appDir: true,
     serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
     outputFileTracingIncludes: {
       '/api/generate-pdf': [
