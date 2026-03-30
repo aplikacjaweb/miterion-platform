@@ -28,11 +28,16 @@ export async function POST(req: NextRequest) {
     const recruitingPct = previewData?.preview?.recruitingPct || 0;
 
     // VERCEL DEPLOYMENT GUARDRAILS
+    const executablePath = await chromium.executablePath();
+    console.log('Chromium executable path:', executablePath);
+    console.log('Chromium args:', chromium.args);
+
     browser = await puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      executablePath: executablePath,
       headless: true,
     });
+    console.log('Puppeteer browser launched.');
 
     const page = await browser.newPage();
 
@@ -156,6 +161,7 @@ export async function POST(req: NextRequest) {
 
     await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    console.log('PDF generated successfully.');
 
     // TASK 3: FORM INPUT & SUPABASE UPGRADE - Flow A: Free Snapshot
     // Save snapshot request to Supabase (degraded grace on failure)
@@ -185,13 +191,37 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('PDF generation API error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
+    
+    let errorMessage = 'Failed to generate PDF';
+    let errorDetails = error instanceof Error ? error.message : String(error);
+    
+    // Add specific error handling for common issues
+    if (error instanceof Error) {
+      if (error.message.includes('Could not find browser revision')) {
+        errorMessage = 'Chromium browser not found';
+        errorDetails = 'The Chromium browser executable could not be found. This may be due to a missing or incorrect executable path.';
+      } else if (error.message.includes('Failed to launch the browser process')) {
+        errorMessage = 'Browser launch failed';
+        errorDetails = 'The browser process failed to launch. This may be due to insufficient resources or permissions.';
+      } else if (error.message.includes('Navigation failed')) {
+        errorMessage = 'Page navigation failed';
+        errorDetails = 'The page navigation failed. This may be due to network issues or invalid content.';
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to generate PDF', details: error instanceof Error ? error.message : String(error) },
+      { error: errorMessage, details: errorDetails },
       { status: 500 }
     );
   } finally {
     if (browser) {
-      await browser.close();
+      try {
+        await browser.close();
+        console.log('Browser closed successfully.');
+      } catch (closeError) {
+        console.error('Error closing browser:', closeError);
+      }
     }
   }
 }
