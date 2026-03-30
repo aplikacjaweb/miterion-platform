@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 import { createClient } from '@supabase/supabase-js';
+import nodemailer from 'nodemailer';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -180,6 +181,36 @@ export async function POST(req: NextRequest) {
     } catch (dbError) {
         console.error('Unexpected error during Supabase insert for Free Snapshot:', dbError);
         // Do NOT crash the app, log it and proceed
+    }
+
+    // Send the PDF via email
+    try {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your Clinical Trial Snapshot PDF',
+        text: 'Please find attached your clinical trial snapshot PDF.',
+        attachments: [
+          {
+            filename: 'clinical-trial-snapshot.pdf',
+            content: pdfBuffer,
+          },
+        ],
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully to:', email);
+    } catch (emailError) {
+      console.error('Error sending email:', emailError);
+      // Do not fail the entire request if email sending fails
     }
 
     return new NextResponse(pdfBuffer as unknown as BodyInit, {
