@@ -236,9 +236,7 @@ export async function POST(req: NextRequest) {
     // Configure puppeteer to generate the PDF
     const browser = await puppeteer.launch({
       args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
-      executablePath: await chromium.executablePath(
-        `https://github.com/Sparticuz/chromium/releases/download/v${chromium.revision}/chromium-v${chromium.revision}-pack.zip`
-      ),
+      executablePath: await chromium.executablePath(),
       headless: chromium.headless,
     });
 
