@@ -81,7 +81,7 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] bg-white text-slate-900 border border-slate-200 shadow-xl opacity-100">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-navy">Request Independent Intelligence Report</DialogTitle>
           <DialogDescription className="text-gray-600 mt-2">
@@ -107,7 +107,7 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
               <input
                 id="mechanism_approach"
                 {...register('mechanism_approach')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                 placeholder="Describe your mechanism or approach"
               />
             </div>
@@ -118,7 +118,7 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
               <input
                 id="planned_start"
                 {...register('planned_start')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                 placeholder="When do you plan to start?"
               />
             </div>
@@ -129,7 +129,7 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
               <textarea
                 id="major_finding_concern"
                 {...register('major_finding_concern')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 h-24"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 h-24"
                 placeholder="Describe your main concern or area of focus for the audit"
               />
               {errors.major_finding_concern && <p className="text-red-500 text-sm mt-1">{errors.major_finding_concern.message}</p>}
@@ -199,7 +199,7 @@ function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] bg-white text-slate-900 border border-slate-200 shadow-xl opacity-100">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-navy">RFP Harmonization</DialogTitle>
           <DialogDescription className="text-gray-600 mt-2">
@@ -226,7 +226,7 @@ function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) 
                 id="rfp_file"
                 type="file"
                 {...register('rfp_file')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 accept=".pdf,.xlsx"
               />
               <p className="text-xs text-gray-500">Accepted formats: PDF, XLSX. Maximum file size: 20MB</p>
@@ -239,7 +239,7 @@ function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) 
               <input
                 id="target_geography"
                 {...register('target_geography')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="Enter the target geography for your trial"
               />
               {errors.target_geography && <p className="text-red-500 text-sm mt-1">{errors.target_geography.message}</p>}
@@ -251,7 +251,7 @@ function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) 
               <textarea
                 id="uncertainty_question"
                 {...register('uncertainty_question')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 h-24"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 h-24"
                 placeholder="Describe your concerns or questions about the RFP proposals"
               />
               {errors.uncertainty_question && <p className="text-red-500 text-sm mt-1">{errors.uncertainty_question.message}</p>}
