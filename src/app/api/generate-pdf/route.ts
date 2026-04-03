@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
@@ -231,10 +233,32 @@ export async function POST(req: NextRequest) {
       // Do not fail the entire request if email sending fails
     }
 
-    return NextResponse.json(
-      { success: true, message: 'Snapshot report sent successfully via email.' },
-      { status: 200 }
-    );
+    // Configure puppeteer to generate the PDF
+    const browser = await puppeteer.launch({
+      args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(
+        `https://github.com/Sparticuz/chromium/releases/download/v${chromium.revision}/chromium-v${chromium.revision}-pack.zip`
+      ),
+      headless: chromium.headless,
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+
+    await browser.close();
+
+    // Return the PDF as a response
+    return new NextResponse(pdfBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="Clinical_Landscape_Snapshot.pdf"',
+      },
+    });
+
   } catch (error) {
     console.error('PDF generation API error:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
