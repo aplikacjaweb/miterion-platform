@@ -249,11 +249,16 @@ export async function POST(req: NextRequest) {
     await browser.close();
 
     // Return the PDF as a response
-    return new NextResponse(pdfBuffer, {
+    const pdfArrayBuffer = pdfBuffer.buffer.slice(
+      pdfBuffer.byteOffset,
+      pdfBuffer.byteOffset + pdfBuffer.byteLength
+    ) as ArrayBuffer;
+
+    return new NextResponse(pdfArrayBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="Clinical_Landscape_Snapshot.pdf"',
+        'Content-Disposition': 'attachment; filename="snapshot-report.pdf"',
       },
     });
 
