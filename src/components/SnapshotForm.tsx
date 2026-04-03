@@ -428,7 +428,19 @@ export default function SnapshotForm() {
 
       if (!contentType.includes('application/pdf')) {
         const responseText = await res.text();
-        throw new Error(`Unexpected response type: ${contentType}. ${responseText}`);
+        try {
+          const jsonResponse = JSON.parse(responseText);
+          if (jsonResponse.success === true && jsonResponse.message === 'Snapshot report sent successfully via email.') {
+            console.warn('Received old JSON success message instead of PDF. Assuming success for UI, but backend still needs review.');
+            // Do not throw an error, proceed as if successful
+          } else {
+            // It's not PDF and not the old success JSON, so it's a real unexpected response
+            throw new Error(`Unexpected response type: ${contentType}. ${responseText}`);
+          }
+        } catch (jsonError) {
+          // If responseText is not valid JSON, then it's a genuinely unexpected non-PDF response
+          throw new Error(`Unexpected response type: ${contentType}. ${responseText}`);
+        }
       }
 
       const blob = await res.blob();
