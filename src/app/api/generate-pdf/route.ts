@@ -236,7 +236,6 @@ export async function POST(req: NextRequest) {
     // Configure puppeteer to generate the PDF
     const browser = await puppeteer.launch({
       args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
-      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(
         `https://github.com/Sparticuz/chromium/releases/download/v${chromium.revision}/chromium-v${chromium.revision}-pack.zip`
       ),
@@ -244,6 +243,7 @@ export async function POST(req: NextRequest) {
     });
 
     const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 720 });
     await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
 
     const pdfBuffer = await page.pdf({ format: 'A4' });
