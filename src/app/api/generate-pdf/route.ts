@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 import { createClient } from '@supabase/supabase-js';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -15,6 +15,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 export async function POST(req: NextRequest) {
   let browser = null;
@@ -183,33 +187,42 @@ export async function POST(req: NextRequest) {
         // Do NOT crash the app, log it and proceed
     }
 
-    // Send the PDF via email
+    // Send the PDF via email using Resend
     try {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
+      if (resend && process.env.RESEND_FROM_EMAIL) {
+        console.log('Attempting to send email via Resend...');
+        console.log('From:', process.env.RESEND_FROM_EMAIL);
+        console.log('To:', email);
+        
+        const { data: emailData, error: emailError } = await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL,
+          to: email,
+          subject: 'Your Clinical Trial Snapshot PDF',
+          html: '<p>Please find attached your clinical trial snapshot PDF.</p>',
+          attachments: [
+            {
+              filename: 'clinical-trial-snapshot.pdf',
+              content: pdfBuffer.toString('base64'),
+            },
+          ],
+        });
 
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'Your Clinical Trial Snapshot PDF',
-        text: 'Please find attached your clinical trial snapshot PDF.',
-        attachments: [
-          {
-            filename: 'clinical-trial-snapshot.pdf',
-            content: pdfBuffer,
-          },
-        ],
-      };
-
-      await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully to:', email);
+        if (emailError) {
+          console.error('Error sending email with Resend:', emailError);
+          console.error('Email error details:', JSON.stringify(emailError, null, 2));
+        } else {
+          console.log('Email sent successfully to:', email);
+          console.log('Email response:', emailData);
+        }
+      } else {
+        console.warn('Resend not configured properly. RESEND_API_KEY:', !!process.env.RESEND_API_KEY);
+        console.warn('RESEND_FROM_EMAIL:', process.env.RESEND_FROM_EMAIL);
+      }
     } catch (emailError) {
       console.error('Error sending email:', emailError);
+      if (emailError instanceof Error) {
+        console.error('Email error stack:', emailError.stack);
+      }
       // Do not fail the entire request if email sending fails
     }
 

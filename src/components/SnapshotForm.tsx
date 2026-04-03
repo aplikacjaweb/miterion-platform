@@ -81,32 +81,64 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Request Full Intelligence Report</DialogTitle>
-          <DialogDescription>
-            Provide additional details for a comprehensive analysis (4500 EUR+).
+          <DialogTitle className="text-2xl font-bold text-navy">Request Independent Intelligence Report</DialogTitle>
+          <DialogDescription className="text-gray-600 mt-2">
+            Get a comprehensive analysis of your clinical trial landscape with actionable insights and strategic recommendations.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-          {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
-          <div>
-            <label htmlFor="mechanism_approach" className="text-right">Mechanism / Approach (Optional)</label>
-            <input id="mechanism_approach" {...register('mechanism_approach')} className="col-span-3" />
+        <div className="py-4">
+          <div className="bg-gray-50 p-4 rounded-lg mb-4">
+            <h4 className="font-semibold text-navy mb-2">What's included:</h4>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• Detailed competitive analysis</li>
+              <li>• Recruitment strategy optimization</li>
+              <li>• Risk assessment and mitigation</li>
+              <li>• Custom recommendations</li>
+            </ul>
           </div>
-          <div>
-            <label htmlFor="planned_start" className="text-right">Planned Start (Optional)</label>
-            <input id="planned_start" {...register('planned_start')} className="col-span-3" />
-          </div>
-          <div>
-            <label htmlFor="major_finding_concern" className="text-right">What is the single 'Major Finding' you are most concerned about in your next audit? <span className="text-red-500">*</span></label>
-            <textarea id="major_finding_concern" {...register('major_finding_concern')} className="col-span-3 h-24" />
-            {errors.major_finding_concern && <p className="text-red-500 text-sm">{errors.major_finding_concern.message}</p>}
-          </div>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit Request'}
-          </Button>
-        </form>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
+            <div className="space-y-2">
+              <label htmlFor="mechanism_approach" className="block text-sm font-medium text-gray-700">
+                Mechanism / Approach (Optional)
+              </label>
+              <input
+                id="mechanism_approach"
+                {...register('mechanism_approach')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                placeholder="Describe your mechanism or approach"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="planned_start" className="block text-sm font-medium text-gray-700">
+                Planned Start Date (Optional)
+              </label>
+              <input
+                id="planned_start"
+                {...register('planned_start')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                placeholder="When do you plan to start?"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="major_finding_concern" className="block text-sm font-medium text-gray-700">
+                What is the single 'Major Finding' you are most concerned about in your next audit? <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                id="major_finding_concern"
+                {...register('major_finding_concern')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 h-24"
+                placeholder="Describe your main concern or area of focus for the audit"
+              />
+              {errors.major_finding_concern && <p className="text-red-500 text-sm mt-1">{errors.major_finding_concern.message}</p>}
+            </div>
+            <Button type="submit" disabled={isSubmitting} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md">
+              {isSubmitting ? 'Submitting...' : 'Submit Request (4500 EUR+)'}
+            </Button>
+          </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -167,34 +199,68 @@ function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>RFP Harmonization</DialogTitle>
-          <DialogDescription>
-            Upload your RFP documents for harmonization analysis (1800 EUR+).
+          <DialogTitle className="text-2xl font-bold text-navy">RFP Harmonization</DialogTitle>
+          <DialogDescription className="text-gray-600 mt-2">
+            Optimize your RFP process and budget allocation with our expert analysis and harmonization services.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-          {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
-          <div>
-            <label htmlFor="rfp_file" className="text-right">File Upload (PDF/Excel, max 20MB) <span className="text-red-500">*</span></label>
-            <input id="rfp_file" type="file" {...register('rfp_file')} className="col-span-3" accept=".pdf,.xlsx" />
-            {errors.rfp_file && <p className="text-red-500 text-sm">{errors.rfp_file.message as string}</p>}
+        <div className="py-4">
+          <div className="bg-gray-50 p-4 rounded-lg mb-4">
+            <h4 className="font-semibold text-navy mb-2">What's included:</h4>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• RFP document analysis</li>
+              <li>• Budget optimization recommendations</li>
+              <li>• Vendor comparison and selection</li>
+              <li>• Process efficiency improvements</li>
+            </ul>
           </div>
-          <div>
-            <label htmlFor="target_geography" className="text-right">Target Geography <span className="text-red-500">*</span></label>
-            <input id="target_geography" {...register('target_geography')} className="col-span-3" />
-            {errors.target_geography && <p className="text-red-500 text-sm">{errors.target_geography.message}</p>}
-          </div>
-          <div>
-            <label htmlFor="uncertainty_question" className="text-right">What are you unsure about in these proposals? <span className="text-red-500">*</span></label>
-            <textarea id="uncertainty_question" {...register('uncertainty_question')} className="col-span-3 h-24" />
-            {errors.uncertainty_question && <p className="text-red-500 text-sm">{errors.uncertainty_question.message}</p>}
-          </div>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Uploading...' : 'Submit RFP'}
-          </Button>
-        </form>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
+            <div className="space-y-2">
+              <label htmlFor="rfp_file" className="block text-sm font-medium text-gray-700">
+                RFP File Upload <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="rfp_file"
+                type="file"
+                {...register('rfp_file')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                accept=".pdf,.xlsx"
+              />
+              <p className="text-xs text-gray-500">Accepted formats: PDF, XLSX. Maximum file size: 20MB</p>
+              {errors.rfp_file && <p className="text-red-500 text-sm mt-1">{errors.rfp_file.message as string}</p>}
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="target_geography" className="block text-sm font-medium text-gray-700">
+                Target Geography <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="target_geography"
+                {...register('target_geography')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                placeholder="Enter the target geography for your trial"
+              />
+              {errors.target_geography && <p className="text-red-500 text-sm mt-1">{errors.target_geography.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="uncertainty_question" className="block text-sm font-medium text-gray-700">
+                What are you unsure about in these proposals? <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                id="uncertainty_question"
+                {...register('uncertainty_question')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 h-24"
+                placeholder="Describe your concerns or questions about the RFP proposals"
+              />
+              {errors.uncertainty_question && <p className="text-red-500 text-sm mt-1">{errors.uncertainty_question.message}</p>}
+            </div>
+            <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md">
+              {isSubmitting ? 'Uploading...' : 'Submit RFP (1800 EUR+)'}
+            </Button>
+          </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -603,13 +669,13 @@ export default function SnapshotForm() {
                 </div>
 
                 {/* TASK 5: POST-GENERATION UI FUNNEL */}
-                <div className="space-y-4 mt-8">
-                  <h3 className="text-xl font-semibold text-center">Your Clinical Trial Intelligence</h3>
+                <div className="space-y-6 mt-10">
+                  <h3 className="text-2xl font-bold text-center text-navy">Your Clinical Trial Intelligence Options</h3>
                   
                   {/* Card 1: Download Free Landscape Snapshot */}
-                  <div className="bg-gray-50 p-6 rounded-lg shadow-sm flex flex-col items-center text-center">
-                    <h4 className="text-lg font-semibold mb-2">Download Free Landscape Snapshot</h4>
-                    <p className="text-gray-600 mb-4">Get your instant PDF report with key market insights.</p>
+                  <div className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center text-center">
+                    <h4 className="text-xl font-semibold mb-3 text-gray-800">Download Free Landscape Snapshot</h4>
+                    <p className="text-gray-600 mb-4 text-sm">Get your instant PDF report with key market insights.</p>
                     <form onSubmit={handleSubmitUnlock(onGeneratePdf)} noValidate className="w-full max-w-sm">
                       <input
                         id="email-input-card1"
@@ -625,7 +691,7 @@ export default function SnapshotForm() {
                       <Button
                         type="submit"
                         disabled={isPdfGenerating}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
                       >
                         {isPdfGenerating ? 'Generating PDF...' : 'Download Snapshot Report'}
                       </Button>
@@ -642,20 +708,38 @@ export default function SnapshotForm() {
                   </div>
 
                   {/* Card 2: Request Independent Intelligence Report */}
-                  <div className="bg-gray-50 p-6 rounded-lg shadow-sm flex flex-col items-center text-center">
-                    <h4 className="text-lg font-semibold mb-2">Request Independent Intelligence Report</h4>
-                    <p className="text-gray-600 mb-4">Unlock deeper insights for 4500 EUR+.</p>
-                    <Button onClick={() => setShowFullReportModal(true)} className="w-full max-w-sm bg-purple-600 hover:bg-purple-700 text-white">
-                      Request Full Report
+                  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
+                    <h4 className="text-xl font-semibold mb-3 text-white">Request Independent Intelligence Report</h4>
+                    <p className="text-gray-600 mb-4 text-sm">Get a comprehensive analysis of your clinical trial landscape with actionable insights and strategic recommendations.</p>
+                    <div className="w-full mb-4">
+                      <h5 className="text-sm font-medium text-gray-700 mb-2">What's included:</h5>
+                      <ul className="text-left text-sm text-gray-600 space-y-1">
+                        <li>• Detailed competitive analysis</li>
+                        <li>• Recruitment strategy optimization</li>
+                        <li>• Risk assessment and mitigation</li>
+                        <li>• Custom recommendations</li>
+                      </ul>
+                    </div>
+                    <Button onClick={() => setShowFullReportModal(true)} className="w-full max-w-sm bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md">
+                      Request Full Report (4500 EUR+)
                     </Button>
                   </div>
 
                   {/* Card 3: Request RFP Harmonization */}
-                  <div className="bg-gray-50 p-6 rounded-lg shadow-sm flex flex-col items-center text-center">
-                    <h4 className="text-lg font-semibold mb-2">Request RFP Harmonization</h4>
-                    <p className="text-gray-600 mb-4">Optimize your budget with our RFP analysis (1800 EUR+).</p>
-                    <Button onClick={() => setShowRfpUploadModal(true)} className="w-full max-w-sm bg-green-600 hover:bg-green-700 text-white">
-                      Request RFP Harmonization
+                  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
+                    <h4 className="text-xl font-semibold mb-3 text-white">Request RFP Harmonization</h4>
+                    <p className="text-gray-600 mb-4 text-sm">Optimize your RFP process and budget allocation with our expert analysis and harmonization services.</p>
+                    <div className="w-full mb-4">
+                      <h5 className="text-sm font-medium text-gray-700 mb-2">What's included:</h5>
+                      <ul className="text-left text-sm text-gray-600 space-y-1">
+                        <li>• RFP document analysis</li>
+                        <li>• Budget optimization recommendations</li>
+                        <li>• Vendor comparison and selection</li>
+                        <li>• Process efficiency improvements</li>
+                      </ul>
+                    </div>
+                    <Button onClick={() => setShowRfpUploadModal(true)} className="w-full max-w-sm bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md">
+                      Request RFP Harmonization (1800 EUR+)
                     </Button>
                   </div>
                 </div>
