@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
@@ -20,8 +18,51 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
+export async function GET() {
+  return NextResponse.json(
+    { error: "Method Not Allowed", message: "This endpoint only supports POST requests" },
+    { status: 405 }
+  );
+}
+
+export async function PUT() {
+  return NextResponse.json(
+    { error: "Method Not Allowed", message: "This endpoint only supports POST requests" },
+    { status: 405 }
+  );
+}
+
+export async function DELETE() {
+  return NextResponse.json(
+    { error: "Method Not Allowed", message: "This endpoint only supports POST requests" },
+    { status: 405 }
+  );
+}
+
+export async function PATCH() {
+  return NextResponse.json(
+    { error: "Method Not Allowed", message: "This endpoint only supports POST requests" },
+    { status: 405 }
+  );
+}
+
+export async function HEAD() {
+  return NextResponse.json(
+    { error: "Method Not Allowed", message: "This endpoint only supports POST requests" },
+    { status: 405 }
+  );
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Allow': 'POST',
+    },
+  });
+}
+
 export async function POST(req: NextRequest) {
-  let browser = null;
   try {
     const { indication, phase, geography, email, data: previewData } = await req.json();
 
@@ -31,20 +72,6 @@ export async function POST(req: NextRequest) {
     const topSponsors = previewData?.preview?.topSponsors || [];
     const countryDistribution = previewData?.preview?.countryDistribution || [];
     const recruitingPct = previewData?.preview?.recruitingPct || 0;
-
-    // VERCEL DEPLOYMENT GUARDRAILS
-    const executablePath = await chromium.executablePath();
-    console.log('Chromium executable path:', executablePath);
-    console.log('Chromium args:', chromium.args);
-
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: executablePath,
-      headless: true,
-    });
-    console.log('Puppeteer browser launched.');
-
-    const page = await browser.newPage();
 
     // TASK 2: IMPLEMENT "TRIAL FEASIBILITY SCORE" (TFS)
     const baseScore = 100;
@@ -66,17 +93,15 @@ export async function POST(req: NextRequest) {
     const geoGap = "1 Geo-Gap identified where competitor activity is < 15%."; // Hardcoded for now, if dynamic, need to fetch/calculate
     const decisionPressure = "High site competition usually forces CROs to underbid initially and recover margins via Change Orders."; // Hardcoded from new instructions
 
-    // UPDATED SNAPSHOT PDF TEMPLATE (3 PAGES)
+    // Simple HTML content for PDF
     const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
           <title>Miterion Clinical Landscape Snapshot</title>
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
           <style>
-              body { font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; font-size: 12px; color: #333; }
-              .page { width: 210mm; height: 297mm; padding: 40px; box-sizing: border-box; page-break-after: always; }
-              .page:last-child { page-break-after: avoid; }
+              body { font-family: Arial, sans-serif; margin: 0; padding: 0; font-size: 12px; color: #333; }
+              .page { width: 210mm; height: 297mm; padding: 40px; box-sizing: border-box; }
               h1 { font-size: 28px; color: #1a202c; margin-bottom: 15px; }
               h2 { font-size: 22px; color: #2d3748; margin-top: 20px; margin-bottom: 10px; }
               h3 { font-size: 18px; color: #4a5568; margin-top: 15px; margin-bottom: 8px; }
@@ -84,14 +109,10 @@ export async function POST(req: NextRequest) {
               ul { list-style: none; padding: 0; margin-bottom: 10px; }
               li { margin-bottom: 5px; }
               hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
-              table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-              th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
-              th { background-color: #f7fafc; }
               .bold-score { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
           </style>
       </head>
       <body>
-          <!-- PAGE 1 — HEADER + CONTEXT -->
           <div class="page">
               <h1>Miterion Clinical Landscape Snapshot</h1>
               <p><strong>Indication:</strong> ${indication}</p>
@@ -105,10 +126,7 @@ export async function POST(req: NextRequest) {
               <p>
                   This score reflects trial density, recruitment pressure, and competitive overlap.
               </p>
-          </div>
-
-          <!-- PAGE 2 — DATA + TENSION -->
-          <div class="page">
+              <hr />
               <h2>Market Overview</h2>
               <ul>
                   <li>Total active trials: <strong>${totalTrials}</strong></li>
@@ -123,10 +141,7 @@ export async function POST(req: NextRequest) {
               <ul>
                   ${countryDistribution.slice(0, 5).map((c: any) => `<li>${c.country} — ${c.count} trials</li>`).join('')}
               </ul>
-          </div>
-
-          <!-- PAGE 3 — CRITICAL (HOOK + CTA) -->
-          <div class="page">
+              <hr />
               <h2>Immediate Risk Signal</h2>
               <p>
                   <strong>Top Risk:</strong><br/>
@@ -164,10 +179,6 @@ export async function POST(req: NextRequest) {
       </html>
     `;
 
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
-    console.log('PDF generated successfully.');
-
     // TASK 3: FORM INPUT & SUPABASE UPGRADE - Flow A: Free Snapshot
     // Save snapshot request to Supabase (degraded grace on failure)
     try {
@@ -187,7 +198,7 @@ export async function POST(req: NextRequest) {
         // Do NOT crash the app, log it and proceed
     }
 
-    // Send the PDF via email using Resend
+    // Send the HTML content via email using Resend
     try {
       if (resend && process.env.RESEND_FROM_EMAIL) {
         console.log('Attempting to send email via Resend...');
@@ -197,14 +208,8 @@ export async function POST(req: NextRequest) {
         const { data: emailData, error: emailError } = await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL,
           to: email,
-          subject: 'Your Clinical Trial Snapshot PDF',
-          html: '<p>Please find attached your clinical trial snapshot PDF.</p>',
-          attachments: [
-            {
-              filename: 'clinical-trial-snapshot.pdf',
-              content: pdfBuffer.toString('base64'),
-            },
-          ],
+          subject: 'Your Clinical Trial Snapshot Report',
+          html: htmlContent,
         });
 
         if (emailError) {
@@ -226,13 +231,10 @@ export async function POST(req: NextRequest) {
       // Do not fail the entire request if email sending fails
     }
 
-    return new NextResponse(pdfBuffer as unknown as BodyInit, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="clinical-trial-snapshot.pdf"',
-      },
-    });
+    return NextResponse.json(
+      { success: true, message: 'Snapshot report sent successfully via email.' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('PDF generation API error:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
@@ -240,32 +242,9 @@ export async function POST(req: NextRequest) {
     let errorMessage = 'Failed to generate PDF';
     let errorDetails = error instanceof Error ? error.message : String(error);
     
-    // Add specific error handling for common issues
-    if (error instanceof Error) {
-      if (error.message.includes('Could not find browser revision')) {
-        errorMessage = 'Chromium browser not found';
-        errorDetails = 'The Chromium browser executable could not be found. This may be due to a missing or incorrect executable path.';
-      } else if (error.message.includes('Failed to launch the browser process')) {
-        errorMessage = 'Browser launch failed';
-        errorDetails = 'The browser process failed to launch. This may be due to insufficient resources or permissions.';
-      } else if (error.message.includes('Navigation failed')) {
-        errorMessage = 'Page navigation failed';
-        errorDetails = 'The page navigation failed. This may be due to network issues or invalid content.';
-      }
-    }
-    
     return NextResponse.json(
       { error: errorMessage, details: errorDetails },
       { status: 500 }
     );
-  } finally {
-    if (browser) {
-      try {
-        await browser.close();
-        console.log('Browser closed successfully.');
-      } catch (closeError) {
-        console.error('Error closing browser:', closeError);
-      }
-    }
   }
 }
