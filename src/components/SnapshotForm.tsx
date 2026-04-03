@@ -426,27 +426,22 @@ export default function SnapshotForm() {
         throw new Error(errorText || 'Failed to generate PDF.');
       }
 
-      if (!contentType.includes('application/pdf')) {
+      if (contentType.includes('application/pdf')) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        setDownloadUrl(url);
+      } else if (contentType.includes('application/json')) {
         const responseText = await res.text();
-        try {
-          const jsonResponse = JSON.parse(responseText);
-          if (jsonResponse.success === true && jsonResponse.message === 'Snapshot report sent successfully via email.') {
-            console.warn('Received old JSON success message instead of PDF. Assuming success for UI, but backend still needs review.');
-            // Do not throw an error, proceed as if successful
-          } else {
-            // It's not PDF and not the old success JSON, so it's a real unexpected response
-            throw new Error(`Unexpected response type: ${contentType}. ${responseText}`);
-          }
-        } catch (jsonError) {
-          // If responseText is not valid JSON, then it's a genuinely unexpected non-PDF response
-          throw new Error(`Unexpected response type: ${contentType}. ${responseText}`);
+        const jsonResponse = JSON.parse(responseText);
+        if (jsonResponse.success === true && jsonResponse.message === 'Snapshot report sent successfully via email.') {
+          // This is the old email success message. Treat as silent success.
+          return; // Exit the function, do not trigger download or error.
+        } else {
+          throw new Error(`Unexpected JSON response: ${responseText}`);
         }
+      } else {
+        throw new Error(`Unexpected response type: ${contentType}.`);
       }
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      setDownloadUrl(url);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate PDF.');
