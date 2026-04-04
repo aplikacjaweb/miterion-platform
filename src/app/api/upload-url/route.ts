@@ -5,10 +5,16 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   let body: unknown;
+  let rawBodyText: string | null = null;
 
   try {
-    body = await request.json();
-  } catch {
+    rawBodyText = await request.text();
+    console.log('[/api/upload-url] Received raw body:', rawBodyText);
+    body = JSON.parse(rawBodyText);
+  } catch (e) {
+    console.error(
+      '[/api/upload-url] JSON parse error, raw body was:', rawBodyText, 'Error:', e
+    );
     return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
   }
 

@@ -32,8 +32,15 @@ export default function RfpForm() {
     try {
       // Step 1: Get signed upload URL
       const urlRes = await fetch(
-        `/api/upload-url?filename=${encodeURIComponent(data.file.name)}&type=${encodeURIComponent(data.file.type)}`,
-        { method: 'POST' }
+        `/api/upload-url`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: data.file.name,
+            type: data.file.type,
+          }),
+        }
       );
       const { signedUrl, path } = await unwrapApi<{ signedUrl: string; path: string }>(urlRes);
 
