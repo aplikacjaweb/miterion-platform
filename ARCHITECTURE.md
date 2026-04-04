@@ -119,7 +119,7 @@ User fills RfpForm (email, company, message, file)
 | Bucket | Purpose |
 |---|---|
 | `snapshots` | Generated PDF snapshot reports (public read) |
-| `rfp-uploads` | Uploaded RFP/questionnaire files |
+| `rfp_uploads` | Uploaded RFP/questionnaire files |
 
 ---
 
