@@ -46,29 +46,54 @@ export function apiSuccess<T>(data: T): NextResponse<ApiSuccess<T>> {
  * Why: eliminates duplicated (!res.ok || json.error || json.data) checks
  * scattered across every form component.
  */
-export function unwrapApi<T>(
+export async function unwrapApi<T>(
   res: Response,
-  json: ApiResponse<T> | unknown
-): T {
-  // Transport-level failure (network, 5xx before our handler ran)
-  if (!res.ok && !isApiResponse(json)) {
+  // Optional: if JSON already parsed, pass it. Otherwise, unwrapApi will parse.
+  json?: ApiResponse<T> | unknown
+): Promise<T> {
+  let parsedJson: ApiResponse<T> | unknown;
+
+  if (json) {
+    parsedJson = json;
+  } else {
+    // Attempt to parse JSON, or fall back to text
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        parsedJson = await res.json();
+      } catch (e) {
+        // JSON parsing failed, likely malformed JSON or empty body
+        const text = await res.text();
+        console.error('API Response JSON parse error:', e, 'Response text:', text);
+        throw new Error(
+          `API Error: Invalid JSON response. Status: ${res.status}. Body: ${text.substring(0, 100)}`
+        );
+      }
+    } else {
+      const text = await res.text();
+      console.warn('API Response not JSON. Status:', res.status, 'Response text:', text);
+      throw new Error(
+        `API Error: Unexpected response type. Status: ${res.status}. Body: ${text.substring(0, 100)}`
+      );
+    }
+  }
+
+  // Now process the parsed (or provided) JSON
+  if (!res.ok && !isApiError(parsedJson)) {
+    // This covers HTTP errors where the body wasn't our structured error.
+    // This might be a 500 HTML page from Next.js or a proxy.
     throw new Error(`Request failed: ${res.status} ${res.statusText}`);
   }
 
-  // Our structured error shape
-  if (isApiError(json)) {
-    throw new Error(json.message);
+  if (isApiError(parsedJson)) {
+    throw new Error(parsedJson.message);
   }
 
-  // Our structured success shape
-  if (isApiSuccess<T>(json)) {
-    return json.data;
+  if (isApiSuccess<T>(parsedJson)) {
+    return parsedJson.data;
   }
 
-  // fetch-trials returns FetchTrialsResponse directly (domain-level error field,
-  // not the transport wrapper) — callers that need it handle it themselves.
-  // This branch should not be reached for wrapped routes.
-  throw new Error('Unexpected response shape from API');
+  throw new Error('Unexpected API response format.');
 }
 
 // ---------------------------------------------------------------------------
