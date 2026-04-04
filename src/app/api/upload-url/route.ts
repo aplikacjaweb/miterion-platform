@@ -3,6 +3,8 @@ import { apiError, apiSuccess } from '@/lib/apiResponse';
 
 export const runtime = "nodejs";
 
+const RFP_UPLOAD_BUCKET = process.env.SUPABASE_RFP_BUCKET_NAME || 'rfp_uploads';
+
 export async function POST(request: Request) {
   let body: unknown;
   let rawBodyText: string | null = null;
@@ -33,7 +35,7 @@ export async function POST(request: Request) {
   const path = `${Date.now()}-${safeFilename}`;
 
   const { data, error } = await supabaseAdmin.storage
-    .from('rfp_uploads')
+    .from(RFP_UPLOAD_BUCKET)
     .createSignedUploadUrl(path);
 
   if (error || !data?.signedUrl || !data?.token) {
