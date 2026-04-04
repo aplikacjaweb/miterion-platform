@@ -34,8 +34,7 @@ export default function RfpForm() {
       const urlRes = await fetch(
         `/api/upload-url?filename=${encodeURIComponent(data.file.name)}&type=${encodeURIComponent(data.file.type)}`
       );
-      const urlJson = await urlRes.json();
-      const { signedUrl, path } = unwrapApi<{ signedUrl: string; path: string }>(urlRes, urlJson);
+      const { signedUrl, path } = await unwrapApi<{ signedUrl: string; path: string }>(urlRes);
 
       // Step 2: Upload file directly to storage
       const uploadRes = await fetch(signedUrl, {
@@ -61,8 +60,7 @@ export default function RfpForm() {
           filePath: path,
         }),
       });
-      const submitJson = await submitRes.json();
-      unwrapApi(submitRes, submitJson); // throws on error
+      await unwrapApi(submitRes); // throws on error
 
       setSuccess(true);
       reset();
