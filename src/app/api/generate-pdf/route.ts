@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabaseServer';
 import { Resend } from 'resend';
 
 export const runtime = 'nodejs';
@@ -9,6 +10,9 @@ export const dynamic = 'force-dynamic';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+// Define the bucket name for snapshots, configurable via environment variable
+const SNAPSHOT_UPLOAD_BUCKET = process.env.SUPABASE_SNAPSHOT_BUCKET_NAME || 'snapshots';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase URL and/or Anon Key not provided. Ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set.');
@@ -248,18 +252,63 @@ export async function POST(req: NextRequest) {
 
     await browser.close();
 
-    // Return the PDF as a response
-    const pdfArrayBuffer = pdfBuffer.buffer.slice(
-      pdfBuffer.byteOffset,
-      pdfBuffer.byteOffset + pdfBuffer.byteLength
-    ) as ArrayBuffer;
+    let publicUrl: string | null = null;
 
-    return new NextResponse(pdfArrayBuffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="snapshot-report.pdf"',
-      },
+    // Upload PDF to Supabase Storage
+    if (supabaseAdmin) {
+      const pdfFileName = `snapshot-${Date.now()}.pdf`;
+      const pdfPath = `reports/${pdfFileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+        .from(SNAPSHOT_UPLOAD_BUCKET)
+        .upload(pdfPath, pdfBuffer, { contentType: 'application/pdf' });
+
+      if (uploadError) {
+        console.error('Supabase PDF upload failed:', uploadError);
+        throw new Error(`Failed to upload PDF: ${uploadError.message}`);
+      } else if (uploadData?.path) {
+        // Get public URL (assuming the bucket is public read)
+        const { data: urlData } = supabaseAdmin.storage
+          .from(SNAPSHOT_UPLOAD_BUCKET)
+          .getPublicUrl(uploadData.path);
+        publicUrl = urlData?.publicUrl || null;
+        console.log('Uploaded PDF public URL:', publicUrl);
+      }
+    } else {
+      console.warn('Supabase admin client not available for PDF upload.');
+      // If admin client not available, still return the PDF directly if possible (fallback)
+      const pdfArrayBuffer = pdfBuffer.buffer.slice(
+        pdfBuffer.byteOffset,
+        pdfBuffer.byteOffset + pdfBuffer.byteLength
+      ) as ArrayBuffer;
+
+      return new NextResponse(pdfArrayBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'attachment; filename="snapshot-report.pdf"',
+        },
+      });
+    }
+
+    // Update leads_snapshot table with pdf_path (using the anon client)
+    if (supabase && publicUrl) {
+        const { error: dbUpdateError } = await supabase
+          .from('leads_snapshot') // Ensure this table exists
+          .insert([{ indication, phase, geography, email, final_score: finalScore, risk_label: riskLabel, pdf_path: publicUrl }])
+          .select();
+
+        if (dbUpdateError) {
+          console.error('Supabase leads_snapshot update error:', dbUpdateError);
+          // Do NOT crash the app, log it and proceed
+        } else {
+          console.log('leads_snapshot updated with PDF path.');
+        }
+    }
+
+    return NextResponse.json({
+      message: 'PDF report generated and uploaded successfully',
+      publicUrl: publicUrl,
     });
 
   } catch (error) {
