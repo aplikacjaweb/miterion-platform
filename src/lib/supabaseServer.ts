@@ -17,12 +17,17 @@ function createAdminClient(): SupabaseClient | null {
     return null;
   }
 
-  return createClient(url, key, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  });
+  try {
+    return createClient(url, key, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+  } catch (e) {
+    console.error('[supabase] Error creating admin client:', e);
+    return null;
+  }
 }
 
 export const supabaseAdmin = createAdminClient();
