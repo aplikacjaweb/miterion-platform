@@ -12,17 +12,10 @@ function createAdminClient(): SupabaseClient | null {
   if (!url || !key) {
     console.warn(
       '[supabase] NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set. ' +
-        'Database and storage features will be unavailable.' +
-        ` (URL: ${url || 'not set'}, Key present: ${!!key})`
+        'Database and storage features will be unavailable.'
     );
     return null;
   }
-
-  console.info(
-    '[supabase] Initializing admin client with:' +
-      ` URL: ${url}` +
-      ` Key: ${key.substring(0, 5)}...${key.substring(key.length - 5)}`
-  );
 
   return createClient(url, key, {
     auth: {
