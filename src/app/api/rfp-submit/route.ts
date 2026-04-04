@@ -13,9 +13,15 @@ const resend = process.env.RESEND_API_KEY
 export async function POST(request: Request) {
   // 1. Parse & validate
   let body: unknown;
+  let rawBodyText: string | null = null;
   try {
-    body = await request.json();
-  } catch {
+    rawBodyText = await request.text();
+    console.log('[/api/rfp-submit] Received raw body:', rawBodyText);
+    body = rawBodyText ? JSON.parse(rawBodyText) : {};
+  } catch (e) {
+    console.error(
+      '[/api/rfp-submit] JSON parse error, raw body was:', rawBodyText, 'Error:', e
+    );
     return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
   }
 
