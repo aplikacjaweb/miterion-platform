@@ -10,7 +10,8 @@ export async function POST(request: Request) {
   try {
     rawBodyText = await request.text();
     console.log('[/api/upload-url] Received raw body:', rawBodyText);
-    body = JSON.parse(rawBodyText);
+    // If the body is empty, treat it as an empty JSON object for parsing
+    body = rawBodyText ? JSON.parse(rawBodyText) : {};
   } catch (e) {
     console.error(
       '[/api/upload-url] JSON parse error, raw body was:', rawBodyText, 'Error:', e
