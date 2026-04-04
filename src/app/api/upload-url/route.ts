@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     .createSignedUploadUrl(path);
 
   if (error || !data?.signedUrl || !data?.token) {
-    console.error('Signed upload URL generation failed:', error);
+    console.error('Signed upload URL generation failed:', { error, data });
     // Return the specific Supabase error message if available, otherwise a generic one.
     return apiError('UPLOAD_FAILED', error?.message || 'Failed to create upload URL', 500);
   }
