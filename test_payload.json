@@ -1,0 +1,16 @@
+{
+  "indication": "Test Indication",
+  "phase": "Phase 1",
+  "geography": "Test Geography",
+  "email": "test@example.com",
+  "data": {
+    "preview": {
+      "totalTrials": 10,
+      "numberOfActiveTrials": 5,
+      "countryDistribution": [
+        {"country": "USA", "count": 5}
+      ],
+      "recruitingPct": 50
+    }
+  }
+}
