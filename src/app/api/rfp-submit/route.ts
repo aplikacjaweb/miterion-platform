@@ -45,12 +45,11 @@ export async function POST(request: Request) {
       .insert({
         email,
         company: company || null,
-        message: message || null,
-        indication: null, // RFP leads do not have this initially
-        phase: null, // RFP leads do not have this initially
+        indication: 'RFP_SUBMITTED', // Default for RFP leads to satisfy NOT NULL
+        phase: 'RFP_RECEIVED', // Default for RFP leads to satisfy NOT NULL
         country: null, // RFP leads do not have this initially
         country_code: null, // RFP leads do not have this initially
-        user_question: null, // RFP leads do not have this initially
+        user_question: message || null, // Map message to user_question
         pdf_path: null, // RFP leads do not have this initially
       })
       .select('id')
