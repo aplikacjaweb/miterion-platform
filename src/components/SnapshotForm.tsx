@@ -68,7 +68,10 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
     setError(null);
     try {
       const { error } = await supabase.from('leads_full').insert([data]);
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase leads_full insert failed:', error);
+        throw error;
+      }
       onSuccess();
       reset();
       onOpenChange(false);
