@@ -57,6 +57,7 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
   } = useForm<FullReportFormData>({
     resolver: zodResolver(fullReportSchema),
     defaultValues: {
+      email: '',
       mechanism_approach: '',
       planned_start: '',
       major_finding_concern: '',
@@ -68,9 +69,26 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
     setError(null);
     console.log('Submitting full report with data:', data);
     try {
-      const { error } = await supabase.from('leads_full').insert([data]);
+      const userQuestion = [
+        `Major finding / concern: ${data.major_finding_concern}`,
+        data.mechanism_approach ? `Mechanism / approach: ${data.mechanism_approach}` : '',
+        data.planned_start ? `Planned start: ${data.planned_start}` : '',
+      ].filter(Boolean).join('\n');
+
+      const { error } = await supabase.from('leads').insert([
+        {
+          email: data.email,
+          company: null,
+          indication: 'FULL_REPORT_SUBMITTED',
+          phase: 'REPORT_REQUESTED',
+          country: null,
+          country_code: null,
+          user_question: userQuestion,
+          pdf_path: null,
+        },
+      ]);
       if (error) {
-        console.error('Supabase leads_full insert failed:', error);
+        console.error('Supabase leads insert failed:', error);
         throw error;
       }
       onSuccess();
@@ -104,6 +122,19 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                {...register('email')}
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                placeholder="Enter your email address"
+                type="email"
+              />
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+            </div>
             <div className="space-y-2">
               <label htmlFor="mechanism_approach" className="block text-sm font-medium text-gray-700">
                 Mechanism / Approach (Optional)

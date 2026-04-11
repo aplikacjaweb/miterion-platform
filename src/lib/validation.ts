@@ -16,6 +16,7 @@ export const snapshotUnlockSchema = z.object({
 });
 
 export const fullReportSchema = z.object({
+  email: z.string().email('Invalid email address'),
   mechanism_approach: z.string().max(500).optional().or(z.literal('')),
   planned_start: z.string().max(100).optional().or(z.literal('')),
   major_finding_concern: z.string().min(10, 'This field is required and must be at least 10 characters').max(2000),
