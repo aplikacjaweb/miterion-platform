@@ -66,6 +66,7 @@ function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps
   const onSubmit = async (data: FullReportFormData) => {
     setIsSubmitting(true);
     setError(null);
+    console.log('Submitting full report with data:', data);
     try {
       const { error } = await supabase.from('leads_full').insert([data]);
       if (error) {
