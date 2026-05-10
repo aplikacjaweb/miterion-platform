@@ -8,7 +8,7 @@ const RFP_UPLOAD_BUCKET =
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null); // Simplified JSON parsing
+    const body = await request.json().catch(() => null);
 
     const filename = body?.filename;
     if (!filename || typeof filename !== 'string') {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       .from(RFP_UPLOAD_BUCKET)
       .createSignedUploadUrl(path);
 
-    if (error || !data?.token) { // Changed condition to check data?.token
+    if (error || !data?.token) {
       return apiError(
         'UPLOAD_FAILED',
         error?.message || 'Failed to create upload URL',
@@ -37,7 +37,8 @@ export async function POST(request: Request) {
     return apiSuccess({
       path,
       token: data.token,
-      signedUrl: data.signedUrl ?? null, // Ensure signedUrl is explicitly null if undefined
+      signedUrl: data.signedUrl ?? null,
+      bucketName: RFP_UPLOAD_BUCKET,
     });
   } catch (error) {
     console.error('[/api/upload-url] Unhandled error:', error);

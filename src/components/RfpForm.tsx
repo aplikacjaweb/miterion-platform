@@ -6,14 +6,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { rfpFormSchema } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
-import { supabase } from '@/lib/supabaseClient'; // Added import
+import { supabase } from '@/lib/supabaseClient'; // Corrected import
 import type { RfpFormData } from '@/types';
 
-// Added type definition
+// Updated type definition to include bucketName
 type UploadUrlResponse = {
-  signedUrl: string;
+  signedUrl: string; // This might not be strictly needed on the client anymore with uploadToSignedUrl
   path: string;
   token: string;
+  bucketName: string; // Added bucketName
 };
 
 export default function RfpForm() {
@@ -38,7 +39,7 @@ export default function RfpForm() {
     setError(null);
 
     try {
-      // Step 1: Backend gives path + token
+      // Step 1: Backend gives path + token + bucketName
       const urlRes = await fetch(
         `/api/upload-url`,
         {
@@ -51,11 +52,11 @@ export default function RfpForm() {
         }
       );
 
-      const { path, token } = await unwrapApi<UploadUrlResponse>(urlRes);
+      const { path, token, bucketName } = await unwrapApi<UploadUrlResponse>(urlRes); // Destructure bucketName
 
       // Step 2: Upload through supabase-js, not raw fetch(signedUrl)
       const { error: uploadError } = await supabase.storage
-        .from('rfp_uploads') // Ensure this bucket name is correct
+        .from(bucketName) // Dynamically use bucketName
         .uploadToSignedUrl(path, token, data.file, {
           contentType: data.file.type || 'application/pdf',
         });
