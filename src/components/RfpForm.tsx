@@ -54,6 +54,13 @@ export default function RfpForm() {
 
       const { path, token, bucketName } = await unwrapApi<UploadUrlResponse>(urlRes); // Destructure bucketName
 
+      // --- Added logging for debugging ---
+      console.log('[RfpForm] Upload details:');
+      console.log('  bucketName:', bucketName);
+      console.log('  path:', path);
+      console.log('  token (start):', token.substring(0, 10), '...'); // Log beginning of token
+      console.log('  NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+
       // Step 2: Upload through supabase-js, not raw fetch(signedUrl)
       const { error: uploadError } = await supabase.storage
         .from(bucketName) // Dynamically use bucketName
