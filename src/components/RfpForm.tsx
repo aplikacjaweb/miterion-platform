@@ -6,7 +6,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { rfpFormSchema } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
+import { supabase } from '@/lib/supabaseClient'; // Added import
 import type { RfpFormData } from '@/types';
+
+// Added type definition
+type UploadUrlResponse = {
+  signedUrl: string;
+  path: string;
+  token: string;
+};
 
 export default function RfpForm() {
 
@@ -30,7 +38,7 @@ export default function RfpForm() {
     setError(null);
 
     try {
-      // Step 1: Get signed upload URL
+      // Step 1: Backend gives path + token
       const urlRes = await fetch(
         `/api/upload-url`,
         {
@@ -42,16 +50,18 @@ export default function RfpForm() {
           }),
         }
       );
-      const { signedUrl, path } = await unwrapApi<{ signedUrl: string; path: string }>(urlRes);
 
-      // Step 2: Upload file directly to storage
-      const uploadRes = await fetch(signedUrl, {
-        method: 'PUT',
-        body: data.file,
-        headers: { 'Content-Type': data.file.type },
-      });
-      if (!uploadRes.ok) {
-        throw new Error('File upload failed — please try again');
+      const { path, token } = await unwrapApi<UploadUrlResponse>(urlRes);
+
+      // Step 2: Upload through supabase-js, not raw fetch(signedUrl)
+      const { error: uploadError } = await supabase.storage
+        .from('rfp_uploads') // Ensure this bucket name is correct
+        .uploadToSignedUrl(path, token, data.file, {
+          contentType: data.file.type || 'application/pdf',
+        });
+
+      if (uploadError) {
+        throw new Error(`File upload failed: ${uploadError.message}`);
       }
 
       // Step 3: Submit metadata
@@ -73,7 +83,9 @@ export default function RfpForm() {
       setSuccess(true);
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong';
+      setError(message);
     } finally {
       setIsUploading(false);
       setIsSubmitting(false);
