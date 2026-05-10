@@ -52,7 +52,10 @@ export default function RfpForm() {
         }
       );
 
-      const { path, token, bucketName } = await unwrapApi<UploadUrlResponse>(urlRes); // Destructure bucketName
+      const payload = await unwrapApi<UploadUrlResponse>(urlRes); // Log the payload from /api/upload-url
+      console.log('[RfpForm] upload-url payload', payload);
+
+      const { path, token, bucketName } = payload; // Destructure from payload
 
       // --- Added logging for debugging ---
       console.log('[RfpForm] Upload details:');
@@ -61,15 +64,22 @@ export default function RfpForm() {
       console.log('  token (start):', token.substring(0, 10), '...'); // Log beginning of token
       console.log('  NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
 
+
       // Step 2: Upload through supabase-js, not raw fetch(signedUrl)
-      const { error: uploadError } = await supabase.storage
-        .from(bucketName) // Dynamically use bucketName
+      const result = await supabase.storage // Wrap uploadToSignedUrl to log full result
+        .from(bucketName)
         .uploadToSignedUrl(path, token, data.file, {
           contentType: data.file.type || 'application/pdf',
         });
 
-      if (uploadError) {
-        throw new Error(`File upload failed: ${uploadError.message}`);
+      console.log('[RfpForm] upload result', result); // Log full result
+
+      if (result.error) {
+        console.error('[RfpForm] upload error details', { // Log error details
+          message: result.error.message,
+          name: result.error.name,
+        });
+        throw new Error(`File upload failed: ${result.error.message}`);
       }
 
       // Step 3: Submit metadata
