@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { rfpFormSchema } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
+import { uploadToSignedUrl } from '@/lib/supabaseClient';
 import type { RfpFormData } from '@/types';
 
 export default function RfpForm() {
@@ -42,17 +43,10 @@ export default function RfpForm() {
           }),
         }
       );
-      const { signedUrl, path } = await unwrapApi<{ signedUrl: string; path: string }>(urlRes);
+      const { signedUrl, path, token } = await unwrapApi<{ signedUrl: string; path: string; token: string }>(urlRes);
 
       // Step 2: Upload file directly to storage
-      const uploadRes = await fetch(signedUrl, {
-        method: 'PUT',
-        body: data.file,
-        headers: { 'Content-Type': data.file.type },
-      });
-      if (!uploadRes.ok) {
-        throw new Error('File upload failed — please try again');
-      }
+      await uploadToSignedUrl(signedUrl, token, data.file);
 
       // Step 3: Submit metadata
       setIsUploading(false);
