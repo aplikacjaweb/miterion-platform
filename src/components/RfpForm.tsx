@@ -6,8 +6,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { rfpFormSchema } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
-import { uploadToSignedUrl } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient'; // Use remote's import
 import type { RfpFormData } from '@/types';
+
+// Updated type definition to include bucketName as in remote
+type UploadUrlResponse = {
+  signedUrl: string; // This might not be strictly needed on the client anymore with uploadToSignedUrl
+  path: string;
+  token: string;
+  bucketName: string;
+};
 
 export default function RfpForm() {
 
@@ -31,7 +39,7 @@ export default function RfpForm() {
     setError(null);
 
     try {
-      // Step 1: Get signed upload URL
+      // Step 1: Backend gives path + token + bucketName
       const urlRes = await fetch(
         `/api/upload-url`,
         {
@@ -43,10 +51,36 @@ export default function RfpForm() {
           }),
         }
       );
-      const { signedUrl, path, token } = await unwrapApi<{ signedUrl: string; path: string; token: string }>(urlRes);
 
-      // Step 2: Upload file directly to storage
-      await uploadToSignedUrl(signedUrl, token, data.file);
+      const payload = await unwrapApi<UploadUrlResponse>(urlRes); // Log the payload from /api/upload-url
+      console.log('[RfpForm] upload-url payload', payload);
+
+      const { path, token, bucketName } = payload; // Destructure from payload
+
+      // --- Added logging for debugging ---
+      console.log('[RfpForm] Upload details:');
+      console.log('  bucketName:', bucketName);
+      console.log('  path:', path);
+      console.log('  token (start):', token.substring(0, 10), '...'); // Log beginning of token
+      console.log('  NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+
+
+      // Step 2: Upload through supabase-js, not raw fetch(signedUrl)
+      const result = await supabase.storage // Use remote's direct supabase client upload
+        .from(bucketName)
+        .uploadToSignedUrl(path, token, data.file, {
+          contentType: data.file.type || 'application/pdf',
+        });
+
+      console.log('[RfpForm] upload result', result); // Log full result
+
+      if (result.error) {
+        console.error('[RfpForm] upload error details', { // Log error details
+          message: result.error.message,
+          name: result.error.name,
+        });
+        throw new Error(`File upload failed: ${result.error.message}`);
+      }
 
       // Step 3: Submit metadata
       setIsUploading(false);
@@ -67,7 +101,9 @@ export default function RfpForm() {
       setSuccess(true);
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong';
+      setError(message);
     } finally {
       setIsUploading(false);
       setIsSubmitting(false);
