@@ -48,5 +48,6 @@ export async function POST(request: Request) {
     path,
     token: data.token,
     signedUrl: data.signedUrl,
+    bucketName: RFP_UPLOAD_BUCKET,
   });
 }
