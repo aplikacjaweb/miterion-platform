@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '-');
     const path = `${Date.now()}-${safeFilename}`;
 
-    console.log(\"[/api/upload-url] DEBUG: Project URL:\", process.env.NEXT_PUBLIC_SUPABASE_URL, \"Bucket:\", RFP_UPLOAD_BUCKET); const { data, error } = await supabaseAdmin.storage
+    const { data, error } = await supabaseAdmin.storage
       .from(RFP_UPLOAD_BUCKET)
       .createSignedUploadUrl(path);
 
