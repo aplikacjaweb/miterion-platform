@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 
@@ -62,7 +62,7 @@ export default function RfpForm() {
       console.log('  bucketName:', bucketName);
       console.log('  path:', path);
       console.log('  token (start):', token.substring(0, 10), '...'); // Log beginning of token
-      console.log('  NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL); console.log('  NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL); console.log('  NODE_ENV:', process.env.NODE_ENV); console.log('  window.location.origin:', typeof window !== \"undefined\" ? window.location.origin : \"ssr\");
+      console.log('  NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
 
 
       // Step 2: Upload through supabase-js, not raw fetch(signedUrl)
@@ -79,7 +79,7 @@ export default function RfpForm() {
           message: result.error.message,
           name: result.error.name,
         });
-        throw new Error(`File upload failed: ${result.error.message} (Bucket: ${bucketName}, URL: ${process.env.NEXT_PUBLIC_SUPABASE_URL})`);
+        throw new Error(`File upload failed: ${result.error.message}`);
       }
 
       // Step 3: Submit metadata
@@ -159,6 +159,3 @@ export default function RfpForm() {
     </form>
   );
 }
-
-
-

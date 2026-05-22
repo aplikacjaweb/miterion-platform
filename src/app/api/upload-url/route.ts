@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(\"[/api/upload-url] DEBUG: Returning success payload\", { path, tokenStart: data.token?.substring(0, 10), bucketName: RFP_UPLOAD_BUCKET, projectUrl: process.env.NEXT_PUBLIC_SUPABASE_URL }); return apiSuccess({
+    return apiSuccess({
       path,
       token: data.token,
       signedUrl: data.signedUrl ?? null, // Use null for signedUrl if not present, as in remote
