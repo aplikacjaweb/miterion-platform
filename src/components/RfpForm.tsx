@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 
@@ -79,7 +79,7 @@ export default function RfpForm() {
           message: result.error.message,
           name: result.error.name,
         });
-        throw new Error(`File upload failed: ${result.error.message}`);
+        throw new Error(`File upload failed: ${result.error.message} (Bucket: ${bucketName}, URL: ${process.env.NEXT_PUBLIC_SUPABASE_URL})`);
       }
 
       // Step 3: Submit metadata
@@ -159,3 +159,4 @@ export default function RfpForm() {
     </form>
   );
 }
+
