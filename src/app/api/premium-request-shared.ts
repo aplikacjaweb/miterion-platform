@@ -87,7 +87,8 @@ export async function POST(request: Request) {
     if (!resend || !env.RESEND_FROM_EMAIL) {
       console.error(`[${url.pathname}] Resend configuration missing`);
     } else {
-        const { data, error: resendError } = await resend.emails.send({
+      // Internal notification
+      const { data, error: resendError } = await resend.emails.send({
         from: env.RESEND_FROM_EMAIL,
         to: 'contact@miterion.com',
         reply_to: email,
@@ -96,7 +97,7 @@ export async function POST(request: Request) {
       });
 
       if (resendError) {
-        console.error(`[${url.pathname}] Resend failed:`, resendError);
+        console.error(`[${url.pathname}] Resend notification failed:`, resendError);
         if (supabaseAdmin) {
           await supabaseAdmin.from('email_queue').insert({
             to_email: 'contact@miterion.com',
@@ -107,6 +108,29 @@ export async function POST(request: Request) {
         }
       } else {
         console.log(`[${url.pathname}] Notification email sent:`, data?.id);
+      }
+
+      // Requester confirmation email
+      try {
+        const { error: confirmError } = await resend.emails.send({
+          from: env.RESEND_FROM_EMAIL,
+          to: email,
+          subject: `Request Received: ${typeLabel}`,
+          html: `
+            <h3>Thank you for your request</h3>
+            <p>We have received your request for <strong>${typeLabel}</strong>.</p>
+            <p>Our team will review your information and get back to you shortly.</p>
+            <hr/>
+            <p><small>This is an automated confirmation.</small></p>
+          `,
+        });
+        if (confirmError) {
+          console.error(`[${url.pathname}] Requester confirmation failed:`, confirmError);
+        } else {
+          console.log(`[${url.pathname}] Requester confirmation sent to:`, email);
+        }
+      } catch (confirmEx) {
+        console.error(`[${url.pathname}] Requester confirmation exception:`, confirmEx);
       }
     }
 
