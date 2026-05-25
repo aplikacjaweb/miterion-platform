@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       status: 200, 
       headers: { 
         "Content-Type": "application/pdf", 
-        "Content-Disposition": \`attachment; filename="snapshot-report.pdf"\`,
+        "Content-Disposition": `attachment; filename="snapshot-report.pdf"`,
         "Content-Length": pdfBuffer.length.toString(),
       } 
     });
