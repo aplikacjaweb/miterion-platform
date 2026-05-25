@@ -61,13 +61,18 @@ export async function POST(req: NextRequest) {
 
     if (resend && process.env.RESEND_FROM_EMAIL && email) {
       const filename = `snapshot-${indication.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-      resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL,
-        to: email,
-        subject: "Your Clinical Trial Snapshot Report",
-        html: `<p>Please find your requested Clinical Trial Snapshot for <strong>${indication}</strong> attached.</p>`,
-        attachments: [{ filename, content: pdfBuffer }],
-      }).catch(e => console.error("Email failed:", e));
+      try {
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL,
+          to: email,
+          subject: "Your Clinical Trial Snapshot Report",
+          html: `<p>Please find your requested Clinical Trial Snapshot for <strong>${indication}</strong> attached.</p>`,
+          attachments: [{ filename, content: pdfBuffer }],
+        });
+        console.log("LOG_EMAIL_SUCCESS:", email);
+      } catch (e) {
+        console.error("Email failed:", e);
+      }
     }
 
     return new NextResponse(pdfBuffer, { 
