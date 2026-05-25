@@ -87,10 +87,10 @@ export async function POST(request: Request) {
     if (!resend || !env.RESEND_FROM_EMAIL) {
       console.error(`[${url.pathname}] Resend configuration missing`);
     } else {
-      const { data, error: resendError } = await resend.emails.send({
+        const { data, error: resendError } = await resend.emails.send({
         from: env.RESEND_FROM_EMAIL,
         to: 'contact@miterion.com',
-        replyTo: email,
+        reply_to: email,
         subject: subject,
         html: emailHtml,
       });
