@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     const { data, error: resendError } = await resend.emails.send({
       from: env.RESEND_FROM_EMAIL,
       to: email,
-      replyTo: 'contact@miterion.com',
+        reply_to: 'contact@miterion.com',
       subject: 'Welcome to the DCT Dashboard Waitlist',
       html: emailHtml,
     });
