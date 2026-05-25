@@ -48,7 +48,7 @@ export type SnapshotPreviewFormData = z.infer<typeof snapshotPreviewSchema>;
 export type SnapshotUnlockFormData = z.infer<typeof snapshotUnlockSchema>;
 
 // ---------------------------------------------------------------------------
-// RFP form
+// Premium forms
 // ---------------------------------------------------------------------------
 
 const ALLOWED_FILE_TYPES = [
@@ -56,7 +56,7 @@ const ALLOWED_FILE_TYPES = [
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 ];
 
-const rfpBaseSchema = z.object({
+const premiumBaseSchema = z.object({
   email: z.string().email('Invalid email address'),
   company: z
     .string()
@@ -68,7 +68,7 @@ const rfpBaseSchema = z.object({
   message: z.string().max(1000).optional().nullable(),
 });
 
-export const rfpFormSchema = rfpBaseSchema.extend({
+export const premiumRequestSchema = premiumBaseSchema.extend({
   file: z
     .custom<File>((val) => {
       if (typeof File === 'undefined') return false;
@@ -76,14 +76,17 @@ export const rfpFormSchema = rfpBaseSchema.extend({
     })
     .refine((f) => f.size > 0, 'File cannot be empty')
     .refine((f) => f.size <= 20 * 1024 * 1024, 'File must be less than 20MB')
-    .refine((f) => ALLOWED_FILE_TYPES.includes(f.type), 'File must be PDF or XLSX'),
+    .refine((f) => ALLOWED_FILE_TYPES.includes(f.type), 'File must be PDF or XLSX')
+    .optional()
+    .nullable(),
 });
 
-export const rfpSubmitSchema = rfpBaseSchema.extend({
-  filePath: z.string().min(1, 'File path is required'),
+export const premiumSubmitSchema = premiumBaseSchema.extend({
+  filePath: z.string().optional().nullable(),
 });
 
-export type RfpSubmitPayload = z.infer<typeof rfpSubmitSchema>;
+export type PremiumRequestData = z.infer<typeof premiumRequestSchema>;
+export type PremiumSubmitPayload = z.infer<typeof premiumSubmitSchema>;
 
 // ---------------------------------------------------------------------------
 // DCT waitlist
