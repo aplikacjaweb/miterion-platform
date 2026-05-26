@@ -85,10 +85,11 @@ export async function POST(request: Request) {
     `;
 
     if (!resend || !env.RESEND_FROM_EMAIL) {
-      console.error(`[${url.pathname}] Resend configuration missing`);
+      console.error(`[${url.pathname}] Resend configuration missing. RESEND_API_KEY: ${env.RESEND_API_KEY ? 'Present' : 'Missing'}, FROM: ${env.RESEND_FROM_EMAIL || 'Missing'}`);
     } else {
+      console.log(`[${url.pathname}] Resend configured. Attempting notification to contact@miterion.com`);
       // Internal notification
-      const { data, error: resendError } = await resend.emails.send({
+      const { data: notifyData, error: resendError } = await resend.emails.send({
         from: env.RESEND_FROM_EMAIL,
         to: 'contact@miterion.com',
         reply_to: email,
@@ -107,12 +108,13 @@ export async function POST(request: Request) {
           });
         }
       } else {
-        console.log(`[${url.pathname}] Notification email sent:`, data?.id);
+        console.log(`[${url.pathname}] Notification email sent:`, notifyData?.id);
       }
 
       // Requester confirmation email
       try {
-        const { error: confirmError } = await resend.emails.send({
+        console.log(`[${url.pathname}] Attempting confirmation to ${email}`);
+        const { data: confirmData, error: confirmError } = await resend.emails.send({
           from: env.RESEND_FROM_EMAIL,
           to: email,
           subject: `Request Received: ${typeLabel}`,
@@ -127,7 +129,7 @@ export async function POST(request: Request) {
         if (confirmError) {
           console.error(`[${url.pathname}] Requester confirmation failed:`, confirmError);
         } else {
-          console.log(`[${url.pathname}] Requester confirmation sent to:`, email);
+          console.log(`[${url.pathname}] Requester confirmation sent to: ${email}, ID: ${confirmData?.id}`);
         }
       } catch (confirmEx) {
         console.error(`[${url.pathname}] Requester confirmation exception:`, confirmEx);
