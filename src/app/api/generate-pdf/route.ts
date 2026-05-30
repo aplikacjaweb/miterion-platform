@@ -41,19 +41,24 @@ export async function POST(req: NextRequest) {
     `;
 
     let browser;
-    if (process.env.NODE_ENV === "development" || !process.env.VERCEL) {
-      const puppeteerLocal = require("puppeteer");
-      browser = await puppeteerLocal.launch({ args: ["--no-sandbox"] });
-    } else {
-      browser = await puppeteer.launch({ 
-        args: chromium.args, 
-        executablePath: await chromium.executablePath(), 
-        headless: true 
-      });
+    try {
+      if (process.env.NODE_ENV === "development" || !process.env.VERCEL) {
+        const puppeteerLocal = await import("puppeteer");
+        browser = await puppeteerLocal.launch({ args: ["--no-sandbox"] });
+      } else {
+        browser = await puppeteer.launch({ 
+          args: chromium.args, 
+          executablePath: await chromium.executablePath(), 
+          headless: true 
+        });
+      }
+    } catch (err) {
+      console.error("Puppeteer launch error:", err);
+      return NextResponse.json({ error: "Puppeteer failed to launch" }, { status: 500 });
     }
 
     const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" as any });
     const pdfBuffer = await page.pdf({ format: "A4" });
     await browser.close();
 
@@ -68,7 +73,7 @@ export async function POST(req: NextRequest) {
           to: email,
           subject: "Your Clinical Trial Snapshot Report",
           html: `<p>Please find your requested Clinical Trial Snapshot for <strong>${indication}</strong> attached.</p>`,
-          attachments: [{ filename, content: pdfBuffer }],
+          attachments: [{ filename, content: Buffer.from(pdfBuffer) }],
         });
         
         if (emailError) {
@@ -81,7 +86,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return new NextResponse(pdfBuffer, { 
+    return new NextResponse(Buffer.from(pdfBuffer), { 
       status: 200, 
       headers: { 
         "Content-Type": "application/pdf", 
