@@ -2,12 +2,11 @@ import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { dctWaitlistSchema } from '@/lib/validation';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
+import { env } from '@/lib/env';
 
 export const runtime = "nodejs";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -34,37 +33,51 @@ export async function POST(request: Request) {
       .insert({ email });
 
     if (dbError) {
-      // Unique constraint violation — already on the list, treat as success
       if (dbError.code === '23505') {
         return apiSuccess({ alreadyRegistered: true });
       }
-      console.error('DCT waitlist DB error:', dbError);
+      console.error('[/api/dct-waitlist] DB error:', dbError);
       return apiError('DB_ERROR', 'Failed to join waitlist', 500);
     }
   }
 
-  // Send confirmation email (non-fatal)
-  if (resend && process.env.RESEND_FROM_EMAIL) {
-    try {
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL,
-        to: email,
-        subject: 'Welcome to the DCT Dashboard Waitlist',
-        html: `
-          <h2>Thanks for Joining!</h2>
-          <p>You're on the waitlist for early access to our Decentralized Clinical Trials dashboard.</p>
-          <p>We'll notify you as soon as it's ready.</p>
-        `,
+  // Send confirmation email
+  const emailHtml = `
+    <h2>Thanks for Joining!</h2>
+    <p>You're on the waitlist for early access to our Decentralized Clinical Trials dashboard.</p>
+    <p>We'll notify you as soon as it's ready.</p>
+  `;
+
+  if (!resend || !env.RESEND_FROM_EMAIL) {
+    console.error('[/api/dct-waitlist] Resend configuration missing (API Key or From Email)');
+  } else {
+    const { data, error: resendError } = await resend.emails.send({
+      from: env.RESEND_FROM_EMAIL,
+      to: email,
+      bcc: 'contact@miterion.com',
+      reply_to: 'contact@miterion.com',
+      subject: 'Welcome to the DCT Dashboard Waitlist',
+      html: emailHtml,
+    });
+
+    if (resendError) {
+      const isDomainError = resendError.message?.toLowerCase().includes('domain is not verified');
+      console.error('[/api/dct-waitlist] Resend failed:', {
+        name: resendError.name,
+        message: resendError.message,
+        isDomainError
       });
-    } catch (emailError) {
-      console.error('Confirmation email failed (non-fatal):', emailError);
+
       if (supabaseAdmin) {
         await supabaseAdmin.from('email_queue').insert({
           to_email: email,
           subject: 'Welcome to the DCT Dashboard Waitlist',
-          html: '<h2>Thanks for Joining!</h2><p>You\'re on the waitlist.</p>',
+          html: emailHtml,
+          error_log: `${resendError.name}: ${resendError.message}`
         });
       }
+    } else {
+      console.log('[/api/dct-waitlist] Confirmation email sent:', data?.id);
     }
   }
 
