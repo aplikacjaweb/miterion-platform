@@ -220,8 +220,6 @@ export default function SnapshotForm() {
       } else {
         throw new Error(`Unexpected response type: ${contentType}.`);
       }
-    }
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate PDF.');
     } finally {
