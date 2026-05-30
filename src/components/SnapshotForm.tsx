@@ -200,6 +200,14 @@ export default function SnapshotForm() {
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         setDownloadUrl(url);
+        
+        // Auto-trigger download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'clinical-trial-snapshot.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       } else if (contentType.includes('application/json')) {
         const responseText = await res.text();
         const jsonResponse = JSON.parse(responseText);
@@ -474,13 +482,9 @@ export default function SnapshotForm() {
                       </Button>
                     </form>
                     {downloadUrl && !isPdfGenerating && (
-                      <a
-                        href={downloadUrl}
-                        download="clinical-trial-snapshot.pdf"
-                        className="btn-secondary mt-2 inline-block"
-                      >
-                        Click here to download
-                      </a>
+                      <p className="mt-2 text-sm text-green-600">
+                        PDF generated successfully! Check your downloads.
+                      </p>
                     )}
                   </div>
 
