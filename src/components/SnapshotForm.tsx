@@ -477,8 +477,7 @@ export default function SnapshotForm() {
                         disabled={isPdfGenerating}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
                       >
-                        {isPdfGenerating ? 'Generating PDF...' : 'Download Snapshot Report'
-                      </Button>
+                        {isPdfGenerating ? 'Generating PDF...' : 'Download Snapshot Report'} </Button>
                     </form>
                     {downloadUrl && !isPdfGenerating && (
                       <p className="mt-2 text-sm text-green-600">
