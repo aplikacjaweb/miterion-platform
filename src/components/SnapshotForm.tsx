@@ -10,16 +10,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   snapshotPreviewSchema,
   snapshotUnlockSchema,
-  fullReportSchema,
-  rfpUploadSchema,
   type SnapshotPreviewFormData,
   type SnapshotUnlockFormData,
-  type FullReportFormData,
-  type RfpUploadFormData,
 } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
 import type { FetchTrialsResponse } from '@/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import FullReportRequestDialog from './FullReportRequestDialog';
+import RfpHarmonizationDialog from './RfpHarmonizationDialog';
 import { Button } from './ui/button';
 
 type CountryOption = { name: string; code: string };
@@ -37,268 +34,6 @@ function parseJsonSafely(raw: string): unknown | null {
   } catch {
     return null;
   }
-}
-
-// Flow B: Full Report Modal
-interface FullReportModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
-}
-
-function FullReportModal({ open, onOpenChange, onSuccess }: FullReportModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FullReportFormData>({
-    resolver: zodResolver(fullReportSchema),
-    defaultValues: {
-      email: '',
-      mechanism_approach: '',
-      planned_start: '',
-      major_finding_concern: '',
-    },
-  });
-
-  const onSubmit = async (data: FullReportFormData) => {
-    setIsSubmitting(true);
-    setError(null);
-    console.log('Submitting full report with data:', data);
-    try {
-      const userQuestion = [
-        `Major finding / concern: ${data.major_finding_concern}`,
-        data.mechanism_approach ? `Mechanism / approach: ${data.mechanism_approach}` : '',
-        data.planned_start ? `Planned start: ${data.planned_start}` : '',
-      ].filter(Boolean).join('\n');
-
-      const { error } = await supabase.from('leads').insert([
-        {
-          email: data.email,
-          company: null,
-          indication: 'FULL_REPORT_SUBMITTED',
-          phase: 'REPORT_REQUESTED',
-          country: null,
-          country_code: null,
-          user_question: userQuestion,
-          pdf_path: null,
-        },
-      ]);
-      if (error) {
-        console.error('Supabase leads insert failed:', error);
-        throw error;
-      }
-      onSuccess();
-      reset();
-      onOpenChange(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit full report request.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-white text-slate-900 border border-slate-200 shadow-xl opacity-100">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-navy">Request Independent Intelligence Report</DialogTitle>
-          <DialogDescription className="text-gray-600 mt-2">
-            Get a comprehensive analysis of your clinical trial landscape with actionable insights and strategic recommendations.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4">
-          <div className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold text-navy mb-2">What's included:</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Detailed competitive analysis</li>
-              <li>• Recruitment strategy optimization</li>
-              <li>• Risk assessment and mitigation</li>
-              <li>• Custom recommendations</li>
-            </ul>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="email"
-                {...register('email')}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Enter your email address"
-                type="email"
-              />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="mechanism_approach" className="block text-sm font-medium text-gray-700">
-                Mechanism / Approach (Optional)
-              </label>
-              <input
-                id="mechanism_approach"
-                {...register('mechanism_approach')}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Describe your mechanism or approach"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="planned_start" className="block text-sm font-medium text-gray-700">
-                Planned Start Date (Optional)
-              </label>
-              <input
-                id="planned_start"
-                {...register('planned_start')}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                placeholder="When do you plan to start?"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="major_finding_concern" className="block text-sm font-medium text-gray-700">
-                What is the single 'Major Finding' you are most concerned about in your next audit? <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                id="major_finding_concern"
-                {...register('major_finding_concern')}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 h-24"
-                placeholder="Describe your main concern or area of focus for the audit"
-              />
-              {errors.major_finding_concern && <p className="text-red-500 text-sm mt-1">{errors.major_finding_concern.message}</p>}
-            </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md">
-              {isSubmitting ? 'Submitting...' : 'Submit Request (4500 EUR+)'}
-            </Button>
-          </form>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// Flow C: RFP Upload Modal
-interface RfpUploadModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
-}
-
-function RfpUploadModal({ open, onOpenChange, onSuccess }: RfpUploadModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<RfpUploadFormData>({
-    resolver: zodResolver(rfpUploadSchema),
-  });
-
-  const onSubmit = async (data: RfpUploadFormData) => {
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      // Upload file to Supabase Storage
-      const file = data.rfp_file as File;
-      const filePath = `rfp_uploads/${Date.now()}-${file.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('rfp-files')
-        .upload(filePath, file, { cacheControl: '3600', upsert: false });
-
-      if (uploadError) throw uploadError;
-
-      // Save data to Supabase DB
-      const { error: dbError } = await supabase.from('rfp_requests').insert([
-        {
-          file_path: uploadData.path,
-          target_geography: data.target_geography,
-          uncertainty_question: data.uncertainty_question,
-        },
-      ]);
-
-      if (dbError) throw dbError;
-
-      onSuccess();
-      reset();
-      onOpenChange(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload RFP and submit request.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-white text-slate-900 border border-slate-200 shadow-xl opacity-100">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-navy">RFP Harmonization</DialogTitle>
-          <DialogDescription className="text-gray-600 mt-2">
-            Optimize your RFP process and budget allocation with our expert analysis and harmonization services.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4">
-          <div className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold text-navy mb-2">What's included:</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• RFP document analysis</li>
-              <li>• Budget optimization recommendations</li>
-              <li>• Vendor comparison and selection</li>
-              <li>• Process efficiency improvements</li>
-            </ul>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {error && <div className="mb-4 rounded bg-red-50 p-4 text-red-600">{error}</div>}
-            <div className="space-y-2">
-              <label htmlFor="rfp_file" className="block text-sm font-medium text-gray-700">
-                RFP File Upload <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="rfp_file"
-                type="file"
-                {...register('rfp_file')}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                accept=".pdf,.xlsx"
-              />
-              <p className="text-xs text-gray-500">Accepted formats: PDF, XLSX. Maximum file size: 20MB</p>
-              {errors.rfp_file && <p className="text-red-500 text-sm mt-1">{errors.rfp_file.message as string}</p>}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="target_geography" className="block text-sm font-medium text-gray-700">
-                Target Geography <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="target_geography"
-                {...register('target_geography')}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="Enter the target geography for your trial"
-              />
-              {errors.target_geography && <p className="text-red-500 text-sm mt-1">{errors.target_geography.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="uncertainty_question" className="block text-sm font-medium text-gray-700">
-                What are you unsure about in these proposals? <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                id="uncertainty_question"
-                {...register('uncertainty_question')}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 h-24"
-                placeholder="Describe your concerns or questions about the RFP proposals"
-              />
-              {errors.uncertainty_question && <p className="text-red-500 text-sm mt-1">{errors.uncertainty_question.message}</p>}
-            </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md">
-              {isSubmitting ? 'Uploading...' : 'Submit RFP (1800 EUR+)'}
-            </Button>
-          </form>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
 }
 
 export default function SnapshotForm() {
@@ -465,6 +200,14 @@ export default function SnapshotForm() {
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         setDownloadUrl(url);
+        
+        // Auto-trigger download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'clinical-trial-snapshot.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       } else if (contentType.includes('application/json')) {
         const responseText = await res.text();
         const jsonResponse = JSON.parse(responseText);
@@ -477,13 +220,12 @@ export default function SnapshotForm() {
       } else {
         throw new Error(`Unexpected response type: ${contentType}.`);
       }
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate PDF.');
     } finally {
       setIsPdfGenerating(false);
     }
-  };
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -710,7 +452,7 @@ export default function SnapshotForm() {
                   </div>
                 </div>
 
-                {/* TASK 5: POST-GENERATION UI FUNNEL */}
+                {/* POST-GENERATION UI FUNNEL */}
                 <div className="space-y-6 mt-10">
                   <h3 className="text-2xl font-bold text-center text-navy">Your Clinical Trial Intelligence Options</h3>
                   
@@ -735,24 +477,20 @@ export default function SnapshotForm() {
                         disabled={isPdfGenerating}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
                       >
-                        {isPdfGenerating ? 'Generating PDF...' : 'Download Snapshot Report'}
+                        {isPdfGenerating ? 'Generating PDF...' : 'Download Snapshot Report'
                       </Button>
                     </form>
-                    {downloadUrl && !isPdfGenerating && ( // Only show download link after generation and if not currently generating
-                      <a
-                        href={downloadUrl}
-                        download="clinical-trial-snapshot.pdf"
-                        className="btn-secondary mt-2 inline-block"
-                      >
-                        Click here to download
-                      </a>
+                    {downloadUrl && !isPdfGenerating && (
+                      <p className="mt-2 text-sm text-green-600">
+                        PDF generated successfully! Check your downloads.
+                      </p>
                     )}
                   </div>
 
-                  {/* Card 2: Request Independent Intelligence Report */}
+                  {/* Card 2: Request Full Trial Intelligence Report */}
                   <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
-                    <h4 className="text-xl font-semibold mb-3 text-white">Request Independent Intelligence Report</h4>
-                    <p className="text-gray-600 mb-4 text-sm">Get a comprehensive analysis of your clinical trial landscape with actionable insights and strategic recommendations.</p>
+                    <h4 className="text-xl font-semibold mb-3 text-navy">Full Trial Intelligence Report</h4>
+                    <p className="text-gray-600 mb-4 text-sm">Analyst-led deep dive including international public-source cross-checking.</p>
                     <div className="w-full mb-4">
                       <h5 className="text-sm font-medium text-gray-700 mb-2">What's included:</h5>
                       <ul className="text-left text-sm text-gray-600 space-y-1">
@@ -763,26 +501,17 @@ export default function SnapshotForm() {
                       </ul>
                     </div>
                     <Button onClick={() => setShowFullReportModal(true)} className="w-full max-w-sm bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md">
-                      Request Full Report (4500 EUR+)
+                      Request Full Report
                     </Button>
                   </div>
 
-                  {/* Card 3: Request RFP Harmonization */}
-                  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
-                    <h4 className="text-xl font-semibold mb-3 text-white">Request RFP Harmonization</h4>
-                    <p className="text-gray-600 mb-4 text-sm">Optimize your RFP process and budget allocation with our expert analysis and harmonization services.</p>
-                    <div className="w-full mb-4">
-                      <h5 className="text-sm font-medium text-gray-700 mb-2">What's included:</h5>
-                      <ul className="text-left text-sm text-gray-600 space-y-1">
-                        <li>• RFP document analysis</li>
-                        <li>• Budget optimization recommendations</li>
-                        <li>• Vendor comparison and selection</li>
-                        <li>• Process efficiency improvements</li>
-                      </ul>
-                    </div>
-                    <Button onClick={() => setShowRfpUploadModal(true)} className="w-full max-w-sm bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md">
-                      Request RFP Harmonization (1800 EUR+)
-                    </Button>
+                  <div className="text-center">
+                    <button 
+                      onClick={() => setShowRfpUploadModal(true)}
+                      className="text-sm text-gray-500 hover:text-navy underline"
+                    >
+                      Looking for RFP & Quote Harmonization?
+                    </button>
                   </div>
                 </div>
               </>
@@ -790,8 +519,8 @@ export default function SnapshotForm() {
           </div>
         )}
       </div>
-      <FullReportModal open={showFullReportModal} onOpenChange={setShowFullReportModal} onSuccess={() => alert('Full Report request submitted successfully!')} />
-      <RfpUploadModal open={showRfpUploadModal} onOpenChange={setShowRfpUploadModal} onSuccess={() => alert('RFP Upload submitted successfully!')} />
+      <FullReportRequestDialog open={showFullReportModal} onOpenChange={setShowFullReportModal} />
+      <RfpHarmonizationDialog open={showRfpUploadModal} onOpenChange={setShowRfpUploadModal} />
     </div>
   );
 }

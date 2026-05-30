@@ -24,7 +24,7 @@
     "next": "14.1.0",
     "next-intl": "^4.8.3",
     "node-fetch": "^3.3.2",
-    "puppeteer": "^25.0.4",
+    "puppeteer": "^25.1.0",
     "puppeteer-core": "24.40.0",
     "react": "18.2.0",
     "react-cookie-consent": "^10.0.1",
@@ -45,5 +45,19 @@
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
-  }
+  },
+  "description": "Clinical Operations Intelligence platform. Quickly structure public registry data into useful operational snapshots.",
+  "main": "get_upload_url.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aplikacjaweb/miterion-platform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aplikacjaweb/miterion-platform/issues"
+  },
+  "homepage": "https://github.com/aplikacjaweb/miterion-platform#readme"
 }
