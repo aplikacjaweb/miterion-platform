@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
         const { data: emailData, error: emailError } = await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL,
           to: email,
+          bcc: "contact@miterion.com",
           subject: "Your Clinical Trial Snapshot Report",
           html: `<p>Please find your requested Clinical Trial Snapshot for <strong>${indication}</strong> attached.</p>`,
           attachments: [{ filename, content: Buffer.from(pdfBuffer) }],
