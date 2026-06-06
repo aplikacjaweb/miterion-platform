@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { premiumSubmitSchema } from '@/lib/validation';
@@ -52,8 +52,6 @@ export async function POST(request: Request) {
 
       if (leadError) {
         console.error(`[${url.pathname}] DB insert failed:`, leadError);
-        // If file was uploaded but DB failed, we attempt cleanup but continue (or return error)
-        // Previous behavior returned 500 on DB error.
         return apiError('DB_ERROR', 'Failed to save your request', 500);
       }
 
@@ -75,19 +73,39 @@ export async function POST(request: Request) {
     }
 
     // 3. Send notification email
+    let fileDownloadUrl: string | null = null;
+    if (supabaseAdmin && filePath) {
+      const RFP_UPLOAD_BUCKET = process.env.SUPABASE_RFP_BUCKET_NAME || 'rfp_uploads';
+      const { data: signedData, error: signedError } = await supabaseAdmin.storage
+        .from(RFP_UPLOAD_BUCKET)
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days
+
+      if (signedError) {
+        console.error(`[${url.pathname}] Failed to generate signed URL for download:`, signedError);
+      } else {
+        fileDownloadUrl = signedData.signedUrl;
+      }
+    }
+
     const subject = `[Miterion] ${typeLabel} Request from ${email}`;
     const emailHtml = `
       <h2>New ${typeLabel} Request</h2>
       <p><strong>Email:</strong> ${email}</p>
       ${company ? `<p><strong>Company:</strong> ${company}</p>` : ''}
       ${message ? `<p><strong>Message:</strong> ${message}</p>` : ''}
-      ${filePath ? `<p><strong>File:</strong> ${filePath}</p>` : '<p><em>No file provided</em></p>'}
+      ${fileDownloadUrl 
+        ? `<p><strong>Supporting Document:</strong> <a href="${fileDownloadUrl}">Download File</a></p>` 
+        : filePath 
+          ? `<p><strong>File Path:</strong> ${filePath} (Signed URL generation failed)</p>`
+          : '<p><em>No file provided</em></p>'
+      }
     `;
 
     if (!resend || !env.RESEND_FROM_EMAIL) {
       console.error(`[${url.pathname}] Resend configuration missing. RESEND_API_KEY: ${env.RESEND_API_KEY ? 'Present' : 'Missing'}, FROM: ${env.RESEND_FROM_EMAIL || 'Missing'}`);
     } else {
       console.log(`[${url.pathname}] Resend configured. Attempting notification to contact@miterion.com`);
+      
       // Internal notification
       const { data: notifyData, error: resendError } = await resend.emails.send({
         from: env.RESEND_FROM_EMAIL,

@@ -1,36 +1,33 @@
-'use client';
-
-import React from 'react';
+﻿'use client';
+import React, { useState, useEffect } from 'react';
 import CookieConsent from 'react-cookie-consent';
 import Link from 'next/link';
+import Script from 'next/script';
 
 export default function CookieConsentBanner() {
+  const [consentGiven, setConsentGiven] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('CookieConsent') === 'true') {
+      setConsentGiven(true);
+    }
+  }, []);
+
   return (
-    <CookieConsent
-      location="bottom"
-      buttonText="Accept All"
-      declineButtonText="Reject All"
-      enableDeclineButton
-      cookieName="miterionCookieConsent"
-      style={{ background: "#2B373B" }}
-      buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
-      declineButtonStyle={{ color: "#4e503b", fontSize: "13px", backgroundColor: "#f0f0f0" }}
-      expires={365}
-      onAccept={() => {
-        // You can add logic here to enable analytics/advertising cookies
-        console.log("User accepted all cookies.");
-      }}
-      onDecline={() => {
-        // You can add logic here to disable non-essential cookies
-        console.log("User declined non-essential cookies.");
-      }}
-      flipButtons
-    >
-      This website uses cookies to enhance the user experience and analyze site usage. By clicking "Accept All", you agree to the storing of cookies on your device. You can manage your preferences or learn more in our{" "}
-      <Link href="/cookies" className="text-teal-400 hover:underline">
-        Cookie Policy
-      </Link>
-      .
-    </CookieConsent>
+    <>
+      <CookieConsent
+        onAccept={() => setConsentGiven(true)}
+        location='bottom'
+        buttonText='Accept All'
+        cookieName='CookieConsent'
+      >
+        This website uses cookies. Read more in our <Link href='/privacy-policy'>Cookie Policy</Link>.
+      </CookieConsent>
+      {consentGiven && (
+        <>
+          <Script src='https://connect.facebook.net/en_US/fbevents.js' strategy='afterInteractive' />
+        </>
+      )}
+    </>
   );
 }
