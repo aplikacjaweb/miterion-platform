@@ -17,10 +17,57 @@ export async function POST(request: Request) {
     
     // 1. Parse & validate body
     let body: unknown;
-    try {
-      body = await request.json();
-    } catch (e) {
-      return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
+    let filePath: string | null = null;
+    
+    // Check if the request is multipart form data (file upload)
+    const contentType = request.headers.get('content-type');
+    if (contentType && contentType.includes('multipart/form-data')) {
+      // Handle multipart form data for file uploads
+      const formData = await request.formData();
+      const email = formData.get('email') as string;
+      const company = formData.get('company') as string;
+      const message = formData.get('message') as string;
+      const file = formData.get('file') as File | null;
+      
+      // Validate required fields
+      if (!email) {
+        return apiError('INVALID_REQUEST', 'Email is required', 400);
+      }
+      
+      // Handle file upload if present
+      if (file) {
+        // Upload the file to Supabase Storage
+        if (supabaseAdmin) {
+          const RFP_UPLOAD_BUCKET = process.env.SUPABASE_RFP_BUCKET_NAME || 'rfp_uploads';
+          const fileName = `uploads/${Date.now()}_${file.name}`;
+          
+          try {
+            const { error: uploadError } = await supabaseAdmin.storage
+              .from(RFP_UPLOAD_BUCKET)
+              .upload(fileName, file);
+            
+            if (uploadError) {
+              console.error(`[${url.pathname}] File upload failed:`, uploadError);
+              return apiError('UPLOAD_FAILED', 'Failed to upload file', 500);
+            }
+            
+            filePath = fileName;
+          } catch (uploadException) {
+            console.error(`[${url.pathname}] File upload exception:`, uploadException);
+            return apiError('UPLOAD_FAILED', 'Failed to upload file', 500);
+          }
+        }
+      }
+      
+      // Construct the body object for validation
+      body = { email, company, message, filePath };
+    } else {
+      // Handle JSON body for non-file requests
+      try {
+        body = await request.json();
+      } catch (e) {
+        return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
+      }
     }
 
     const parsed = premiumSubmitSchema.safeParse(body);
@@ -32,7 +79,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const { email, company, message, filePath } = parsed.data;
+    const { email, company, message } = parsed.data;
+    // Use the filePath from multipart handling if it was set
+    if (filePath === null) {
+      filePath = parsed.data.filePath || null;
+    }
 
     // 2. Save lead to DB
     let leadId: string | null = null;
