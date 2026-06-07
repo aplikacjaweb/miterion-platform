@@ -17,29 +17,29 @@ export const CookieBanner = () => {
     <div className="fixed bottom-0 left-0 w-full bg-gray-900 text-gray-100 p-4 sm:p-6 z-[9999] shadow-2xl border-t border-gray-800">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-sm text-center sm:text-left flex-1">
-          <p className="font-medium text-white mb-1">Cenimy Twoją prywatność</p>
+          <p className="font-medium text-white mb-1">We value your privacy</p>
           <p className="text-gray-400">
-            Ta strona używa plików cookies, aby zapewnić najlepsze doświadczenia z korzystania z naszego serwisu oraz do celów analitycznych.
+            This website uses cookies to ensure you get the best experience on our website and for analytical purposes.
           </p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto justify-center">
           <button
             onClick={() => {
-              localStorage.setItem('cookie-consent', 'none');
+              localStorage.setItem('cookie-consent', 'reject');
               setShow(false);
             }}
             className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors border border-gray-700 w-full sm:w-auto"
           >
-            Odrzuć
+            Reject
           </button>
           <button
             onClick={() => {
-              localStorage.setItem('cookie-consent', 'all');
+              localStorage.setItem('cookie-consent', 'accept');
               setShow(false);
             }}
             className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors w-full sm:w-auto shadow-md"
           >
-            Akceptuj
+            Accept
           </button>
         </div>
       </div>
