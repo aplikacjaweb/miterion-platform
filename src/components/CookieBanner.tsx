@@ -1,65 +1,47 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export const CookieBanner = () => {
-  const [showPreferences, setShowPreferences] = useState(false);
-  const [consentGiven, setConsentGiven] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
-    // Check localStorage only after the component mounts to avoid hydration issues
-    const storedConsent = localStorage.getItem('cookieConsent');
-    if (storedConsent === 'true') {
-      setConsentGiven(true);
+    // Check if the user has already made a decision
+    if (!localStorage.getItem('cookie-consent')) {
+      setShow(true);
     }
   }, []);
 
-  const handleAcceptAll = () => {
-    // Logic to accept all cookies
-    localStorage.setItem('cookieConsent', 'true');
-    setConsentGiven(true);
-  };
-
-  const handleRejectAll = () => {
-    // Logic to reject all cookies
-    localStorage.setItem('cookieConsent', 'true');
-    setConsentGiven(true);
-  };
-
-  const handlePreferences = () => {
-    setShowPreferences(!showPreferences);
-  };
-
-  if (consentGiven) {
-    return null;
-  }
+  if (!show) return null;
 
   return (
-    <div className="cookie-banner">
-      <div className="cookie-banner-content">
-        <p>
-          We use cookies to analyze site traffic, personalize content, and serve targeted ads.
-          You can choose to accept all, reject all, or manage your preferences.
-        </p>
-        <div className="cookie-banner-buttons">
-          <button onClick={handleAcceptAll} className="cookie-button accept-button">Accept All</button>
-          <button onClick={handleRejectAll} className="cookie-button reject-button">Reject All</button>
-          <button onClick={handlePreferences} className="cookie-button preferences-button">Preferences</button>
+    <div className="fixed bottom-0 left-0 w-full bg-gray-900 text-gray-100 p-4 sm:p-6 z-[9999] shadow-2xl border-t border-gray-800">
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-sm text-center sm:text-left flex-1">
+          <p className="font-medium text-white mb-1">Cenimy Twoją prywatność</p>
+          <p className="text-gray-400">
+            Ta strona używa plików cookies, aby zapewnić najlepsze doświadczenia z korzystania z naszego serwisu oraz do celów analitycznych.
+          </p>
         </div>
-        {showPreferences && (
-          <div className="cookie-preferences">
-            <h3>Cookie Preferences</h3>
-            <label>
-              <input type="checkbox" /> Necessary
-            </label>
-            <label>
-              <input type="checkbox" /> Analytics
-            </label>
-            <label>
-              <input type="checkbox" /> Marketing
-            </label>
-            <button onClick={() => setShowPreferences(false)}>Save Preferences</button>
-          </div>
-        )}
+        <div className="flex gap-3 w-full sm:w-auto justify-center">
+          <button
+            onClick={() => {
+              localStorage.setItem('cookie-consent', 'none');
+              setShow(false);
+            }}
+            className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors border border-gray-700 w-full sm:w-auto"
+          >
+            Odrzuć
+          </button>
+          <button
+            onClick={() => {
+              localStorage.setItem('cookie-consent', 'all');
+              setShow(false);
+            }}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors w-full sm:w-auto shadow-md"
+          >
+            Akceptuj
+          </button>
+        </div>
       </div>
     </div>
   );
