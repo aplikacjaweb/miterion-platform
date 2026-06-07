@@ -1,17 +1,27 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export const CookieBanner = () => {
   const [showPreferences, setShowPreferences] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
 
+  useEffect(() => {
+    // Check localStorage only after the component mounts to avoid hydration issues
+    const storedConsent = localStorage.getItem('cookieConsent');
+    if (storedConsent === 'true') {
+      setConsentGiven(true);
+    }
+  }, []);
+
   const handleAcceptAll = () => {
     // Logic to accept all cookies
+    localStorage.setItem('cookieConsent', 'true');
     setConsentGiven(true);
   };
 
   const handleRejectAll = () => {
     // Logic to reject all cookies
+    localStorage.setItem('cookieConsent', 'true');
     setConsentGiven(true);
   };
 
