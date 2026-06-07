@@ -28,7 +28,7 @@ export const CookieBanner = () => {
               localStorage.setItem('cookie-consent', 'reject');
               setShow(false);
             }}
-            className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors border border-gray-700 w-full sm:w-auto"
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
           >
             Reject
           </button>
