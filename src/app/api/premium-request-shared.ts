@@ -76,14 +76,19 @@ export async function POST(request: Request) {
     let fileDownloadUrl: string | null = null;
     if (supabaseAdmin && filePath) {
       const RFP_UPLOAD_BUCKET = process.env.SUPABASE_RFP_BUCKET_NAME || 'rfp_uploads';
-      const { data: signedData, error: signedError } = await supabaseAdmin.storage
-        .from(RFP_UPLOAD_BUCKET)
-        .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days
+      try {
+        const { data: signedData, error: signedError } = await supabaseAdmin.storage
+          .from(RFP_UPLOAD_BUCKET)
+          .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days
 
-      if (signedError) {
-        console.error(`[${url.pathname}] Failed to generate signed URL for download:`, signedError);
-      } else {
-        fileDownloadUrl = signedData.signedUrl;
+        if (signedError) {
+          console.error(`[${url.pathname}] Failed to generate signed URL for download:`, signedError);
+        } else {
+          fileDownloadUrl = signedData.signedUrl;
+        }
+      } catch (storageError) {
+        console.error(`[${url.pathname}] Storage operation failed (non-fatal):`, storageError);
+        fileDownloadUrl = null; // Explicitly set to null to continue execution
       }
     }
 
