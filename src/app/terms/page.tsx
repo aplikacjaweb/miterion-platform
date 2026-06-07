@@ -1,6 +1,6 @@
-// Cache bust: June 7, 2026 - Legal Update v2`n
+
 // Cache bust: June 7, 2026 - Legal Update v2
-import { Metadata } from .next.;
+import { Metadata } from "next";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -107,5 +107,6 @@ export default function TermsPage() {
     </div>
   );
 }
+
 
 
