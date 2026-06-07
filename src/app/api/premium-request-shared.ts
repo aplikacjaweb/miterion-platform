@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { premiumSubmitSchema } from '@/lib/validation';
@@ -178,7 +178,6 @@ export async function POST(request: Request) {
             to_email: 'contact@miterion.com',
             subject: subject,
             html: emailHtml,
-            error_log: `${resendError.name}: ${resendError.message}`
           });
         }
       } else {
