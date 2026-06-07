@@ -73,7 +73,6 @@ export async function POST(request: Request) {
           to_email: email,
           subject: 'Welcome to the DCT Dashboard Waitlist',
           html: emailHtml,
-          error_log: `${resendError.name}: ${resendError.message}`
         });
       }
     } else {
