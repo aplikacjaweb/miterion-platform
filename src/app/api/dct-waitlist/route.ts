@@ -53,23 +53,36 @@ export async function POST(request: Request) {
   if (!resend || !env.RESEND_FROM_EMAIL) {
     console.error('[/api/dct-waitlist] Resend configuration missing (API Key or From Email)');
   } else {
-    const { data, error: resendError } = await resend.emails.send({
-      from: env.RESEND_FROM_EMAIL,
-      to: email,
-      bcc: 'contact@miterion.com',
-      reply_to: 'contact@miterion.com',
-      subject: 'Welcome to the DCT Dashboard Waitlist',
-      html: emailHtml,
-    });
-
-    if (resendError) {
-      const isDomainError = resendError.message?.toLowerCase().includes('domain is not verified');
-      console.error('[/api/dct-waitlist] Resend failed:', {
-        name: resendError.name,
-        message: resendError.message,
-        isDomainError
+    try {
+      const { data, error: resendError } = await resend.emails.send({
+        from: env.RESEND_FROM_EMAIL,
+        to: email,
+        bcc: 'contact@miterion.com',
+        reply_to: 'contact@miterion.com',
+        subject: 'Welcome to the DCT Dashboard Waitlist',
+        html: emailHtml,
       });
 
+      if (resendError) {
+        const isDomainError = resendError.message?.toLowerCase().includes('domain is not verified');
+        console.error('[/api/dct-waitlist] Resend failed:', {
+          name: resendError.name,
+          message: resendError.message,
+          isDomainError
+        });
+
+        if (supabaseAdmin) {
+          await supabaseAdmin.from('email_queue').insert({
+            to_email: email,
+            subject: 'Welcome to the DCT Dashboard Waitlist',
+            html: emailHtml,
+          });
+        }
+      } else {
+        console.log('[/api/dct-waitlist] Confirmation email sent:', data?.id);
+      }
+    } catch (resendException) {
+      console.error('[/api/dct-waitlist] Resend exception:', resendException);
       if (supabaseAdmin) {
         await supabaseAdmin.from('email_queue').insert({
           to_email: email,
@@ -77,8 +90,6 @@ export async function POST(request: Request) {
           html: emailHtml,
         });
       }
-    } else {
-      console.log('[/api/dct-waitlist] Confirmation email sent:', data?.id);
     }
   }
 
