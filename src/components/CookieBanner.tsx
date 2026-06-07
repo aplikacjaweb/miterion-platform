@@ -30,9 +30,9 @@ export const CookieBanner = () => {
           You can choose to accept all, reject all, or manage your preferences.
         </p>
         <div className="cookie-banner-buttons">
-          <button onClick={handleAcceptAll}>Accept All</button>
-          <button onClick={handleRejectAll}>Reject All</button>
-          <button onClick={handlePreferences}>Preferences</button>
+          <button onClick={handleAcceptAll} className="cookie-button accept-button">Accept All</button>
+          <button onClick={handleRejectAll} className="cookie-button reject-button">Reject All</button>
+          <button onClick={handlePreferences} className="cookie-button preferences-button">Preferences</button>
         </div>
         {showPreferences && (
           <div className="cookie-preferences">
