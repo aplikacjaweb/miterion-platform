@@ -1,55 +1,55 @@
-'use client';
+import React, { useState } from 'react';
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import Cookies from 'js-cookie';
+export const CookieBanner = () => {
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
 
-export default function CookieBanner() {
-  const t = useTranslations('Common.cookieBanner');
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    const consent = Cookies.get('cookie_consent');
-    if (!consent) {
-      setShow(true);
-    }
-  }, []);
-
-  const handleAccept = () => {
-    Cookies.set('cookie_consent', 'accepted', { expires: 365 });
-    setShow(false);
+  const handleAcceptAll = () => {
+    // Logic to accept all cookies
+    setConsentGiven(true);
   };
 
-  const handleReject = () => {
-    Cookies.set('cookie_consent', 'rejected', { expires: 365 });
-    setShow(false);
+  const handleRejectAll = () => {
+    // Logic to reject all cookies
+    setConsentGiven(true);
   };
 
-  if (!show) return null;
+  const handlePreferences = () => {
+    setShowPreferences(!showPreferences);
+  };
+
+  if (consentGiven) {
+    return null;
+  }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-600">
-            {t('message')}
-          </p>
-          <div className="flex gap-4">
-            <button
-              onClick={handleAccept}
-              className="btn-primary text-sm py-1"
-            >
-              {t('accept')}
-            </button>
-            <button
-              onClick={handleReject}
-              className="btn-secondary text-sm py-1"
-            >
-              {t('reject')}
-            </button>
-          </div>
+    <div className="cookie-banner">
+      <div className="cookie-banner-content">
+        <p>
+          We use cookies to analyze site traffic, personalize content, and serve targeted ads.
+          You can choose to accept all, reject all, or manage your preferences.
+        </p>
+        <div className="cookie-banner-buttons">
+          <button onClick={handleAcceptAll}>Accept All</button>
+          <button onClick={handleRejectAll}>Reject All</button>
+          <button onClick={handlePreferences}>Preferences</button>
         </div>
+        {showPreferences && (
+          <div className="cookie-preferences">
+            <h3>Cookie Preferences</h3>
+            <label>
+              <input type="checkbox" /> Necessary
+            </label>
+            <label>
+              <input type="checkbox" /> Analytics
+            </label>
+            <label>
+              <input type="checkbox" /> Marketing
+            </label>
+            <button onClick={() => setShowPreferences(false)}>Save Preferences</button>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
