@@ -42,8 +42,6 @@ export async function POST(request: Request) {
   }
 
   // Send confirmation email
-  // DIAGNOSTIC: Log exact runtime RESEND_FROM_EMAIL value
-  console.log('[DIAGNOSTIC] RESEND_FROM_EMAIL runtime value:', JSON.stringify(env.RESEND_FROM_EMAIL));
   const emailHtml = `
     <h2>Thanks for Joining!</h2>
     <p>You're on the waitlist for early access to our Decentralized Clinical Trials dashboard.</p>
