@@ -1,0 +1,13 @@
+HTTP/1.1 400 Bad Request
+Date: Mon, 08 Jun 2026 18:11:33 GMT
+Content-Type: application/json
+Content-Length: 89
+Connection: keep-alive
+ratelimit-limit: 5
+ratelimit-policy: 5;w=1
+ratelimit-remaining: 4
+ratelimit-reset: 1
+cf-cache-status: DYNAMIC
+Server: cloudflare
+CF-RAY: a089dc140edb147a-WAW
+
