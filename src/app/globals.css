@@ -32,7 +32,7 @@
 
   /* Fix for input fields on dark backgrounds */
   .bg-navy .input-field, .text-white .input-field {
-    @apply text-navy bg-white;
+    @apply text-navy bg-white placeholder-gray-500;
   }
 
   /* Ensure cursor is visible */
