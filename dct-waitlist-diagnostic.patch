@@ -1,0 +1,14 @@
+--- a/src/app/api/dct-waitlist/route.ts
++++ b/src/app/api/dct-waitlist/route.ts
+@@ -43,6 +43,9 @@ export async function POST(request: Request) {
+   // Send confirmation email
+   const emailHtml = `
+     <h2>Thanks for Joining!</h2>
+     <p>You're on the waitlist for early access to our Decentralized Clinical Trials dashboard.</p>
+     <p>We'll notify you as soon as it's ready.</p>
+   `;
++
++  // DIAGNOSTIC: Log exact runtime RESEND_FROM_EMAIL value
++  console.log('[DIAGNOSTIC] RESEND_FROM_EMAIL runtime value:', JSON.stringify(env.RESEND_FROM_EMAIL));
+
+   if (!resend || !env.RESEND_FROM_EMAIL) {
