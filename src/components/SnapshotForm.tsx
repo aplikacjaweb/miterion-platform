@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import conditions from '@/lib/data/clinicaltrials_conditions.json';
 import countries from '@/lib/data/iso_countries.json';
-import { createClient } from '@supabase/supabase-js';
+
+// ✅ Zastąpiono bezpośredni createClient bezpiecznym importem współdzielonej instancji:
+import { supabase } from '@/lib/supabaseClient';
 
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,11 +22,6 @@ import RfpHarmonizationDialog from './RfpHarmonizationDialog';
 import { Button } from './ui/button';
 
 type CountryOption = { name: string; code: string };
-
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
 
 function parseJsonSafely(raw: string): unknown | null {
   if (!raw.trim()) return null;
@@ -184,7 +181,7 @@ export default function SnapshotForm() {
           email: data.email,
           indication: preview.indication,
           phase: preview.phase,
-          geography: preview.country_name, // Changed from country_name to geography for clarity in PDF API
+          geography: preview.country_name,
           data: preview,
         }),
       });
@@ -201,7 +198,6 @@ export default function SnapshotForm() {
         const url = window.URL.createObjectURL(blob);
         setDownloadUrl(url);
         
-        // Auto-trigger download
         const a = document.createElement('a');
         a.href = url;
         a.download = 'clinical-trial-snapshot.pdf';
@@ -212,8 +208,7 @@ export default function SnapshotForm() {
         const responseText = await res.text();
         const jsonResponse = JSON.parse(responseText);
         if (jsonResponse.success === true && jsonResponse.message === 'Snapshot report sent successfully via email.') {
-          // This is the old email success message. Treat as silent success.
-          return; // Exit the function, do not trigger download or error.
+          return;
         } else {
           throw new Error(`Unexpected JSON response: ${responseText}`);
         }
@@ -225,7 +220,7 @@ export default function SnapshotForm() {
     } finally {
       setIsPdfGenerating(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -452,11 +447,9 @@ export default function SnapshotForm() {
                   </div>
                 </div>
 
-                {/* POST-GENERATION UI FUNNEL */}
                 <div className="space-y-6 mt-10">
                   <h3 className="text-2xl font-bold text-center text-navy">Your Clinical Trial Intelligence Options</h3>
                   
-                  {/* Card 1: Download Free Landscape Snapshot */}
                   <div className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center text-center">
                     <h4 className="text-xl font-semibold mb-3 text-gray-800">Download Free Landscape Snapshot</h4>
                     <p className="text-gray-600 mb-4 text-sm">Get your instant PDF report with key market insights.</p>
@@ -486,7 +479,6 @@ export default function SnapshotForm() {
                     )}
                   </div>
 
-                  {/* Card 2: Request Full Trial Intelligence Report */}
                   <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
                     <h4 className="text-xl font-semibold mb-3 text-navy">Full Trial Intelligence Report</h4>
                     <p className="text-gray-600 mb-4 text-sm">Analyst-led deep dive including international public-source cross-checking.</p>
