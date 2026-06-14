@@ -9,20 +9,10 @@ export default function FloatingCalWidget() {
     
     (async function () {
       try {
-        const cal = await getCalApi({
-          namespace: 'miterion-cal'
-        });
+        const cal = await getCalApi({ namespace: 'miterion-cal' });
         
         if (isMounted && cal) {
-          cal('ui', {
-            theme: 'light',
-            styles: {
-              branding: { brandColor: '#000000' }
-            },
-            hideEventTypeDetails: true,
-            layout: 'month_view'
-          });
-          
+          cal('ui', { theme: 'light', styles: { branding: { brandColor: '#000000' } }, hideEventTypeDetails: true, layout: 'month_view' });
           cal('floatingButton', {
             calLink: 'web-app-xkqbra',
             buttonText: 'Book a meeting',
@@ -31,43 +21,41 @@ export default function FloatingCalWidget() {
             buttonPosition: 'bottom-right'
           });
           
-          // Agresywne wymuszenie pozycji przez CSS w nagłówku
-          const style = document.createElement('style');
-          style.innerHTML = `
-            button[style*="background-color: rgb(0, 0, 0)"],
-            [data-cal-namespace="miterion-cal"] button {
-              bottom: 140px !important;
-            }
-          `;
-          document.head.appendChild(style);
-          
-          // Obserwator wymuszający styl na wypadek, gdyby JS biblioteki go zmieniał
-          const observer = new MutationObserver(() => {
+          // Funkcja sprawdzająca czy któryś baner jest widoczny
+          const updateButtonPosition = () => {
             const buttons = document.querySelectorAll('button[style*="background-color: rgb(0, 0, 0)"]');
+            
+            // Szukamy elementów po klasach z Twoich banerów
+            const cookieBanner = document.querySelector('.fixed.bottom-0'); // Klasa z CookieBanner.tsx
+            const reactCookieBanner = document.querySelector('.CookieConsent'); // Domyślna klasa dla react-cookie-consent
+            
+            const isBannerVisible = (cookieBanner && window.getComputedStyle(cookieBanner).display !== 'none') || 
+                                    (reactCookieBanner && window.getComputedStyle(reactCookieBanner).display !== 'none');
+            
+            const bottomPosition = isBannerVisible ? '140px' : '30px';
+            
             buttons.forEach(button => {
               if (button instanceof HTMLElement) {
-                button.style.setProperty('bottom', '140px', 'important');
+                button.style.setProperty('bottom', bottomPosition, 'important');
               }
             });
-          });
+          };
           
+          // Obserwator zmian w DOM
+          const observer = new MutationObserver(updateButtonPosition);
           observer.observe(document.body, { childList: true, subtree: true });
           
-          return () => {
-            observer.disconnect();
-            if (style.parentNode) {
-              document.head.removeChild(style);
-            }
-          };
+          // Uruchomienie początkowe
+          updateButtonPosition();
+          
+          return () => observer.disconnect();
         }
       } catch (error) {
-        console.error('Error loading Cal.com widget:', error);
+        console.error('Error:', error);
       }
     })();
     
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, []);
 
   return null;
