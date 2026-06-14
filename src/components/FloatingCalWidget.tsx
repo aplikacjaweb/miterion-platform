@@ -4,10 +4,12 @@ import { useEffect, useRef } from 'react';
 import { getCalApi } from '@calcom/embed-react';
 
 export default function FloatingCalWidget() {
-  const calRef = useRef(null);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    // Wstępne załadowanie API Cal.com w tle
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
     (async function () {
       const cal = await getCalApi({ namespace: 'miterion-cal' });
       if (cal) {
@@ -44,8 +46,7 @@ export default function FloatingCalWidget() {
     <button 
       ref={calRef}
       onClick={openCal}
-      className="fixed bottom-6 right-6 z-[2147483647] bg-black text-white px-6 py-4 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 font-medium text-sm"
-      style={cssVarsPerTheme.light}
+      className="fixed bottom-20 md:bottom-6 right-6 z-[2147483647] bg-black text-white px-6 py-4 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 font-medium text-sm"
     >
       Book a meeting
     </button>
