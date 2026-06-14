@@ -55,4 +55,9 @@
   .success-text {
     @apply text-green-600 font-semibold;
   }
+
+  /* Cal.com Floating Button Adjustment */
+  .cal-com-floating-button {
+    bottom: 60px !important;
+  }
 }
