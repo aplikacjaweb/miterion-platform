@@ -47,7 +47,7 @@ export default function FloatingCalWidget() {
     <button 
       ref={calRef}
       onClick={openCal}
-      className="fixed bottom-24 md:bottom-8 right-4 md:right-6 z-[9999] bg-black text-white px-4 py-3 md:px-5 md:py-3 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 font-medium text-xs md:text-sm"
+      className="fixed bottom-28 md:bottom-12 right-4 md:right-6 z-[9999] bg-black text-white px-4 py-3 md:px-5 md:py-3 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 font-medium text-xs md:text-sm"
     >
       Book a meeting
     </button>
