@@ -31,23 +31,22 @@ export default function FloatingCalWidget() {
             buttonPosition: 'bottom-right'
           });
           
+          // Agresywne wymuszenie pozycji przez CSS w nagłówku
           const style = document.createElement('style');
           style.innerHTML = `
-            .cal-com-floating-button,
-            [class*="cal-com"][class*="floating"] {
-              bottom: 100px !important;
+            button[style*="background-color: rgb(0, 0, 0)"],
+            [data-cal-namespace="miterion-cal"] button {
+              bottom: 140px !important;
             }
           `;
           document.head.appendChild(style);
           
-          const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.type === 'childList') {
-                const button = document.querySelector('.cal-com-floating-button') ||
-                               document.querySelector('[class*="cal-com"][class*="floating"]');
-                if (button && button instanceof HTMLElement) {
-                  button.style.bottom = '100px';
-                }
+          // Obserwator wymuszający styl na wypadek, gdyby JS biblioteki go zmieniał
+          const observer = new MutationObserver(() => {
+            const buttons = document.querySelectorAll('button[style*="background-color: rgb(0, 0, 0)"]');
+            buttons.forEach(button => {
+              if (button instanceof HTMLElement) {
+                button.style.setProperty('bottom', '140px', 'important');
               }
             });
           });
