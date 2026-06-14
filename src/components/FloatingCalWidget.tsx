@@ -28,7 +28,10 @@ export default function FloatingCalWidget() {
             buttonText: 'Book a meeting',
             buttonColor: '#000000',
             buttonTextColor: '#ffffff',
-            buttonPosition: 'bottom-right'
+            buttonPosition: 'bottom-right',
+            style: {
+              bottom: '60px'
+            }
           });
         }
       } catch (error) {
