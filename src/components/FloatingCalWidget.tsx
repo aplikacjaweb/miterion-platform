@@ -34,7 +34,7 @@ export default function FloatingCalWidget() {
           const style = document.createElement('style');
           style.innerHTML = `
             .cal-com-floating-button {
-              bottom: 60px !important;
+              bottom: 100px !important;
             }
           `;
           document.head.appendChild(style);
