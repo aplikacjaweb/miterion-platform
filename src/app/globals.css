@@ -65,3 +65,14 @@ button[style*="background-color: rgb(0, 0, 0)"] {
         margin-bottom: 120px !important;
     }
 }
+button[style*="background-color: rgb(0, 0, 0)"], 
+#miterion-cal-floating-button {
+    bottom: 80px !important;
+}
+
+@media (max-width: 768px) {
+    button[style*="background-color: rgb(0, 0, 0)"], 
+    #miterion-cal-floating-button {
+        bottom: 120px !important;
+    }
+}
