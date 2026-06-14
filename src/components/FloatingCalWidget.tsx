@@ -39,6 +39,22 @@ export default function FloatingCalWidget() {
             }
           `;
           document.head.appendChild(style);
+          
+          const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.type === 'childList') {
+                const button = document.querySelector('.cal-com-floating-button') ||
+                               document.querySelector('[class*="cal-com"][class*="floating"]');
+                if (button) {
+                  button.style.bottom = '100px';
+                }
+              }
+            });
+          });
+          
+          observer.observe(document.body, { childList: true, subtree: true });
+          
+          return () => observer.disconnect();
         }
       } catch (error) {
         console.error('Error loading Cal.com widget:', error);
