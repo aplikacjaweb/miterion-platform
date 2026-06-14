@@ -1,75 +1,40 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getCalApi } from '@calcom/embed-react';
 
 export default function FloatingCalWidget() {
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
-    let isMounted = true;
-    
+    // Wstępne załadowanie API Cal.com w tle
     (async function () {
-      try {
-        const cal = await getCalApi({
-          namespace: 'miterion-cal'
+      const cal = await getCalApi({ namespace: 'miterion-cal' });
+      if (cal) {
+        cal('ui', { 
+          theme: 'light', 
+          styles: { branding: { brandColor: '#000000' } }, 
+          hideEventTypeDetails: true, 
+          layout: 'month_view' 
         });
-        
-        if (isMounted && cal) {
-          cal('ui', {
-            theme: 'light',
-            styles: {
-              branding: { brandColor: '#000000' }
-            },
-            hideEventTypeDetails: true,
-            layout: 'month_view'
-          });
-          
-          cal('floatingButton', {
-            calLink: 'web-app-xkqbra',
-            buttonText: 'Book a meeting',
-            buttonColor: '#000000',
-            buttonTextColor: '#ffffff',
-            buttonPosition: 'bottom-right'
-          });
-          
-          const style = document.createElement('style');
-          style.innerHTML = `
-            .cal-com-floating-button,
-            [class*="cal-com"][class*="floating"] {
-              bottom: 100px !important;
-            }
-          `;
-          document.head.appendChild(style);
-          
-          const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.type === 'childList') {
-                const button = document.querySelector('.cal-com-floating-button') ||
-                               document.querySelector('[class*="cal-com"][class*="floating"]');
-                if (button && button instanceof HTMLElement) {
-                  button.style.bottom = '100px';
-                }
-              }
-            });
-          });
-          
-          observer.observe(document.body, { childList: true, subtree: true });
-          
-          return () => {
-            observer.disconnect();
-            if (style.parentNode) {
-              document.head.removeChild(style);
-            }
-          };
-        }
-      } catch (error) {
-        console.error('Error loading Cal.com widget:', error);
       }
     })();
-    
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-  return null;
+  const openCal = async () => {
+    const cal = await getCalApi({ namespace: 'miterion-cal' });
+    cal('modal', { 
+      calLink: 'web-app-xkqbra',
+      config: { layout: 'month_view' }
+    });
+  };
+
+  return (
+    <button 
+      onClick={openCal}
+      className="fixed bottom-6 right-6 z-[9999] bg-black text-white px-6 py-4 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 font-medium text-sm"
+    >
+      Book a meeting
+    </button>
+  );
 }
