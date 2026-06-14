@@ -30,6 +30,14 @@ export default function FloatingCalWidget() {
             buttonTextColor: '#ffffff',
             buttonPosition: 'bottom-right'
           });
+          
+          const style = document.createElement('style');
+          style.innerHTML = `
+            .cal-com-floating-button {
+              bottom: 60px !important;
+            }
+          `;
+          document.head.appendChild(style);
         }
       } catch (error) {
         console.error('Error loading Cal.com widget:', error);
