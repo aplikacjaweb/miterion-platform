@@ -5,15 +5,15 @@ import { getCalApi } from '@calcom/embed-react';
 
 export default function FloatingCalWidget() {
   useEffect(() => {
+    let isMounted = true;
+    
     (async function () {
       try {
         const cal = await getCalApi({
           namespace: 'miterion-cal'
         });
         
-        if (cal) {
-          console.log('Cal.com API loaded successfully');
-          
+        if (isMounted && cal) {
           cal('ui', {
             theme: 'light',
             styles: {
@@ -54,12 +54,21 @@ export default function FloatingCalWidget() {
           
           observer.observe(document.body, { childList: true, subtree: true });
           
-          return () => observer.disconnect();
+          return () => {
+            observer.disconnect();
+            if (style.parentNode) {
+              document.head.removeChild(style);
+            }
+          };
         }
       } catch (error) {
         console.error('Error loading Cal.com widget:', error);
       }
     })();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return null;
