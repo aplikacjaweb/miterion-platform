@@ -5,6 +5,7 @@ import { getCalApi } from '@calcom/embed-react';
 
 export default function FloatingCalWidget() {
   const isInitialized = useRef(false);
+  const calRef = useRef(null);
 
   useEffect(() => {
     if (isInitialized.current) return;
