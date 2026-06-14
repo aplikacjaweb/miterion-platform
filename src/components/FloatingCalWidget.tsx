@@ -15,7 +15,10 @@ export default function FloatingCalWidget() {
       if (cal) {
         cal('ui', { 
           theme: 'light', 
-          cssVarsPerTheme: { light: { brandColor: '#000000' } }, 
+          cssVarsPerTheme: { 
+  light: { brandColor: '#000000' }, 
+  dark: { brandColor: '#000000' } 
+}, 
           hideEventTypeDetails: true, 
           layout: 'month_view' 
         });
