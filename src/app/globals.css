@@ -60,4 +60,9 @@
   .cal-com-floating-button {
     bottom: 60px !important;
   }
+
+  /* Adjust Cal.com button when cookie banner is visible */
+  .cookie-banner ~ .cal-com-floating-button {
+    bottom: 120px !important;
+  }
 }
