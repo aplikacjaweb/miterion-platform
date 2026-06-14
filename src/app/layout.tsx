@@ -2,8 +2,6 @@ import { Inter } from 'next/font/google';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { CookieBanner } from '@/components/CookieBanner';
-import FloatingCalWidget from '@/components/FloatingCalWidget';
-import Script from 'next/script';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -25,13 +23,6 @@ export default function RootLayout({
           <Footer />
         </div>
         <CookieBanner />
-        <FloatingCalWidget />
-        <Script
-          src="https://cal.com/embed.js"
-          strategy="afterInteractive"
-          data-cal-namespace="miterion-cal"
-          data-cal-link="web-app-xkqbra"
-        />
       </body>
     </html>
   );
