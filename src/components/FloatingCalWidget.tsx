@@ -15,6 +15,9 @@ export default function FloatingCalWidget() {
     (async function () {
       const cal = await getCalApi({ namespace: 'miterion-cal' });
       if (cal) {
+        // Dodany preload:
+        cal("preload", { calLink: 'web-app-xkqbra' });
+
         cal('ui', { 
           theme: 'light', 
           styles: { branding: { brandColor: '#000000' } }, 
