@@ -26,12 +26,6 @@ export default function RootLayout({
         </div>
         <CookieBanner />
         <FloatingCalWidget />
-        <Script
-          src="https://cal.com/embed.js"
-          strategy="afterInteractive"
-          data-cal-namespace="miterion-cal"
-          data-cal-link="web-app-xkqbra"
-        />
       </body>
     </html>
   );
