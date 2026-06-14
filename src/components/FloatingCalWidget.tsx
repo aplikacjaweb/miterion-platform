@@ -43,8 +43,8 @@ export default function FloatingCalWidget() {
           const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
               if (mutation.type === 'childList') {
-                const button = document.querySelector('.cal-com-floating-button') ||
-                               document.querySelector('[class*="cal-com"][class*="floating"]');
+                const button = document.querySelector('.cal-com-floating-button') as HTMLElement ||
+                               document.querySelector('[class*="cal-com"][class*="floating"]') as HTMLElement;
                 if (button) {
                   button.style.bottom = '100px';
                 }
