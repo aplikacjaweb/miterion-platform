@@ -1,4 +1,4 @@
-import Script from 'next/script';
+import CalInitializer from '@/components/CalInitializer';
 import FloatingCalWidget from '@/components/FloatingCalWidget';
 import { Inter } from 'next/font/google';
 import Header from '@/components/Header';
@@ -26,8 +26,9 @@ export default function RootLayout({
         </div>
         <CookieBanner />
         <FloatingCalWidget />
-      <Script id="cal-preload" src="https://cal.com/embed.js" strategy="afterInteractive" onLoad={() => {(window as any).Cal("init", {origin: "https://cal.com"});}} />
+      <CalInitializer />
 </body>
     </html>
   );
 }
+
