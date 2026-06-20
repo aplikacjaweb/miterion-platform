@@ -13,7 +13,7 @@ export default function FloatingCalWidget() {
     isInitialized.current = true;
 
     (async function () {
-      const cal = await getCalApi({ namespace: 'miterion-cal' });
+      const cal = await new Promise(resolve => setTimeout(() => resolve(getCalApi({ namespace: "miterion-cal" })), 1000))({ namespace: 'miterion-cal' });
       if (cal) {
         // Dodany preload:
         // cal("preload", { calLink: "web-app-xkqbra" });
@@ -29,7 +29,7 @@ export default function FloatingCalWidget() {
   }, []);
 
   const openCal = async () => {
-    const cal = await getCalApi({ namespace: 'miterion-cal' });
+    const cal = await new Promise(resolve => setTimeout(() => resolve(getCalApi({ namespace: "miterion-cal" })), 1000))({ namespace: 'miterion-cal' });
     cal('modal', { 
       calLink: 'web-app-xkqbra',
       config: { layout: 'month_view' }
