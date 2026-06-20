@@ -7,9 +7,12 @@ export default function CalInitializer() {
       src="https://cal.com/embed.js"
       strategy="afterInteractive"
       onLoad={() => {
-        if (!(window as any).Cal) {
-          (window as any).Cal("init", { origin: "https://cal.com" });
-        }
+        const checkCal = setInterval(() => {
+          if ((window as any).Cal) {
+            clearInterval(checkCal);
+            (window as any).Cal("init", { origin: "https://cal.com" });
+          }
+        }, 50);
       }}
     />
   );
