@@ -16,7 +16,7 @@ export default function CaptchaWrapper({ onVerify }: { onVerify: (token: string)
     if (isRendered.current) return;
 
     const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v1/api.js';
+    script.src = 'https://challenges.cloudflare.com/turnstile/v1/api.js?render=explicit';
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
@@ -28,13 +28,14 @@ export default function CaptchaWrapper({ onVerify }: { onVerify: (token: string)
           callback: (token: string) => {
             onVerify(token);
           },
+          'execution': 'execute',
+          'appearance': 'interaction-only',
         });
         isRendered.current = true;
       }
     };
 
     return () => {
-      // Opcjonalnie: wyczyść przy odmontowaniu
       isRendered.current = false;
     };
   }, [onVerify]);

@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import BasePremiumForm from './BasePremiumForm';
+import CaptchaWrapper from './CaptchaWrapper';
 
 interface RfpHarmonizationDialogProps {
   trigger?: React.ReactNode;
@@ -10,6 +12,8 @@ interface RfpHarmonizationDialogProps {
 }
 
 export default function RfpHarmonizationDialog({ trigger, open, onOpenChange }: RfpHarmonizationDialogProps) {
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -27,9 +31,15 @@ export default function RfpHarmonizationDialog({ trigger, open, onOpenChange }: 
             <li>• Data-driven vendor proposal optimization</li>
             <li>• Upload your RFP/proposals for a free scope review</li>
           </ul>
+          
+          {/* Niewidoczna Captcha działająca w tle */}
+          <CaptchaWrapper onVerify={(token) => setCaptchaToken(token)} />
+
           <BasePremiumForm 
             endpoint="/api/rfp-harmonization-request" 
             submitButtonText="Request RFP Harmonization" 
+            // Przekazanie tokenu z Captchy do formularza bazowego
+            captchaToken={captchaToken}
           />
         </div>
       </DialogContent>

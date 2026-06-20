@@ -16,8 +16,9 @@ export async function POST(request: Request) {
     const typeLabel = isRfp ? 'RFP Harmonization' : 'Full Trial Intelligence';
     
     // 1. Parse & validate body
-    let body: unknown;
+    let body: any; // Zmieniono na any dla ułatwienia odczytu tokenu
     let filePath: string | null = null;
+    let captchaToken: string | null = null;
     
     // Check if the request is multipart form data (file upload)
     const contentType = request.headers.get('content-type');
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
       const company = formData.get('company') as string;
       const message = formData.get('message') as string;
       const file = formData.get('file') as File | null;
+      captchaToken = formData.get('token') as string | null;
       
       // Validate required fields
       if (!email) {
@@ -65,10 +67,44 @@ export async function POST(request: Request) {
       // Handle JSON body for non-file requests
       try {
         body = await request.json();
+        captchaToken = body.token || null;
       } catch (e) {
         return apiError('INVALID_REQUEST', 'Request body must be valid JSON', 400);
       }
     }
+
+    // ---> CLOUDFLARE TURNSTILE VERIFICATION <---
+    const cloudflareSecret = process.env.CLOUDFLARE_SECRET_KEY;
+    if (cloudflareSecret) {
+      if (!captchaToken) {
+        return apiError('INVALID_REQUEST', 'Security token is missing. Please try again.', 400);
+      }
+
+      const verifyForm = new URLSearchParams();
+      verifyForm.append('secret', cloudflareSecret);
+      verifyForm.append('response', captchaToken);
+
+      try {
+        const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v1/siteverify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: verifyForm.toString(),
+        });
+
+        const verifyData = await verifyRes.json();
+        if (!verifyData.success) {
+          console.error(`[${url.pathname}] Captcha verification failed:`, verifyData);
+          return apiError('UNAUTHORIZED', 'Security verification failed. Please try again.', 403);
+        }
+      } catch (captchaError) {
+        console.error(`[${url.pathname}] Captcha network error:`, captchaError);
+        return apiError('INTERNAL', 'Failed to verify security token.', 500);
+      }
+    } else {
+      // Ostrzeżenie w konsoli, jeśli zapomnisz dodać klucza w .env
+      console.warn('CLOUDFLARE_SECRET_KEY is not defined. Skipping Captcha verification.');
+    }
+    // ---> END CAPTCHA VERIFICATION <---
 
     const parsed = premiumSubmitSchema.safeParse(body);
     if (!parsed.success) {

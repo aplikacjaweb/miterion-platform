@@ -11,13 +11,14 @@ interface BasePremiumFormProps {
   endpoint: string;
   submitButtonText: string;
   onSuccess?: () => void;
+  captchaToken: string | null; // <-- DODANO: Wymagany token z Captchy
 }
 
 /**
  * Robust base form for premium requests (Full Report & RFP Harmonization).
  * Preserves Supabase signed upload flow and Resend notification logic.
  */
-export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess }: BasePremiumFormProps) {
+export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess, captchaToken }: BasePremiumFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -40,6 +41,12 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess 
   });
 
   const onSubmit = async (data: PremiumRequestData) => {
+    // 0. DODANO: Zabezpieczenie przed wysyłką bez pomyślnej weryfikacji w tle
+    if (!captchaToken) {
+      setError("Security verification in progress. Please wait a moment and try again.");
+      return;
+    }
+
     setIsUploading(false);
     setIsSubmitting(false);
     setError(null);
@@ -86,6 +93,7 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess 
           company: data.company || undefined,
           message: data.message || undefined,
           filePath: filePath,
+          token: captchaToken, // <-- DODANO: Przekazanie tokenu na serwer
         }),
       });
 
