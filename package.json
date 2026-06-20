@@ -12,6 +12,7 @@
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
     "@hookform/resolvers": "^3.3.4",
+    "@marsidev/react-turnstile": "^1.5.3",
     "@radix-ui/react-dialog": "^1.1.15",
     "@react-pdf/renderer": "^3.4.5",
     "@sparticuz/chromium": "^143.0.4",
