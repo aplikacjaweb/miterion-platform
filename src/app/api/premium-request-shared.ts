@@ -94,7 +94,7 @@ export async function POST(request: Request) {
         const verifyData = await verifyRes.json();
         if (!verifyData.success) {
           console.error(`[${url.pathname}] Captcha verification failed:`, verifyData);
-          return apiError('UNAUTHORIZED', 'Security verification failed. Please try again.', 403);
+          return apiError('INVALID_REQUEST', 'Security verification failed. Please try again.', 403);
         }
       } catch (captchaError) {
         console.error(`[${url.pathname}] Captcha network error:`, captchaError);
