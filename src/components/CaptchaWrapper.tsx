@@ -12,7 +12,7 @@ export default function CaptchaWrapper({ onVerify }: { onVerify: (token: string)
   const isRendered = useRef(false);
 
   useEffect(() => {
-    // Sprawdź, czy skrypt jest już załadowany, aby nie dublować rejestracji
+    // Sprawd , czy skrypt jest ju  za adowany, aby nie dublowa  rejestracji
     if (isRendered.current) return;
 
     const script = document.createElement('script');
@@ -24,12 +24,12 @@ export default function CaptchaWrapper({ onVerify }: { onVerify: (token: string)
     script.onload = () => {
       if (window.turnstile && containerRef.current) {
         window.turnstile.render(containerRef.current, {
-          sitekey: '0x4AAAAAADoSriRgvTkLLDSW', // Wstaw tutaj swój klucz
+          sitekey: '0x4AAAAAADoSriRgvTkLLDSW', // Wstaw tutaj sw j klucz
           callback: (token: string) => {
             onVerify(token);
           },
-          'execution': 'execute',
-          'appearance': 'interaction-only',
+          'execution': 'render',
+          'appearance': 'always',
         });
         isRendered.current = true;
       }
@@ -40,5 +40,5 @@ export default function CaptchaWrapper({ onVerify }: { onVerify: (token: string)
     };
   }, [onVerify]);
 
-  return <div ref={containerRef} />;
+  return <div ref={containerRef} className="min-h-[65px] w-full" />;
 }
