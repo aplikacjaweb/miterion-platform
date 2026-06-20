@@ -1,8 +1,8 @@
+import FloatingCalWidget from '@/components/FloatingCalWidget';
 import { Inter } from 'next/font/google';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { CookieBanner } from '@/components/CookieBanner';
-import FloatingCalWidget from '@/components/FloatingCalWidget';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
