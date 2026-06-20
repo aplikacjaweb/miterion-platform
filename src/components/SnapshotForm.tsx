@@ -20,7 +20,6 @@ import type { FetchTrialsResponse } from '@/types';
 import FullReportRequestDialog from './FullReportRequestDialog';
 import RfpHarmonizationDialog from './RfpHarmonizationDialog';
 import { Button } from './ui/button';
-import CaptchaWrapper from './CaptchaWrapper';
 
 type CountryOption = { name: string; code: string };
 
@@ -41,9 +40,6 @@ export default function SnapshotForm() {
   const [error, setError] = useState<string | null>(null);
   const [showFullReportModal, setShowFullReportModal] = useState(false);
   const [showRfpUploadModal, setShowRfpUploadModal] = useState(false);
-  
-  // Stan na token z Captchy
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const [indicationInput, setIndicationInput] = useState('');
   const [selectedIndication, setSelectedIndication] = useState<string | null>(null);
@@ -168,12 +164,6 @@ export default function SnapshotForm() {
   const onGeneratePdf = async (data: SnapshotUnlockFormData) => {
     if (!preview || preview.error) return;
 
-    // Sprawdzenie, czy token Captchy został wygenerowany
-    if (!captchaToken) {
-      setError("Please complete the security check before downloading.");
-      return;
-    }
-
     setError(null);
 
     if (downloadUrl) {
@@ -191,7 +181,6 @@ export default function SnapshotForm() {
           phase: preview.phase,
           geography: preview.country_name,
           data: preview,
-          token: captchaToken, // Przesyłamy token do walidacji na backendzie
         }),
       });
 
@@ -473,16 +462,13 @@ export default function SnapshotForm() {
                         <p className="mt-1 text-sm text-red-500">{errorsUnlock.email.message}</p>
                       )}
                       
-                      <div className="mt-4 mb-4 flex justify-center">
-                        <CaptchaWrapper onVerify={(token) => setCaptchaToken(token)} />
-                      </div>
-
                       <Button
                         type="submit"
                         disabled={isSubmitting}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
                       >
-                        {isSubmitting ? 'Generating PDF...' : 'Download Snapshot Report'} </Button>
+                        {isSubmitting ? 'Generating PDF...' : 'Download Snapshot Report'}
+                      </Button>
                     </form>
                     {downloadUrl && !isSubmitting && (
                       <p className="mt-2 text-sm text-green-600">
