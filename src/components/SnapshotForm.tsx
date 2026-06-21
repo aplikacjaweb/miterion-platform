@@ -37,6 +37,7 @@ export default function SnapshotForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<FetchTrialsResponse | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [isEmailSent, setIsEmailSent] = useState(false); // ✅ Dodany stan informujący o wysłaniu maila
   const [error, setError] = useState<string | null>(null);
   const [showFullReportModal, setShowFullReportModal] = useState(false);
   const [showRfpUploadModal, setShowRfpUploadModal] = useState(false);
@@ -165,6 +166,7 @@ export default function SnapshotForm() {
     if (!preview || preview.error) return;
 
     setError(null);
+    setIsEmailSent(false); // ✅ Resetowanie statusu przed nową próbą wysyłki
 
     if (downloadUrl) {
       window.URL.revokeObjectURL(downloadUrl);
@@ -206,6 +208,7 @@ export default function SnapshotForm() {
         const responseText = await res.text();
         const jsonResponse = JSON.parse(responseText);
         if (jsonResponse.success === true && jsonResponse.message === 'Snapshot report sent successfully via email.') {
+          setIsEmailSent(true); // ✅ Ustawienie sukcesu wysłania maila, gdy API odpowie poprawnie
           return;
         } else {
           throw new Error(`Unexpected JSON response: ${responseText}`);
@@ -363,10 +366,6 @@ export default function SnapshotForm() {
                 {isLoading ? 'Generating Preview...' : 'Generate Preview'}
               </button>
             </div>
-
-            {Object.keys(errorsPreview).length > 0 && (
-              
-            )}
           </form>
         ) : (
           <div className="space-y-6">
@@ -470,6 +469,12 @@ export default function SnapshotForm() {
                     {downloadUrl && !isSubmitting && (
                       <p className="mt-2 text-sm text-green-600">
                         PDF generated successfully! Check your downloads.
+                      </p>
+                    )}
+                    {/* ✅ Wyświetla się tylko wtedy, gdy mail został wysłany bez błędów */}
+                    {isEmailSent && !isSubmitting && (
+                      <p className="mt-2 text-sm text-green-600 font-medium">
+                        📬 Snapshot report sent successfully via email! Check your inbox.
                       </p>
                     )}
                   </div>
