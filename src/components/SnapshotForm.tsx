@@ -365,10 +365,7 @@ export default function SnapshotForm() {
             </div>
 
             {Object.keys(errorsPreview).length > 0 && (
-              <div className="mt-4 rounded bg-red-100 p-4 text-red-700">
-                <p className="font-semibold">Validation Errors:</p>
-                <pre className="mt-2 text-sm">{JSON.stringify(errorsPreview, null, 2)}</pre>
-              </div>
+              
             )}
           </form>
         ) : (
