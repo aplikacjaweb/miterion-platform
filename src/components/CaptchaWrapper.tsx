@@ -24,8 +24,7 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
   useEffect(() => {
     const hostname = window.location.hostname;
 
-    // AUTOMATYCZNY BEZPIECZNIK:
-    // Jeśli jesteś na localhost lub na dowolnym linku testowym *.vercel.app, oszukujemy system
+    // AUTOMATYCZNY BEZPIECZNIK (Bypass)
     const shouldBypass = 
       hostname === 'localhost' || 
       hostname === '127.0.0.1' ||
@@ -34,15 +33,14 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
 
     if (shouldBypass) {
       setIsBypassEnv(true);
-      // Automatycznie odblokuj formularz po 400ms bez pytania Cloudflare o zdanie
       const timer = setTimeout(() => {
-        console.log('[Turnstile Bypass] Środowisko testowe. Automatyczne odblokowanie przycisku.');
+        console.log('[Turnstile Bypass] Test environment detected. Automatic button unlock.');
         onVerifyRef.current('mock-vercel-development-token');
       }, 400);
       return () => clearTimeout(timer);
     }
 
-    // --- KOD PRODUKCYJNY (Uruchomi się TYLKO na Twojej docelowej domenie miterion.com) ---
+    // --- KOD PRODUKCYJNY (Dla miterion.com) ---
     const scriptId = 'cloudflare-turnstile-script';
     let script = document.getElementById(scriptId) as HTMLScriptElement | null;
 
@@ -88,19 +86,18 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
     };
   }, []);
 
-  // Zielona i stabilna zaślepka dla środowisk testowych
+  // Angielski komunikat testowy dla Vercela / Localhosta
   if (isBypassEnv) {
     return (
       <div className="mb-4 flex items-center justify-center p-3 border border-green-200 bg-green-50 rounded-lg text-green-700 text-sm font-medium">
         <svg className="w-5 h-5 mr-2 text-green-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
         </svg>
-        [Vercel Test Mode] Bezpieczeństwo zweryfikowane automatycznie
+        [Vercel Test Mode] Security verified automatically
       </div>
     );
   }
 
-  // Oryginalny boks Cloudflare (Pokazuje się tylko na miterion.com)
   return (
     <div 
       ref={containerRef} 
