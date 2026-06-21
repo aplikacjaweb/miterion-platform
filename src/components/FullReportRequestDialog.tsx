@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react'; // 1. Dodajemy import stanu
+import { useState, useCallback } from 'react'; // 1. Dodajemy useCallback do importu z React
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import BasePremiumForm from './BasePremiumForm';
-import CaptchaWrapper from './CaptchaWrapper'; // 2. Importujemy wrapper
+import CaptchaWrapper from './CaptchaWrapper';
 
 interface FullReportRequestDialogProps {
   trigger?: React.ReactNode;
@@ -12,7 +12,13 @@ interface FullReportRequestDialogProps {
 }
 
 export default function FullReportRequestDialog({ trigger, open, onOpenChange }: FullReportRequestDialogProps) {
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null); // 3. Tworzymy stan na token
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
+  // 2. Owijamy funkcję w useCallback. Dzięki temu React zapamięta jej referencję
+  // i nie wyrenderuje Captchy na nowo, gdy stan 'captchaToken' się zmieni.
+  const handleCaptchaVerify = useCallback((token: string) => {
+    setCaptchaToken(token);
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -32,13 +38,13 @@ export default function FullReportRequestDialog({ trigger, open, onOpenChange }:
             <li>• Free scope review and tailored pricing</li>
           </ul>
 
-          {/* 4. Wstawiamy Captchę tutaj */}
-          <CaptchaWrapper onVerify={(token) => setCaptchaToken(token)} />
+          {/* 3. Przekazujemy zapamiętaną funkcję 'handleCaptchaVerify' */}
+          <CaptchaWrapper onVerify={handleCaptchaVerify} />
 
           <BasePremiumForm 
             endpoint="/api/full-report-request" 
             submitButtonText="Request Intelligence Report" 
-            captchaToken={captchaToken} // 5. Przekazujemy token do formularza
+            captchaToken={captchaToken} 
           />
         </div>
       </DialogContent>
