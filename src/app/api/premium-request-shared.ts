@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   try {
     // KROK OSTATECZNY: Wklejasz tutaj swój pełny, prawdziwy klucz w cudzysłowie.
     // Generator ani Windows nie mają już nic do gadania!
-    const apiKey = "re_2BMiFpU2_NjfjkBWYXdcXT6JXavt6d2QT";
+    const apiKey = process.env.RESEND_API_KEY;
     
     // --- BLOK DEBUGOWANIA ---
     console.log("======= DETEKTYW RESEND =======");
