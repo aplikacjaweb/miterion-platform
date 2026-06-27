@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
     // Przygotowanie żądania do API Cloudflare
     const formData = new FormData();
-    formData.append('secret', TURNSTILE_SECRET_KEY);
+    formData.append('secret', TURNSTILE_SECRET_KEY || '');
     formData.append('response', captchaToken);
 
     const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
