@@ -1,3 +1,4 @@
+﻿import { getFooter } from '../../../lib/email-footer';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 
