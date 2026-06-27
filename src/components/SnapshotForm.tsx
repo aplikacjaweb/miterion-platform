@@ -1,10 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import conditions from '@/lib/data/clinicaltrials_conditions.json';
 import countries from '@/lib/data/iso_countries.json';
 
-// ✅ Zastąpiono bezpośredni createClient bezpiecznym importem współdzielonej instancji:
 import { supabase } from '@/lib/supabaseClient';
 
 import { Controller, useForm } from 'react-hook-form';
@@ -17,15 +16,15 @@ import {
 } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
 import type { FetchTrialsResponse } from '@/types';
-import FullReportRequestDialog from './FullReportRequestDialog';
-import RfpHarmonizationDialog from './RfpHarmonizationDialog';
+import ExpertSupportDialog from './ExpertSupportDialog';
+import CaptchaWrapper from './CaptchaWrapper';
+
 import { Button } from './ui/button';
 
 type CountryOption = { name: string; code: string };
 
 function parseJsonSafely(raw: string): unknown | null {
   if (!raw.trim()) return null;
-
   try {
     return JSON.parse(raw);
   } catch {
@@ -37,16 +36,19 @@ export default function SnapshotForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<FetchTrialsResponse | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [isEmailSent, setIsEmailSent] = useState(false); // ✅ Dodany stan informujący o wysłaniu maila
+  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [isDownloaded, setIsDownloaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showFullReportModal, setShowFullReportModal] = useState(false);
   const [showRfpUploadModal, setShowRfpUploadModal] = useState(false);
 
   const [indicationInput, setIndicationInput] = useState('');
   const [selectedIndication, setSelectedIndication] = useState<string | null>(null);
-
   const [countryInput, setCountryInput] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<CountryOption | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [timeline, setTimeline] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     control: previewControl,
@@ -61,6 +63,7 @@ export default function SnapshotForm() {
       phase: 'All',
       country_name: '',
       country_code: undefined,
+      timeline: '',
     },
   });
 
@@ -88,9 +91,7 @@ export default function SnapshotForm() {
     if (indicationInput.trim().length < 1 || selectedIndication === indicationInput) {
       return [];
     }
-
     const lowerInput = indicationInput.toLowerCase();
-
     return (conditions as string[])
       .filter((condition) => condition.toLowerCase().startsWith(lowerInput))
       .sort((a, b) => a.localeCompare(b))
@@ -101,9 +102,7 @@ export default function SnapshotForm() {
     if (countryInput.trim().length < 1 || selectedCountry?.name === countryInput) {
       return [];
     }
-
     const lowerInput = countryInput.toLowerCase();
-
     return (countries as CountryOption[])
       .filter((country) => country.name.toLowerCase().startsWith(lowerInput))
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -115,7 +114,6 @@ export default function SnapshotForm() {
       setError('Please select a valid indication from the suggestions.');
       return;
     }
-
     if (!selectedCountry) {
       setError('Please select a valid country from the suggestions.');
       return;
@@ -138,6 +136,7 @@ export default function SnapshotForm() {
           phase: data.phase,
           country_name: selectedCountry.name,
           country_code: selectedCountry.code,
+          timeline: data.timeline || "",
         }),
       });
 
@@ -164,9 +163,14 @@ export default function SnapshotForm() {
 
   const onGeneratePdf = async (data: SnapshotUnlockFormData) => {
     if (!preview || preview.error) return;
+    if (!captchaToken) {
+      setError("Please complete the security check.");
+      return;
+    }
 
     setError(null);
-    setIsEmailSent(false); // ✅ Resetowanie statusu przed nową próbą wysyłki
+    setIsEmailSent(false);
+    setIsDownloaded(false);
 
     if (downloadUrl) {
       window.URL.revokeObjectURL(downloadUrl);
@@ -183,6 +187,8 @@ export default function SnapshotForm() {
           phase: preview.phase,
           geography: preview.country_name,
           data: preview,
+          timeline: data.timeline || "",
+          captchaToken,
         }),
       });
 
@@ -197,7 +203,8 @@ export default function SnapshotForm() {
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         setDownloadUrl(url);
-        
+        setIsDownloaded(true);
+
         const a = document.createElement('a');
         a.href = url;
         a.download = 'clinical-trial-snapshot.pdf';
@@ -207,14 +214,12 @@ export default function SnapshotForm() {
       } else if (contentType.includes('application/json')) {
         const responseText = await res.text();
         const jsonResponse = JSON.parse(responseText);
-        if (jsonResponse.success === true && jsonResponse.message === 'Snapshot report sent successfully via email.') {
-          setIsEmailSent(true); // ✅ Ustawienie sukcesu wysłania maila, gdy API odpowie poprawnie
+        if (jsonResponse.success === true) {
+          setIsEmailSent(true);
           return;
         } else {
-          throw new Error(`Unexpected JSON response: ${responseText}`);
+          throw new Error(jsonResponse.message || 'Failed to send snapshot.');
         }
-      } else {
-        throw new Error(`Unexpected response type: ${contentType}.`);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate PDF.');
@@ -362,6 +367,18 @@ export default function SnapshotForm() {
                 )}
               </div>
 
+              <div>
+                <label htmlFor="timeline-input" className="mb-1 block">
+                  Timeline / Expected Start
+                </label>
+                <input
+                  id="timeline-input"
+                  {...registerPreview('timeline')}
+                  placeholder="e.g. Q3 2026"
+                  className="input-field"
+                />
+              </div>
+
               <button type="submit" disabled={isLoading} className="btn-primary w-full">
                 {isLoading ? 'Generating Preview...' : 'Generate Preview'}
               </button>
@@ -381,43 +398,17 @@ export default function SnapshotForm() {
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="rounded bg-gray-50 p-4">
-                      <div className="font-semibold">Total Trials</div>
-                      <div className="text-2xl">{preview.preview.totalTrials}</div>
+                      <div className="font-semibold text-gray-600">Total Trials Found</div>
+                      <div className="text-2xl font-bold">{preview.preview.totalTrials}</div>
                     </div>
 
                     <div className="rounded bg-gray-50 p-4">
-                      <div className="font-semibold">Recruiting Trials</div>
-                      <div className="text-2xl">
+                      <div className="font-semibold text-gray-600">Recruiting Trials</div>
+                      <div className="text-2xl font-bold">
                         {preview.preview.recruitingTrials}
-                        <span className="ml-2 text-sm text-gray-600">
+                        <span className="ml-2 text-sm text-gray-600 font-normal">
                           ({preview.preview.recruitingPct}%)
                         </span>
-                      </div>
-                    </div>
-
-                    <div className="rounded bg-gray-50 p-4">
-                      <div className="font-semibold">Top Country</div>
-                      <div className="text-xl">
-                        {preview.preview.countryDistribution[0]?.country || 'N/A'}
-                      </div>
-                    </div>
-
-                    <div className="rounded bg-gray-50 p-4">
-                      <div className="font-semibold">Top Sponsor</div>
-                      <div className="text-xl">
-                        {preview.preview.topSponsors[0]?.sponsor || 'N/A'}
-                      </div>
-                    </div>
-
-                    <div className="rounded bg-gray-50 p-4">
-                      <div className="font-semibold">Recruitment Competition</div>
-                      <div className="text-xl">
-                        {(() => {
-                          const totalTrials = preview.preview.totalTrials;
-                          if (totalTrials > 10) return 'HIGH';
-                          if (totalTrials >= 4) return 'MEDIUM';
-                          return 'LOW';
-                        })()}
                       </div>
                     </div>
                   </div>
@@ -441,63 +432,72 @@ export default function SnapshotForm() {
 
                 <div className="space-y-6 mt-10">
                   <h3 className="text-2xl font-bold text-center text-navy">Your Clinical Trial Intelligence Options</h3>
-                  
+
                   <div className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center text-center">
-                    <h4 className="text-xl font-semibold mb-3 text-gray-800">Download Free Landscape Snapshot</h4>
-                    <p className="text-gray-600 mb-4 text-sm">Get your instant PDF report with key market insights.</p>
-                    <form onSubmit={handleSubmitUnlock(onGeneratePdf)} noValidate className="w-full max-w-sm">
-                      <input
-                        id="email-input-card1"
-                        {...registerUnlock('email')}
-                        type="email"
-                        placeholder="Enter your email to download"
-                        className="input-field mb-2"
-                        autoComplete="email"
-                      />
-                      {errorsUnlock.email && (
-                        <p className="mt-1 text-sm text-red-500">{errorsUnlock.email.message}</p>
-                      )}
-                      
-                      <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
-                      >
-                        {isSubmitting ? 'Generating PDF...' : 'Download Snapshot Report'}
-                      </Button>
-                    </form>
-                    {downloadUrl && !isSubmitting && (
-                      <p className="mt-2 text-sm text-green-600">
-                        PDF generated successfully! Check your downloads.
-                      </p>
-                    )}
-                    {/* ✅ Wyświetla się tylko wtedy, gdy mail został wysłany bez błędów */}
-                    {isEmailSent && !isSubmitting && (
-                      <p className="mt-2 text-sm text-green-600 font-medium">
-                        📬 Snapshot report sent successfully via email! Check your inbox.
-                      </p>
+                    {isDownloaded || isEmailSent ? (
+                      <div className="w-full max-w-sm">
+                        <div className="text-green-600 font-bold mb-4">✓ Report Generated & Sent!</div>
+                        <p className="text-sm text-gray-600 mb-6">Check your inbox for the PDF report. You can also start a new search below.</p>
+                        <Button
+                          onClick={() => {
+                            setPreview(null);
+                            setIsEmailSent(false);
+                            setDownloadUrl(null);
+                            setIsDownloaded(false);
+                            setCaptchaToken(null);
+                          }}
+                          className="w-full bg-gray-800 hover:bg-gray-900 text-white"
+                        >
+                          Start New Search
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="w-full max-w-sm">
+                        <h4 className="text-xl font-semibold mb-3 text-gray-800">Download Landscape Snapshot</h4>
+                        <p className="text-gray-600 mb-4 text-sm">Receive a professional PDF report on your email.</p>
+                        <form onSubmit={handleSubmitUnlock(onGeneratePdf)} noValidate className="w-full">
+                          <input
+                            {...registerUnlock('email')}
+                            type="email"
+                            placeholder="Enter work email"
+                            className="input-field mb-3"
+                          />
+                          <div className="mb-3 flex justify-center">
+                            <CaptchaWrapper onVerify={(token) => setCaptchaToken(token)} />
+                          </div>
+                          <Button
+                            type="submit"
+                            disabled={isSubmitting || !captchaToken}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md disabled:opacity-50"
+                          >
+                            {isSubmitting ? 'Sending...' : !captchaToken ? 'Verify Security...' : 'Email & Download PDF'}
+                          </Button>
+                        </form>
+                      </div>
                     )}
                   </div>
 
                   <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
-                    <h4 className="text-xl font-semibold mb-3 text-navy">Full Trial Intelligence Report</h4>
-                    <p className="text-gray-600 mb-4 text-sm">Analyst-led deep dive including international public-source cross-checking.</p>
-                    <div className="w-full mb-4">
-                      <h5 className="text-sm font-medium text-gray-700 mb-2">What's included:</h5>
-                      <ul className="text-left text-sm text-gray-600 space-y-1">
-                        <li>• Detailed competitive analysis</li>
-                        <li>• Recruitment strategy optimization</li>
-                        <li>• Risk assessment and mitigation</li>
-                        <li>• Custom recommendations</li>
-                      </ul>
+                    <div className="w-full max-w-sm">
+                      <h4 className="text-xl font-semibold mb-3 text-navy">Full Trial Intelligence Report</h4>
+                      <p className="text-gray-600 mb-4 text-sm">Analyst-led deep dive including international public-source cross-checking.</p>
+                      <div className="w-full mb-4">
+                        <h5 className="text-sm font-medium text-gray-700 mb-2">What's included:</h5>
+                        <ul className="text-left text-sm text-gray-600 space-y-1">
+                          <li>• Detailed competitive analysis</li>
+                          <li>• Recruitment strategy optimization</li>
+                          <li>• Risk assessment and mitigation</li>
+                          <li>• Custom recommendations</li>
+                        </ul>
+                      </div>
+                      <Button onClick={() => setShowFullReportModal(true)} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md">
+                        Request Full Report
+                      </Button>
                     </div>
-                    <Button onClick={() => setShowFullReportModal(true)} className="w-full max-w-sm bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md">
-                      Request Full Report
-                    </Button>
                   </div>
 
                   <div className="text-center">
-                    <button 
+                    <button
                       onClick={() => setShowRfpUploadModal(true)}
                       className="text-sm text-gray-500 hover:text-navy underline"
                     >
@@ -510,8 +510,8 @@ export default function SnapshotForm() {
           </div>
         )}
       </div>
-      <FullReportRequestDialog open={showFullReportModal} onOpenChange={setShowFullReportModal} />
-      <RfpHarmonizationDialog open={showRfpUploadModal} onOpenChange={setShowRfpUploadModal} />
+      <ExpertSupportDialog open={showFullReportModal} onOpenChange={setShowFullReportModal} initialTab='expert' />
+      <ExpertSupportDialog open={showRfpUploadModal} onOpenChange={setShowRfpUploadModal} initialTab='quote' />
     </div>
   );
 }

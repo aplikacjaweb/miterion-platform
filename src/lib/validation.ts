@@ -1,97 +1,19 @@
-import { z } from 'zod';
-
-// ---------------------------------------------------------------------------
-// Snapshot forms
-// ---------------------------------------------------------------------------
+﻿import { z } from 'zod';
 
 export const snapshotPreviewSchema = z.object({
-  indication: z.string().min(2, 'Indication must be at least 2 characters').max(100),
-  phase: z.enum(['All', 'Phase 1', 'Phase 2', 'Phase 3', 'Phase 4']),
-  country_name: z.string().min(1, 'Country is required').max(100),
+  indication: z.string().min(2, "Indication must be at least 2 characters").max(100),
+  phase: z.enum(["All", "Phase 1", "Phase 2", "Phase 3", "Phase 4"]),
+  country_name: z.string().min(1, "Country is required").max(100),
   country_code: z.string().length(2).optional(),
 });
 
 export const snapshotUnlockSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Please enter a valid work email address'),
 });
 
-export const fullReportSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  mechanism_approach: z.string().max(500).optional().or(z.literal('')),
-  planned_start: z.string().max(100).optional().or(z.literal('')),
-  major_finding_concern: z.string().min(10, 'This field is required and must be at least 10 characters').max(2000),
+export const dctWaitlistSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
 });
-
-export type FullReportFormData = z.infer<typeof fullReportSchema>;
-
-const rfpAllowedFileTypes = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-];
-
-export const rfpUploadSchema = z.object({
-  rfp_file: z
-    .custom<File>((val) => {
-      if (typeof File === 'undefined') return false;
-      return val instanceof File;
-    })
-    .refine((file) => file.size > 0, 'File cannot be empty')
-    .refine((file) => file.size <= 20 * 1024 * 1024, 'File must be less than 20MB')
-    .refine((file) => rfpAllowedFileTypes.includes(file.type), 'File must be PDF or XLSX'),
-  target_geography: z.string().min(2, 'Target Geography is required').max(100),
-  uncertainty_question: z.string().min(10, 'This field is required and must be at least 10 characters').max(2000),
-});
-
-export type RfpUploadFormData = z.infer<typeof rfpUploadSchema>;
 
 export type SnapshotPreviewFormData = z.infer<typeof snapshotPreviewSchema>;
 export type SnapshotUnlockFormData = z.infer<typeof snapshotUnlockSchema>;
-
-// ---------------------------------------------------------------------------
-// Premium forms
-// ---------------------------------------------------------------------------
-
-const ALLOWED_FILE_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-];
-
-const premiumBaseSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  company: z
-    .string()
-    .min(2, 'Company name must be at least 2 characters')
-    .max(100)
-    .optional()
-    .nullable()
-    .or(z.literal('')),
-  message: z.string().max(1000).optional().nullable(),
-});
-
-export const premiumRequestSchema = premiumBaseSchema.extend({
-  file: z
-    .custom<File>((val) => {
-      if (typeof File === 'undefined') return false;
-      return val instanceof File;
-    })
-    .refine((f) => f.size > 0, 'File cannot be empty')
-    .refine((f) => f.size <= 20 * 1024 * 1024, 'File must be less than 20MB')
-    .refine((f) => ALLOWED_FILE_TYPES.includes(f.type), 'File must be PDF or XLSX')
-    .optional()
-    .nullable(),
-});
-
-export const premiumSubmitSchema = premiumBaseSchema.extend({
-  filePath: z.string().optional().nullable(),
-});
-
-export type PremiumRequestData = z.infer<typeof premiumRequestSchema>;
-export type PremiumSubmitPayload = z.infer<typeof premiumSubmitSchema>;
-
-// ---------------------------------------------------------------------------
-// DCT waitlist
-// ---------------------------------------------------------------------------
-
-export const dctWaitlistSchema = z.object({
-  email: z.string().email('Invalid email address'),
-});

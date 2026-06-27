@@ -1,31 +1,41 @@
 'use client';
 
 import { useState } from 'react';
-
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { dctWaitlistSchema } from '@/lib/validation';
 import { unwrapApi } from '@/lib/apiResponse';
 import type { DctWaitlistFormData } from '@/types';
+// 1. Importujemy Twój CaptchaWrapper
+import CaptchaWrapper from './CaptchaWrapper'; 
 
 export default function DctWaitlistForm() {
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // 2. Dodajemy stan na token z Cloudflare
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<DctWaitlistFormData>({
     resolver: zodResolver(dctWaitlistSchema),
   });
 
   const onSubmit = async (data: DctWaitlistFormData) => {
+    // 3. Blokada: jeśli brak tokenu, wyświetlamy błąd
+    if (!captchaToken) {
+      setError('Please complete the security check.');
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
     try {
       const res = await fetch('/api/dct-waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        // 4. Dorzucamy token do wysyłanego body
+        body: JSON.stringify({ ...data, captchaToken }), 
       });
       const json = await res.json();
       unwrapApi(res, json); // throws on error
@@ -55,7 +65,16 @@ export default function DctWaitlistForm() {
           <input {...register('email')} type="email" placeholder="Your email address" className="input-field" />
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
         </div>
-        <button type="submit" disabled={isSubmitting} className="btn-primary w-full">
+
+        {/* 5. Wklejamy komponent Captcha pod polem email */}
+        <CaptchaWrapper onVerify={(token) => setCaptchaToken(token)} />
+
+        {/* 6. Przycisk jest zablokowany, dopóki Captcha nie wygeneruje tokenu */}
+        <button 
+          type="submit" 
+          disabled={isSubmitting || !captchaToken} 
+          className="btn-primary w-full disabled:opacity-50"
+        >
           {isSubmitting ? 'Adding to waitlist...' : 'Join Waitlist'}
         </button>
       </div>

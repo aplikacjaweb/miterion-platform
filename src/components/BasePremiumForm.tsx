@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,13 +12,41 @@ interface BasePremiumFormProps {
   submitButtonText: string;
   onSuccess?: () => void;
   captchaToken: string | null;
+  formType?: 'expert' | 'quote' | 'custom';
 }
 
-export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess, captchaToken }: BasePremiumFormProps) {
+export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess, captchaToken, formType = 'custom' }: BasePremiumFormProps) {
+  const [fullName, setFullName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getFieldConfig = () => {
+    switch (formType) {
+      case 'expert':
+        return {
+          label: 'Indication & Geography *',
+          placeholder: 'e.g., Non-small cell lung cancer, EU5 & US',
+          fileLabel: 'Supporting Document (Protocol Synopsis / Study Brief)'
+        };
+      case 'quote':
+        return {
+          label: 'What vendors or CROs are you comparing? (Optional)',
+          placeholder: 'e.g., Comparing IQVIA with a local European boutique CRO',
+          fileLabel: 'Supporting Document (RFP / Vendor Proposals)'
+        };
+      case 'custom':
+      default:
+        return {
+          label: 'Tell us about your operational bottleneck *',
+          placeholder: 'Briefly describe the challenge or clinical decision you are facing...',
+          fileLabel: 'Supporting Document (Optional)'
+        };
+    }
+  };
+
+  const config = getFieldConfig();
 
   const {
     register,
@@ -37,9 +65,13 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
   });
 
   const onSubmit = async (data: PremiumRequestData) => {
-    // Bezpiecznik: jeśli mimo blokady przycisku ktoś wyśle formularz bez tokena
     if (!captchaToken) {
       setError("Security verification is still loading. Please wait a second.");
+      return;
+    }
+
+    if (formType !== 'quote' && (!data.message || !data.message.trim())) {
+      setError("Please answer the specific question about your trial or operational challenge.");
       return;
     }
 
@@ -50,26 +82,28 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
     try {
       if (data.file && data.file.size > 0) {
         setIsUploading(true);
-        const urlRes = await fetch(`/api/upload-url`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename: data.file.name, type: data.file.type }),
-        });
+        
+        const bucketName = process.env.NEXT_PUBLIC_SUPABASE_RFP_BUCKET_NAME || 'rfp_uploads';
+        const fileName = `uploads/${Date.now()}_${data.file.name}`;
 
-        const payload = await unwrapApi<{ path: string; token: string; bucketName: string }>(urlRes);
-        const { path, token, bucketName } = payload;
-
-        const uploadResult = await supabase.storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
           .from(bucketName)
-          .uploadToSignedUrl(path, token, data.file, {
-            contentType: data.file.type || 'application/octet-stream',
+          .upload(fileName, data.file, {
+            cacheControl: '3600',
+            upsert: false
           });
 
-        if (uploadResult.error) throw new Error(`File upload failed: ${uploadResult.error.message}`);
-        
-        filePath = path;
+        if (uploadError) {
+          throw new Error(`Supabase Storage Error: ${uploadError.message}`);
+        }
+
+        filePath = fileName;
         setIsUploading(false);
       }
+
+      const finalMessage = fullName.trim() 
+        ? `[Sender Name: ${fullName.trim()}]\n\n${data.message}`
+        : data.message;
 
       const submitRes = await fetch(endpoint, {
         method: 'POST',
@@ -77,15 +111,17 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
         body: JSON.stringify({
           email: data.email,
           company: data.company || undefined,
-          message: data.message || undefined,
+          message: finalMessage || undefined,
           filePath: filePath,
           token: captchaToken,
         }),
       });
 
-      await unwrapApi(submitRes);
+      const jsonResult = await submitRes.json().catch(() => null);
+      await unwrapApi(submitRes, jsonResult);
 
       setSuccess(true);
+      setFullName('');
       reset();
       if (onSuccess) onSuccess();
     } catch (err) {
@@ -101,7 +137,7 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
     return (
       <div className="text-center p-8 bg-green-50 rounded-lg border border-green-100">
         <div className="text-green-600 font-bold text-xl mb-2">Request Received</div>
-        <p className="text-green-700">Thank you for your interest. We will contact you shortly.</p>
+        <p className="text-green-700">Thank you for your interest. We will review your details and contact you shortly.</p>
         <button onClick={() => setSuccess(false)} className="mt-4 text-sm text-green-600 underline hover:text-green-800">
           Send another request
         </button>
@@ -110,8 +146,19 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
       {error && <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-md text-sm">{error}</div>}
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+        <input 
+          type="text" 
+          placeholder="John Doe" 
+          className="input-field"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+        />
+      </div>
 
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-1">Work Email *</label>
@@ -125,12 +172,12 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">How can we help?</label>
-        <textarea {...register('message')} placeholder="Briefly describe your trial..." className="input-field min-h-[120px] resize-none" />
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{config.label}</label>
+        <textarea {...register('message')} placeholder={config.placeholder} className="input-field min-h-[100px] resize-none" />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Supporting Document</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{config.fileLabel}</label>
         <input
           type="file"
           accept=".pdf,.xlsx"
@@ -143,13 +190,13 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
       </div>
 
       <div className="pt-2">
-        <button 
-          type="submit" 
-          disabled={isUploading || isSubmitting || !captchaToken} 
+        <button
+          type="submit"
+          disabled={isUploading || isSubmitting || !captchaToken}
           className="btn-primary w-full py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isUploading ? 'Uploading...' : 
-           isSubmitting ? 'Submitting...' : 
+          {isUploading ? 'Uploading document...' :
+           isSubmitting ? 'Submitting request...' :
            !captchaToken ? 'Verifying security...' : submitButtonText}
         </button>
       </div>

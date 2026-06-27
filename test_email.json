@@ -1,7 +1,0 @@
-{
-  "from": "contact@miterion.com",
-  "to": "testuser@gmail.com",
-  "bcc": "contact@miterion.com",
-  "subject": "Test Waitlist Email",
-  "html": "<h2>Test Email</h2><p>This is a test email to verify the waitlist flow.</p>"
-}
