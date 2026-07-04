@@ -180,7 +180,7 @@ export async function POST(request: Request) {
       });
     }
 
-    return new Response(pdfBuffer, {
+    return new Response(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

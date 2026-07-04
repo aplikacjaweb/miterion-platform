@@ -3,9 +3,19 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { premiumRequestSchema, type PremiumRequestData } from '@/lib/validation';
+import { z } from 'zod';
 import { unwrapApi } from '@/lib/apiResponse';
 import { supabase } from '@/lib/supabaseClient';
+
+// Tworzymy lokalny schemat, żeby uniknąć problemów z plikiem validation.ts
+const localFormSchema = z.object({
+  email: z.string().email({ message: "Valid work email is required" }),
+  company: z.string().optional(),
+  message: z.string().optional(),
+  file: z.any().optional(),
+});
+
+type LocalFormData = z.infer<typeof localFormSchema>;
 
 interface BasePremiumFormProps {
   endpoint: string;
@@ -54,8 +64,8 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
     formState: { errors },
     setValue,
     reset,
-  } = useForm<PremiumRequestData>({
-    resolver: zodResolver(premiumRequestSchema),
+  } = useForm<LocalFormData>({
+    resolver: zodResolver(localFormSchema),
     defaultValues: {
       email: '',
       company: '',
@@ -64,7 +74,7 @@ export default function BasePremiumForm({ endpoint, submitButtonText, onSuccess,
     }
   });
 
-  const onSubmit = async (data: PremiumRequestData) => {
+  const onSubmit = async (data: LocalFormData) => {
     if (!captchaToken) {
       setError("Security verification is still loading. Please wait a second.");
       return;

@@ -69,15 +69,15 @@ export async function POST(request: Request) {
       }
 
     } catch (mailError: any) {
-      console.error('❌ Resend failed to deliver:', mailError);
-      return apiError('SERVER_ERROR', `Email dispatch failed: ${mailError.message}`, 500);
-    }
-
-    return NextResponse.json({ success: true, message: 'Lead processed and emails sent successfully.' });
-  } catch (error: any) {
-    console.error('Error in submit-lead API:', error);
-    return apiError('SERVER_ERROR', error.message || 'Internal Server Error', 500);
+    console.error('❌ Resend failed to deliver:', mailError);
+    return apiError('SERVER_ERROR' as any, `Email dispatch failed: ${mailError.message}`, 500);
   }
+
+  return NextResponse.json({ success: true, message: 'Lead processed and emails sent successfully.' });
+} catch (error: any) {
+  console.error('Error in submit-lead API:', error);
+  return apiError('SERVER_ERROR' as any, error.message || 'Internal Server Error', 500);
+}
 }
 
 

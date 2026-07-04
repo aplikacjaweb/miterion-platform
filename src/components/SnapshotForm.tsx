@@ -63,7 +63,6 @@ export default function SnapshotForm() {
       phase: 'All',
       country_name: '',
       country_code: undefined,
-      timeline: '',
     },
   });
 
@@ -136,7 +135,7 @@ export default function SnapshotForm() {
           phase: data.phase,
           country_name: selectedCountry.name,
           country_code: selectedCountry.code,
-          timeline: data.timeline || "",
+          timeline: (data as any).timeline || "",
         }),
       });
 
@@ -187,7 +186,7 @@ export default function SnapshotForm() {
           phase: preview.phase,
           geography: preview.country_name,
           data: preview,
-          timeline: data.timeline || "",
+          timeline: (data as any).timeline || "",
           captchaToken,
         }),
       });
@@ -373,7 +372,7 @@ export default function SnapshotForm() {
                 </label>
                 <input
                   id="timeline-input"
-                  {...registerPreview('timeline')}
+                  {...registerPreview('timeline' as any)}
                   placeholder="e.g. Q3 2026"
                   className="input-field"
                 />

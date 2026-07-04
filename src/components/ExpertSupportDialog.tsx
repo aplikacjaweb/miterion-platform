@@ -301,7 +301,7 @@ Timeline: ${situationFields.timeline}
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" className="w-1/3 rounded-xl py-2" onClick={() => handleSelectTab('selection')}>← Back</Button>
+              <Button type="button" variant="outline" className="w-1/3 rounded-xl py-2" onClick={() => handleSelectTab('selection' as any)}>← Back</Button>
               <Button type="submit" disabled={loading || !captchaToken} className="w-2/3 rounded-xl py-2 font-bold text-white bg-navy hover:opacity-90 disabled:opacity-50">
                 {loading ? 'Processing...' : !captchaToken ? 'Verify Security...' : activeTab === 'expert' ? 'Request Scope Review' : activeTab === 'quote' ? 'Start Document Review' : 'Send Request'}
               </Button>

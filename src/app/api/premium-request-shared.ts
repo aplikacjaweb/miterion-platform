@@ -1,9 +1,15 @@
-﻿import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabaseServer';
-import { premiumSubmitSchema } from '@/lib/validation';
+import { z } from 'zod';
 import { apiError, apiSuccess } from '@/lib/apiResponse';
 import { env } from '@/lib/env';
+
+const localPremiumSubmitSchema = z.object({
+  email: z.string().email(),
+  company: z.string().optional().or(z.string().nullable()),
+  message: z.string().optional().or(z.string().nullable()),
+  filePath: z.string().optional().nullable(),
+});
 
 export const runtime = "nodejs";
 
@@ -120,7 +126,7 @@ export async function POST(request: Request) {
       console.warn('CLOUDFLARE_SECRET_KEY is not defined. Skipping Captcha verification.');
     }
 
-    const parsed = premiumSubmitSchema.safeParse(body);
+    const parsed = localPremiumSubmitSchema.safeParse(body);
     if (!parsed.success) {
       return apiError(
         'INVALID_REQUEST',
@@ -129,7 +135,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { email, company, message } = parsed.data;
+    const { email, company, message } = parsed.data as any;
     if (filePath === null) {
       filePath = parsed.data.filePath || null;
     }
