@@ -224,13 +224,14 @@ if (!verifyResult?.success) {
     });
 
   } catch (error: any) {
-  console.error('[generate-pdf] fatal error', error);
+    console.error('[generate-pdf] fatal error', error);
 
-  return NextResponse.json(
-    {
-      error: 'PDF generation failed',
-      details: error?.message || 'Internal Server Error',
-    },
-    { status: 500 }
-  );
+    return NextResponse.json(
+      {
+        error: 'PDF generation failed',
+        details: error?.message || 'Internal Server Error',
+      },
+      { status: 500 }
+    );
+  }
 }
