@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-[#deded8] bg-[#f7f7f3]">
       <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link
               href="/"
@@ -39,6 +39,35 @@ export default function Footer() {
                 className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
               >
                 Analytical paths
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-slate-400">
+              Legal
+            </p>
+
+            <div className="mt-4 flex flex-col gap-2">
+              <Link
+                href="/privacy"
+                className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
+              >
+                Privacy Policy
+              </Link>
+
+              <Link
+                href="/terms"
+                className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
+              >
+                Terms and Conditions
+              </Link>
+
+              <Link
+                href="/cookies"
+                className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
+              >
+                Cookie Policy
               </Link>
             </div>
           </div>
