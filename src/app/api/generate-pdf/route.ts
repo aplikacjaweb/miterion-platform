@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     formData.append('secret', TURNSTILE_SECRET_KEY || '');
     formData.append('response', captchaToken);
 
-    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v1/siteverify', {
       method: 'POST',
       body: formData,
     });
