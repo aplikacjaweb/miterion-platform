@@ -38,7 +38,7 @@ export default function Home() {
               </p>
 
               <h1 className="text-[38px] sm:text-[52px] lg:text-[64px] font-normal tracking-tight leading-[1.04] flex flex-col">
-                <span>Don’t Buy Feasibility Blind.</span>
+                <span>Donï¿½t Buy Feasibility Blind.</span>
                 <span className="text-slate-400">
                   See the risk before it gets expensive.
                 </span>
