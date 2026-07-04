@@ -1,4 +1,4 @@
-﻿import {
+import {
   ArrowRight,
   BarChart3,
   Check,
@@ -38,7 +38,7 @@ export default function Home() {
               </p>
 
               <h1 className="text-[38px] sm:text-[52px] lg:text-[64px] font-normal tracking-tight leading-[1.04] flex flex-col">
-                <span>Don’t Buy Feasibility Blind.</span>
+                <span>Don�t Buy Feasibility Blind.</span>
                 <span className="text-slate-400">
                   See the risk before it gets expensive.
                 </span>
@@ -77,9 +77,9 @@ export default function Home() {
                 <div className="overflow-hidden rounded-2xl border border-[#deded8] bg-[#fbfbf8] shadow-[0_24px_80px_-48px_rgba(15,23,42,0.38)]">
                   <div className="flex items-center justify-between border-b border-[#e6e6df] bg-[#f7f7f3]/90 px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-[#c9c9c1]" />
-                      <span className="h-3 w-3 rounded-full bg-[#d5d5ce]" />
-                      <span className="h-3 w-3 rounded-full bg-[#e0e0d8]" />
+                      <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
+                      <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
+                      <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
                     </div>
 
                     <div className="hidden sm:block text-[12px] font-medium text-slate-400">
