@@ -45,17 +45,52 @@ export async function POST(request: Request) {
     formData.append('secret', TURNSTILE_SECRET_KEY || '');
     formData.append('response', captchaToken);
 
-    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v1/siteverify', {
-      method: 'POST',
-      body: formData,
-    });
+    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+  method: 'POST',
+  body: formData,
+});
 
-    const verifyResult = await verifyResponse.json();
+const verifyText = await verifyResponse.text();
 
-    // Jeśli token jest niepoprawny (lub podrobiony przez bota) - wyrzucamy błąd 403
-    if (!verifyResult.success) {
-      return NextResponse.json({ error: 'Security check failed. Invalid token.' }, { status: 403 });
-    }
+let verifyResult: any = null;
+
+try {
+  verifyResult = verifyText ? JSON.parse(verifyText) : null;
+} catch (parseError) {
+  console.error('[Turnstile generate-pdf] Failed to parse Cloudflare response', {
+    status: verifyResponse.status,
+    statusText: verifyResponse.statusText,
+    body: verifyText,
+    parseError,
+  });
+
+  return NextResponse.json(
+    {
+      error: 'Security verification failed.',
+      details: 'Invalid response from Turnstile verification service.',
+    },
+    { status: 500 }
+  );
+}
+
+console.log('[Turnstile generate-pdf]', {
+  hasCaptchaToken: Boolean(captchaToken),
+  tokenPrefix:
+    typeof captchaToken === 'string' ? captchaToken.slice(0, 12) : null,
+  hasSecret: Boolean(TURNSTILE_SECRET_KEY),
+  verifyStatus: verifyResponse.status,
+  verifyResult,
+});
+
+if (!verifyResult?.success) {
+  return NextResponse.json(
+    {
+      error: 'Security check failed. Invalid token.',
+      details: verifyResult?.['error-codes'] ?? null,
+    },
+    { status: 403 }
+  );
+}
 
     // 3. ORYGINALNA LOGIKA ENDPOINTU (Wykonuje się tylko, gdy Captcha jest OK)
     if (!email || !indication) {
@@ -189,6 +224,13 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    return new NextResponse(error?.message || 'Internal Server Error', { status: 500 });
-  }
+  console.error('[generate-pdf] fatal error', error);
+
+  return NextResponse.json(
+    {
+      error: 'PDF generation failed',
+      details: error?.message || 'Internal Server Error',
+    },
+    { status: 500 }
+  );
 }
