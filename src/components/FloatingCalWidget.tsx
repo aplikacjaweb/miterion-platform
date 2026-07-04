@@ -32,7 +32,7 @@ export default function FloatingCalWidget() {
   };
 
   return (
-    // Wrapper ukrywający cały pływający widget na urządzeniach mobilnych (hidden md:block)
+    // Wrapper, który całkowicie ukrywa pływający przycisk na telefonach (hidden md:block)
     <div className="hidden md:block">
       <button
         onClick={openCal}

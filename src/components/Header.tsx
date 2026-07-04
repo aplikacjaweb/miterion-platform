@@ -28,7 +28,7 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-4">
-          {/* Główny przycisk – ukryty na mobile (hidden md:inline-flex) */}
+          {/* Przycisk desktopowy – ukryty na mobile (hidden md:inline-flex) */}
           <ExpertSupportDialog 
             initialTab="selection"
             trigger={
@@ -51,7 +51,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobilne menu pod paskiem głównym */}
+      {/* Mobilne menu pod paskiem głównym (tylko 2 pozycje) */}
       {mobileMenuOpen && (
         <div className="border-t border-[#deded8] bg-white px-4 py-4 md:hidden">
           <nav className="mx-auto flex flex-col gap-3">
@@ -62,39 +62,21 @@ export default function Header() {
               trigger={
                 <button
                   type="button"
-                  className="w-full rounded-md bg-teal px-4 py-3 text-left text-[15px] font-medium text-white hover:opacity-90 transition-all"
+                  className="w-full rounded-md bg-teal-600 px-4 py-3 text-left text-[15px] font-medium text-white hover:bg-teal-700 transition-all"
                 >
                   Request Expert Support
                 </button>
               }
             />
 
-            {/* 2. Generate Free Snapshot */}
-            <Link
-              href="/#snapshot"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-md px-4 py-3 text-[15px] font-medium text-slate-800 hover:bg-[#f7f7f3]"
-            >
-              Generate Free Snapshot
-            </Link>
-
-            {/* 3. Analytical paths */}
-            <Link
-              href="/#solutions"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-md px-4 py-3 text-[15px] font-medium text-slate-800 hover:bg-[#f7f7f3]"
-            >
-              Analytical paths
-            </Link>
-
-            {/* 4. Book a meeting */}
+            {/* 2. Book a meeting */}
             <button
               type="button"
               onClick={() => {
                 setMobileMenuOpen(false);
                 openCal();
               }}
-              className="w-full rounded-md bg-slate-900 px-4 py-3 text-left text-[15px] font-medium text-white hover:bg-slate-800"
+              className="w-full rounded-md bg-slate-900 px-4 py-3 text-left text-[15px] font-medium text-white hover:bg-slate-800 transition-all"
             >
               Book a meeting
             </button>
