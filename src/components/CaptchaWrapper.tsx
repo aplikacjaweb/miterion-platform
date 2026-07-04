@@ -4,7 +4,20 @@ import { useEffect, useRef, useState } from 'react';
 
 declare global {
   interface Window {
-    turnstile: any;
+    turnstile?: {
+      render: (
+        container: HTMLElement,
+        options: {
+          sitekey: string;
+          callback: (token: string) => void;
+          'expired-callback'?: () => void;
+          'error-callback'?: () => void;
+          execution?: 'render' | 'execute';
+          appearance?: 'always' | 'execute' | 'interaction-only';
+        }
+      ) => string;
+      remove: (widgetId: string) => void;
+    };
   }
 }
 
@@ -27,7 +40,7 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
     const hostname = window.location.hostname;
 
     // Bypass only for local development.
-    // Vercel Preview must use real Cloudflare Turnstile.
+    // Vercel Preview and production must use real Cloudflare Turnstile.
     const shouldBypass =
       hostname === 'localhost' ||
       hostname === '127.0.0.1';
@@ -43,19 +56,34 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
       return () => clearTimeout(timer);
     }
 
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+    if (!siteKey) {
+      console.error('[Turnstile] Missing NEXT_PUBLIC_TURNSTILE_SITE_KEY.');
+      return;
+    }
+
     const scriptId = 'cloudflare-turnstile-script';
     let script = document.getElementById(scriptId) as HTMLScriptElement | null;
 
     const renderWidget = () => {
-      if (!window.turnstile || !containerRef.current || widgetIdRef.current) return;
+      if (!window.turnstile || !containerRef.current || widgetIdRef.current) {
+        return;
+      }
 
       try {
         containerRef.current.innerHTML = '';
 
         const id = window.turnstile.render(containerRef.current, {
-          sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!,
+          sitekey: siteKey,
           callback: (token: string) => {
             onVerifyRef.current(token);
+          },
+          'expired-callback': () => {
+            onVerifyRef.current('');
+          },
+          'error-callback': () => {
+            onVerifyRef.current('');
           },
           execution: 'render',
           appearance: 'always',
@@ -89,7 +117,7 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
       if (window.turnstile && widgetIdRef.current) {
         try {
           window.turnstile.remove(widgetIdRef.current);
-        } catch (e) {}
+        } catch {}
 
         widgetIdRef.current = null;
       }
