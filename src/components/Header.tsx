@@ -62,7 +62,7 @@ export default function Header() {
               trigger={
                 <button
                   type="button"
-                  className="w-full rounded-md bg-teal-600 px-4 py-3 text-left text-[15px] font-medium text-white hover:bg-teal-700 transition-all"
+                  className="w-full rounded-md bg-teal px-4 py-3 text-left text-[15px] font-medium text-white hover:opacity-90 transition-all"
                 >
                   Request Expert Support
                 </button>
