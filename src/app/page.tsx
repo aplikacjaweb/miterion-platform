@@ -1,4 +1,4 @@
-import {
+﻿import {
   ArrowRight,
   BarChart3,
   Check,
@@ -38,7 +38,7 @@ export default function Home() {
               </p>
 
               <h1 className="text-[38px] sm:text-[52px] lg:text-[64px] font-normal tracking-tight leading-[1.04] flex flex-col">
-                <span>Don�t Buy Feasibility Blind.</span>
+                <span>Don't Buy Feasibility Blind.</span>
                 <span className="text-slate-400">
                   See the risk before it gets expensive.
                 </span>
@@ -73,7 +73,7 @@ export default function Home() {
           {/* HERO MOCKUP */}
           <div className="hidden md:block">
             <RevealOnScroll delay={140} y={24}>
-              <div className="mx-auto mt-14 max-w-[980px] relative z-10">
+              <div className="mx-auto mt-14 max-w-[980px] relative z-10 md:[mask-image:linear-gradient(to_bottom,white_60%,transparent_100%)]">
                 <div className="overflow-hidden rounded-2xl border border-[#deded8] bg-[#fbfbf8] shadow-[0_24px_80px_-48px_rgba(15,23,42,0.38)]">
                   <div className="flex items-center justify-between border-b border-[#e6e6df] bg-[#f7f7f3]/90 px-4 py-3">
                     <div className="flex items-center gap-2">
