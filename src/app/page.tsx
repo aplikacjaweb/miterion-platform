@@ -1,4 +1,4 @@
-﻿import {
+import {
   ArrowRight,
   BarChart3,
   Check,
@@ -34,7 +34,7 @@ export default function Home() {
           <RevealOnScroll>
             <div className="mx-auto max-w-[860px]">
               <p className="mb-5 text-[13px] font-medium uppercase tracking-[0.22em] text-slate-500">
-                Clinical Operations Intelligence
+                Clinical Trial Feasibility Intelligence
               </p>
 
               <h1 className="text-[38px] sm:text-[52px] lg:text-[64px] font-normal tracking-tight leading-[1.04] flex flex-col">
@@ -98,7 +98,7 @@ export default function Home() {
                         </div>
 
                         <h2 className="mt-5 text-[22px] sm:text-[26px] font-semibold tracking-tight text-slate-900">
-                          De-Risk Country, Protocol and Vendor Decisions
+                          Clinical Trial Site Feasibility Report & Risk Mitigation
                         </h2>
 
                         <p className="mt-3 max-w-[560px] text-[15px] sm:text-[16px] leading-relaxed text-slate-500">
@@ -223,8 +223,8 @@ export default function Home() {
               </p>
 
               <h2 className="text-[32px] sm:text-[42px] lg:text-[50px] font-normal text-slate-900 leading-tight tracking-tight">
-                Three analytical paths to
-                <br className="hidden sm:block" /> smarter decisions
+                Clinical Trial Landscape Analysis &
+                <br className="hidden sm:block" /> Smart Feasibility Paths
               </h2>
 
               <p className="mt-5 text-[17px] text-slate-500 max-w-xl font-normal leading-relaxed">
@@ -248,7 +248,7 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-[19px] font-semibold tracking-tight text-slate-900">
-                    Clinical Landscape Snapshot
+                    Clinical Trial Landscape Snapshot
                   </h3>
 
                   <p className="mt-3 text-[15px] text-slate-500 leading-relaxed font-normal">
@@ -286,7 +286,7 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-[19px] font-semibold tracking-tight text-slate-900">
-                    Pre-Feasibility Decision Report
+                    Clinical Trial Country Selection Report
                   </h3>
 
                   <p className="mt-3 text-[15px] text-slate-500 leading-relaxed font-normal">
@@ -326,7 +326,7 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-[19px] font-semibold tracking-tight text-slate-900">
-                    RFP & Budget Harmonization
+                    Clinical Trial Vendor RFP Comparison
                   </h3>
 
                   <p className="mt-3 text-[15px] text-slate-500 leading-relaxed font-normal">
@@ -451,7 +451,7 @@ export default function Home() {
 
             <RevealOnScroll delay={240}>
               <div className="relative">
-                <span className="text-[72px] sm:text-[80px] font-normal text-slate-900/10 leading-none select-none">
+                <span className="text-[72px] sm:text-[80px] font-normal text-slate-900/10 stroke-slate-900 leading-none select-none">
                   04
                 </span>
 
@@ -485,7 +485,7 @@ export default function Home() {
               </p>
 
               <h2 className="text-[32px] sm:text-[42px] lg:text-[50px] font-normal text-slate-900 leading-tight tracking-tight">
-                Generate Your Free Snapshot
+                Generate Your Free Clinical Trial Recruitment Competition Analysis
               </h2>
 
               <p className="mt-5 text-[17px] text-slate-500 max-w-xl mx-auto font-normal leading-relaxed">
@@ -560,8 +560,7 @@ export default function Home() {
               </p>
 
               <h2 className="text-[32px] sm:text-[42px] lg:text-[50px] font-normal text-slate-900 leading-tight tracking-tight">
-                Coming Next:
-                <br className="hidden sm:block" /> DCT Operations Dashboard
+                Decentralized Clinical Trial Adherence & Dashboard
               </h2>
 
               <p className="mt-5 text-[17px] text-slate-500 max-w-lg mx-auto font-normal leading-relaxed">
