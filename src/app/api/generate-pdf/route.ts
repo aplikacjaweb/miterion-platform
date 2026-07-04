@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+﻿import { NextResponse } from 'next/server';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { Resend } from 'resend';
 import { getFooter } from '../../../lib/email-footer';
 
 // Inicjalizacja Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Pobieramy Secret Key z pliku .env (lub używamy oficjalnego testowego klucza Cloudflare, który zawsze przepuszcza)
+// Pobieramy Secret Key z pliku .env (lub uĹĽywamy oficjalnego testowego klucza Cloudflare, ktĂłry zawsze przepuszcza)
 const TURNSTILE_SECRET_KEY = process.env.CLOUDFLARE_SECRET_KEY;
 
 if (!TURNSTILE_SECRET_KEY) {
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing security token' }, { status: 400 });
     }
 
-    // Przygotowanie żądania do API Cloudflare
+    // Przygotowanie ĹĽÄ…dania do API Cloudflare
     const formData = new FormData();
     formData.append('secret', TURNSTILE_SECRET_KEY || '');
     formData.append('response', captchaToken);
@@ -92,7 +93,7 @@ if (!verifyResult?.success) {
   );
 }
 
-    // 3. ORYGINALNA LOGIKA ENDPOINTU (Wykonuje się tylko, gdy Captcha jest OK)
+    // 3. ORYGINALNA LOGIKA ENDPOINTU (Wykonuje siÄ™ tylko, gdy Captcha jest OK)
     if (!email || !indication) {
       return new NextResponse('Missing required fields', { status: 400 });
     }
@@ -109,7 +110,7 @@ if (!verifyResult?.success) {
 
     const publicRegistrySignal = hasAnyTrials ? "Visible public registry activity" : "No visible signal";
     const visibleCompetitionSignal = hasRecruitingTrials ? "Recruiting activity visible" : "None detected";
-    const dataConfidence = hasAnyTrials ? "Public registry signal only" : "Low — manual review recommended";
+    const dataConfidence = hasAnyTrials ? "Public registry signal only" : "Low â€” manual review recommended";
 
     const executiveSignal = hasAnyTrials
       ? "Visible public registry activity was found for this query. This indicates that related trial activity is present in ClinicalTrials.gov, but it does not replace formal feasibility or site-level validation."
@@ -163,8 +164,10 @@ if (!verifyResult?.success) {
     ].join("");
 
     const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
     });
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' });
