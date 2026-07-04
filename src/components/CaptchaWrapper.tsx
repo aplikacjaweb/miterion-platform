@@ -86,7 +86,7 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
             onVerifyRef.current('');
           },
           execution: 'render',
-          appearance: 'always',
+          appearance: 'interaction-only',
         });
 
         widgetIdRef.current = id;
@@ -131,7 +131,8 @@ export default function CaptchaWrapper({ onVerify }: CaptchaWrapperProps) {
   return (
     <div
       ref={containerRef}
-      className="cf-turnstile mb-4 flex justify-center min-h-[65px]"
+      className="cf-turnstile"
     />
   );
 }
+
