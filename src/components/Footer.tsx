@@ -88,10 +88,19 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-[#deded8] pt-6 text-[13px] text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} Miterion. All rights reserved.</p>
+        {/* Dolny pasek informacyjny z dodanym "Made in EU" */}
+        <div className="mt-10 grid grid-cols-1 gap-3 border-t border-[#deded8] pt-6 text-[13px] text-slate-400 sm:grid-cols-3 items-center">
+          <p className="text-left order-1 sm:order-none">
+            © {year} Miterion. All rights reserved.
+          </p>
 
-          <p>Trial intelligence before expensive decisions.</p>
+          <p className="text-center order-3 sm:order-none text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400/85 select-none">
+            Made in EU
+          </p>
+
+          <p className="text-left sm:text-right order-2 sm:order-none">
+            Trial intelligence before expensive decisions.
+          </p>
         </div>
       </div>
     </footer>
