@@ -21,77 +21,108 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/">
-          <Image src="/logo-miterion.png" alt="Miterion Logo" width={200} height={50} />
-        </Link>
+    <>
+      {/* Pasek główny */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-[#deded8]/60 sticky top-0 z-50 h-16 flex items-center transition-all duration-300">
+        <div className="container mx-auto px-4 w-full flex items-center justify-between">
+          
+          {/* Lewa strona: Logo + Dyskretna nawigacja desktopowa */}
+          <div className="flex items-center gap-8">
+            <Link href="/">
+              <Image src="/logo-miterion.png" alt="Miterion Logo" width={200} height={50} />
+            </Link>
 
-        <div className="flex items-center gap-4">
-          {/* Przycisk desktopowy – ukryty na mobile */}
-          <ExpertSupportDialog 
-            trigger={
-              <Button className="hidden md:inline-flex bg-teal hover:opacity-90 text-white font-medium text-sm px-4 py-2 rounded-md transition-all">
-                Request Custom Review
-              </Button>
-            }
-          />
+            {/* Menu widoczne tylko na desktopach */}
+            <nav className="hidden md:flex items-center gap-6">
+              <Link
+                href="/#starting-points"
+                className="text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+              >
+                Services
+              </Link>
+              <Link
+                href="/#snapshot"
+                className="text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+              >
+                Free Tool
+              </Link>
+            </nav>
+          </div>
 
-          {/* Przycisk hamburgera po prawej stronie (widoczny tylko na mobile) */}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#deded8] bg-white text-slate-900 md:hidden"
-            aria-label="Toggle menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobilne menu pod paskiem głównym (trzy zdegradowane pozycje bez rywalizacji wizualnej) */}
-      {mobileMenuOpen && (
-        <div className="border-t border-[#deded8] bg-white px-4 py-4 md:hidden">
-          <nav className="mx-auto flex flex-col gap-1">
-            
-            {/* 1. Request Custom Review */}
-            <ExpertSupportDialog
+          {/* Prawa strona: Akcje i Hamburger */}
+          <div className="flex items-center gap-4">
+            {/* Przycisk desktopowy – ukryty na mobile */}
+            <ExpertSupportDialog 
               trigger={
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-50 transition-all"
-                >
+                <Button className="hidden md:inline-flex bg-teal hover:opacity-90 text-white font-medium text-sm px-4 py-2 rounded-md transition-all">
                   Request Custom Review
-                </button>
+                </Button>
               }
             />
 
-            {/* 2. Book a 20-min review call */}
+            {/* Przycisk hamburgera po prawej stronie (vidoczny tylko na mobile) */}
             <button
               type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                openCal();
-              }}
-              className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-50 transition-all"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#deded8] bg-white text-slate-900 md:hidden z-50 relative"
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
             >
-              Book a 20-min review call
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-
-            {/* 3. Generate Free Snapshot */}
-            <a
-              href="#snapshot"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-50 transition-all block"
-            >
-              Generate Free Snapshot
-            </a>
-
-          </nav>
+          </div>
         </div>
-      )}
-    </header>
+      </header>
+
+      {/* Mobilne menu jako boczny panel wysuwany od prawej strony */}
+      <div 
+        className={`fixed top-16 right-0 h-[calc(100vh-4rem)] w-1/2 min-w-[240px] border-l border-[#deded8]/80 bg-white/80 backdrop-blur-md px-4 py-6 md:hidden shadow-2xl transform transition-transform duration-300 ease-in-out z-40 ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
+        }`}
+      >
+        <nav className="flex flex-col gap-2">
+          
+          <a
+            href="#starting-points"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-900/5 transition-all block"
+          >
+            Services
+          </a>
+          
+          <ExpertSupportDialog
+            trigger={
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-900/5 transition-all"
+              >
+                Request Custom Review
+              </button>
+            }
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              openCal();
+            }}
+            className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-900/5 transition-all"
+          >
+            Book a 20-min review call
+          </button>
+
+          <a
+            href="#snapshot"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-900/5 transition-all block"
+          >
+            Generate Free Snapshot
+          </a>
+
+        </nav>
+      </div>
+    </>
   );
 }

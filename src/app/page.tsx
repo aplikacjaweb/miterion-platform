@@ -71,17 +71,15 @@ export default function Home() {
                   </Button>
                 </a>
 
-                <ExpertSupportDialog
-                  trigger={
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="rounded-full min-h-[50px] border-[#deded8] bg-white/80 px-7 text-[15px] font-medium text-slate-700 transition-all hover:border-[#cfcfc7] hover:bg-white"
-                    >
-                      Request Custom Review
-                    </Button>
-                  }
-                />
+                <a href="#starting-points" className="inline-block">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="rounded-full min-h-[50px] border-[#deded8] bg-white/80 px-7 text-[15px] font-medium text-slate-700 transition-all hover:border-[#cfcfc7] hover:bg-white"
+                  >
+                    Services
+                  </Button>
+                </a>
               </div>
             </div>
           </RevealOnScroll>
@@ -114,7 +112,7 @@ export default function Home() {
                         </div>
 
                         <h2 className="mt-5 text-[22px] sm:text-[26px] font-semibold tracking-tight text-slate-900">
-                          Clinical Trial Site Feasibility Report & Risk Mitigation
+                          Pre-Feasibility Decision Memo
                         </h2>
 
                         <p className="mt-3 max-w-[560px] text-[15px] sm:text-[16px] leading-relaxed text-slate-500">

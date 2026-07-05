@@ -34,8 +34,9 @@ export default function Footer() {
                 Free Snapshot
               </Link>
 
+              {/* POPRAWIONO: Zmiana kotwicy z #solutions na #starting-points */}
               <Link
-                href="/#solutions"
+                href="/#starting-points"
                 className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
               >
                 Analytical paths
