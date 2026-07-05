@@ -416,7 +416,7 @@ export default function Home() {
                   We normalize and validate
                 </h3>
                 <p className="text-[15px] text-slate-600 leading-relaxed">
-                  Public data is fragmented and uneven. Miterion combines automated retrieval where available with manual expert validation.
+                  Fragmented registry checks should not be the basis for expensive CRO decisions. Miterion combines automated retrieval where available with manual expert validation.
                 </p>
               </div>
             </RevealOnScroll>
