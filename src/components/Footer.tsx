@@ -13,18 +13,17 @@ export default function Footer() {
               href="/"
               className="inline-flex items-center text-[15px] font-semibold tracking-tight text-slate-900"
             >
-              Miterion Platform
+              Miterion
             </Link>
 
             <p className="mt-3 max-w-md text-[14px] leading-relaxed text-slate-500">
-              Clinical operations intelligence for feasibility, trial planning,
-              country strategy and vendor decision support.
+              Independent pre-feasibility intelligence for biotech sponsors before expensive trial decisions.
             </p>
           </div>
 
           <div>
             <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-slate-400">
-              Platform
+              Navigation
             </p>
 
             <div className="mt-4 flex flex-col gap-2">
@@ -39,7 +38,7 @@ export default function Footer() {
                 href="/#starting-points"
                 className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
               >
-                Analytical paths
+                Review options
               </Link>
             </div>
           </div>

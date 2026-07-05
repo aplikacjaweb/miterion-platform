@@ -77,7 +77,7 @@ export default function Home() {
                     variant="outline"
                     className="rounded-full min-h-[50px] border-[#deded8] bg-white/80 px-7 text-[15px] font-medium text-slate-700 transition-all hover:border-[#cfcfc7] hover:bg-white"
                   >
-                    Services
+                    See Review Options
                   </Button>
                 </a>
               </div>
@@ -116,8 +116,7 @@ export default function Home() {
                         </h2>
 
                         <p className="mt-3 max-w-[560px] text-[15px] sm:text-[16px] leading-relaxed text-slate-500">
-                          Start with a free data snapshot, move to analytical
-                          reports, or compare CRO proposals.
+                          Turn public trial signals and vendor assumptions into a board-ready decision memo before formal feasibility or CRO commitment.
                         </p>
 
                         <div className="mt-7 grid gap-3 sm:grid-cols-3">
@@ -349,7 +348,7 @@ export default function Home() {
                   </h3>
 
                   <p className="mt-4 text-[15px] text-slate-600 leading-relaxed">
-                    For sponsors comparing CRO or vendor proposals before signature.
+                    For sponsors before country selection, CRO feasibility or vendor commitment.
                   </p>
 
                   <ul className="mt-6 space-y-3 border-t border-[#e6e6df] pt-5">
@@ -512,11 +511,11 @@ export default function Home() {
               </p>
 
               <h2 className="text-[32px] sm:text-[42px] lg:text-[50px] font-normal text-slate-900 leading-tight tracking-tight">
-                Generate Your Free Clinical Trial Recruitment Competition Analysis
+                Generate Your Free Trial Landscape Snapshot
               </h2>
 
               <p className="mt-5 text-[17px] text-slate-500 max-w-xl mx-auto font-normal leading-relaxed">
-                Enter your trial parameters below to receive an instant analysis of the current landscape.
+                See visible recruitment competition signals from public registry data.
               </p>
             </div>
           </RevealOnScroll>
