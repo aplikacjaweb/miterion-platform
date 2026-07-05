@@ -326,7 +326,6 @@ export default function Home() {
                 <div className="mt-8 pt-4">
                   <ExpertSupportDialog
                     initialTab="expert"
-                    endpoint="/api/full-report-request"
                     trigger={
                       <Button className="w-full rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[14px]">
                         Request Report <ArrowRight className="h-4 w-4" />
