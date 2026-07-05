@@ -12,20 +12,26 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   metadataBase: new URL("https://miterion.com"),
   title: {
-    default: "Miterion Platform | Clinical Trial Feasibility Intelligence",
-    template: "%s | Miterion Platform",
+    default: "Miterion | Independent Pre-Feasibility Intelligence for Biotech Sponsors",
+    template: "%s | Miterion",
   },
   description:
-    "Miterion Platform helps clinical teams assess trial feasibility, recruitment competition, country strategy and vendor risk before expensive clinical trial decisions.",
+    "Independent pre-feasibility intelligence for biotech sponsors before CRO assumptions become expensive mistakes. Review public trial data, recruitment competition and vendor proposal assumptions before country selection, formal feasibility or CRO contracts.",
   keywords: [
-    "clinical trial feasibility",
-    "clinical trial intelligence",
+    "clinical trial feasibility intelligence",
     "clinical trial landscape analysis",
+    "clinical trial site feasibility report",
     "clinical trial country selection",
-    "clinical trial recruitment competition",
+    "clinical trial recruitment competition analysis",
     "clinical operations intelligence",
-    "clinical trial vendor RFP",
-    "decentralized clinical trials",
+    "clinical trial vendor RFP comparison",
+    "independent pre-feasibility intelligence",
+    "CRO proposal review",
+    "clinical trial risk assessment",
+    "before CRO feasibility",
+    "biotech feasibility report",
+    "CRO RFP comparison",
+    "public trial registry analysis",
   ],
   authors: [{ name: "Miterion" }],
   creator: "Miterion",
@@ -37,24 +43,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://miterion.com",
-    siteName: "Miterion Platform",
-    title: "Miterion Platform | Clinical Trial Feasibility Intelligence",
+    siteName: "Miterion",
+    title: "Miterion | Independent Pre-Feasibility Intelligence for Biotech Sponsors",
     description:
-      "Clinical trial feasibility intelligence for landscape analysis, recruitment competition, country strategy and vendor decision support.",
+      "Independent pre-feasibility intelligence for biotech sponsors. Review public trial data, visible recruitment competition and vendor proposal assumptions before country selection, formal feasibility or CRO contracts.",
     images: [
       {
         url: "/og-miterion.png",
         width: 1200,
         height: 630,
-        alt: "Miterion Platform clinical trial intelligence dashboard",
+        alt: "Miterion - Independent Clinical Trial Intelligence Dashboard Preview",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Miterion Platform | Clinical Trial Feasibility Intelligence",
+    title: "Miterion | Independent Pre-Feasibility Intelligence for Biotech Sponsors",
     description:
-      "Assess clinical trial feasibility, recruitment competition and vendor risk before expensive decisions.",
+      "Independent intelligence before CRO assumptions become expensive mistakes. Review public trial data, visible recruitment competition and vendor proposal assumptions.",
     images: ["/og-miterion.png"],
   },
   robots: {
@@ -68,18 +74,20 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Dane strukturyzowane Schema.org dla Google Rich Results
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Miterion Platform",
-    "operatingSystem": "All",
-    "applicationCategory": "BusinessApplication",
-    "description": "Clinical trial feasibility intelligence for landscape analysis, recruitment competition, country strategy and vendor decision support.",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Miterion",
-      "url": "https://miterion.com"
+    "@type": "ProfessionalService",
+    "name": "Miterion",
+    "url": "https://miterion.com",
+    "description": "Independent pre-feasibility intelligence for biotech sponsors before CRO assumptions become expensive mistakes. Review public trial data, recruitment competition and vendor proposal assumptions before country selection, formal feasibility or CRO contracts.",
+    "serviceType": [
+      "Pre-Feasibility Decision Memo",
+      "CRO Proposal Risk Review",
+      "Clinical Trial Landscape Analysis"
+    ],
+    "areaServed": {
+      "@type": "Country",
+      "name": ["United States", "European Union", "United Kingdom", "Global"]
     }
   };
 
@@ -99,7 +107,6 @@ export default function RootLayout({
           <Footer />
         </div>
         <CookieBanner />
-        <FloatingCalWidget />
         <CalInitializer />
       </body>
     </html>

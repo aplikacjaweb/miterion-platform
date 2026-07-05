@@ -11,7 +11,7 @@ import { getCalApi } from '@calcom/embed-react';
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Funkcja wywołująca Cal.com – dokładnie ta sama logika co w FloatingCalWidget
+  // Funkcja wywołująca Cal.com
   const openCal = async () => {
     const cal = await getCalApi({ namespace: 'miterion-cal' });
     cal('modal', {
@@ -28,17 +28,16 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-4">
-          {/* Przycisk desktopowy – ukryty na mobile (hidden md:inline-flex) */}
+          {/* Przycisk desktopowy – ukryty na mobile */}
           <ExpertSupportDialog 
-            initialTab="selection"
             trigger={
               <Button className="hidden md:inline-flex bg-teal hover:opacity-90 text-white font-medium text-sm px-4 py-2 rounded-md transition-all">
-                Request Expert Support
+                Request Custom Review
               </Button>
             }
           />
 
-          {/* Przycisk hamburgera po prawej stronie (widoczny tylko na mobile: md:hidden) */}
+          {/* Przycisk hamburgera po prawej stronie (widoczny tylko na mobile) */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
@@ -51,35 +50,44 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobilne menu pod paskiem głównym (tylko 2 pozycje) */}
+      {/* Mobilne menu pod paskiem głównym (trzy zdegradowane pozycje bez rywalizacji wizualnej) */}
       {mobileMenuOpen && (
         <div className="border-t border-[#deded8] bg-white px-4 py-4 md:hidden">
-          <nav className="mx-auto flex flex-col gap-3">
+          <nav className="mx-auto flex flex-col gap-1">
             
-            {/* 1. Request Expert Support */}
+            {/* 1. Request Custom Review */}
             <ExpertSupportDialog
-              initialTab="selection"
               trigger={
                 <button
                   type="button"
-                  className="w-full rounded-md bg-teal px-4 py-3 text-left text-[15px] font-medium text-white hover:opacity-90 transition-all"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-50 transition-all"
                 >
-                  Request Expert Support
+                  Request Custom Review
                 </button>
               }
             />
 
-            {/* 2. Book a meeting */}
+            {/* 2. Book a 20-min review call */}
             <button
               type="button"
               onClick={() => {
                 setMobileMenuOpen(false);
                 openCal();
               }}
-              className="w-full rounded-md bg-slate-900 px-4 py-3 text-left text-[15px] font-medium text-white hover:bg-slate-800 transition-all"
+              className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-50 transition-all"
             >
-              Book a meeting
+              Book a 20-min review call
             </button>
+
+            {/* 3. Generate Free Snapshot */}
+            <a
+              href="#snapshot"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full rounded-md px-4 py-3 text-left text-[15px] font-medium text-slate-800 hover:bg-slate-50 transition-all block"
+            >
+              Generate Free Snapshot
+            </a>
 
           </nav>
         </div>
