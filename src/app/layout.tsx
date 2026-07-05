@@ -49,7 +49,7 @@ export const metadata: Metadata = {
       "Independent pre-feasibility intelligence for biotech sponsors. Review public trial data, visible recruitment competition and vendor proposal assumptions before country selection, formal feasibility or CRO contracts.",
     images: [
       {
-        url: "/landingshot",
+        url: "/landingshot.png",
         width: 1200,
         height: 630,
         alt: "Miterion - Independent Clinical Trial Intelligence Dashboard Preview",
@@ -137,7 +137,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/symbol-miterion" type="image/png" />
+        <link rel="icon" href="/symbol-miterion.png" type="image/png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
