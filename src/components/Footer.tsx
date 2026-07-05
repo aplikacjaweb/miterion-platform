@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Linkedin } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -34,7 +35,6 @@ export default function Footer() {
                 Free Snapshot
               </Link>
 
-              {/* POPRAWIONO: Zmiana kotwicy z #solutions na #starting-points */}
               <Link
                 href="/#starting-points"
                 className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
@@ -78,18 +78,28 @@ export default function Footer() {
               Contact
             </p>
 
-            <div className="mt-4 flex flex-col gap-2">
+            <div className="mt-4 flex flex-col gap-3">
               <a
                 href="mailto:contact@miterion.com"
                 className="text-[14px] text-slate-500 transition-colors hover:text-slate-900"
               >
                 contact@miterion.com
               </a>
+
+              <a
+                href="https://www.linkedin.com/company/miterion"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[14px] text-slate-500 transition-colors hover:text-slate-900"
+              >
+                <Linkedin className="h-4 w-4" />
+                <span>LinkedIn</span>
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Dolny pasek informacyjny z dodanym "Made in EU" */}
+        {/* Dolny pasek informacyjny */}
         <div className="mt-10 grid grid-cols-1 gap-3 border-t border-[#deded8] pt-6 text-[13px] text-slate-400 sm:grid-cols-3 items-center">
           <p className="text-left order-1 sm:order-none">
             © {year} Miterion. All rights reserved.
