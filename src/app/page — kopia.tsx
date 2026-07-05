@@ -311,7 +311,7 @@ export default function Home() {
                     </li>
                     <li className="text-[14px] text-slate-600 flex items-start gap-2">
                       <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      Includes visible trial activity, recruitment recruitment competition, country-level risk and next-step recommendations.
+                      Includes visible trial activity, recruitment competition, country-level risk and next-step recommendations.
                     </li>
                     <li className="text-[14px] text-slate-600 flex items-start gap-2">
                       <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
@@ -325,7 +325,7 @@ export default function Home() {
 
                 <div className="mt-8 pt-4">
                   <ExpertSupportDialog
-                    initialTab="expert"
+                    formType="expert"
                     endpoint="/api/full-report-request"
                     trigger={
                       <Button className="w-full rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[14px]">
@@ -371,7 +371,7 @@ export default function Home() {
 
                 <div className="mt-8 pt-4">
                   <ExpertSupportDialog
-                    initialTab="quote"
+                    formType="proposal"
                     endpoint="/api/proposal-request"
                     trigger={
                       <Button className="w-full rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[14px]">
@@ -404,9 +404,9 @@ export default function Home() {
             <RevealOnScroll delay={0}>
               <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
                 <div className="text-[44px] font-light text-slate-300 mb-2">01</div>
-                <div className="text-[18px] font-semibold text-slate-900 mb-3">
+                <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
                   We collect visible signals
-                </div>
+                </h3>
                 <p className="text-[15px] text-slate-600 leading-relaxed">
                   Public trial registries, CTIS/EU records, WHO ICTRP, ISRCTN, selected national registries and vendor assumptions where provided.
                 </p>
@@ -581,7 +581,6 @@ export default function Home() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <ExpertSupportDialog
-                initialTab="notsure"
                 trigger={
                   <Button
                     size="lg"

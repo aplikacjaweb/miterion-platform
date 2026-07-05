@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from "react";
 import Link from 'next/link';
@@ -53,6 +53,7 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* Przycisk desktopowy – ukryty na mobile */}
             <ExpertSupportDialog 
+              initialTab="notsure"
               trigger={
                 <Button className="hidden md:inline-flex bg-teal hover:opacity-90 text-white font-medium text-sm px-4 py-2 rounded-md transition-all">
                   Request Custom Review
@@ -91,6 +92,7 @@ export default function Header() {
           </a>
           
           <ExpertSupportDialog
+            initialTab="notsure"
             trigger={
               <button
                 type="button"

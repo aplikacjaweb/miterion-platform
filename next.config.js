@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ['puppeteer-core'],
-    workerThreads: false,
-    cpus: 1
-  }
+    outputFileTracingIncludes: {
+      '/api/**/*': ['./node_modules/@sparticuz/chromium/bin/*'],
+    },
+  },
+  serverExternalPackages: ['@sparticuz/chromium'],
 };
 
 module.exports = nextConfig;
