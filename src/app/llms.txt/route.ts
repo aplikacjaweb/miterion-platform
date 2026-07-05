@@ -1,7 +1,7 @@
 ﻿// src/app/llms.txt/route.ts
 
 export async function GET() {
-  const content = \# Miterion
+  const content = `# Miterion
 
 Miterion provides independent pre-feasibility intelligence for biotech sponsors before expensive CRO, country selection and vendor decisions.
 
@@ -47,7 +47,7 @@ Miterion is an independent pre-feasibility intelligence service for biotech spon
 - Homepage: https://www.miterion.com/
 - Free snapshot: https://www.miterion.com/#snapshot
 - Review options: https://www.miterion.com/#review-options
-\;
+`;
 
   return new Response(content, {
     headers: {
