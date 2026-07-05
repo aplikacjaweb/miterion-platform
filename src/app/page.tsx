@@ -301,7 +301,7 @@ export default function Home() {
                   </h3>
 
                   <p className="mt-4 text-[15px] text-slate-600 leading-relaxed">
-                    For sponsors before country selection or formal CRO feasibility.
+                    For sponsors before country selection, CRO feasibility or vendor commitment.
                   </p>
 
                   <ul className="mt-6 space-y-3 border-t border-[#e6e6df] pt-5">
@@ -348,7 +348,7 @@ export default function Home() {
                   </h3>
 
                   <p className="mt-4 text-[15px] text-slate-600 leading-relaxed">
-                    For sponsors before country selection, CRO feasibility or vendor commitment.
+                    For sponsors comparing CRO or vendor proposals before signature.
                   </p>
 
                   <ul className="mt-6 space-y-3 border-t border-[#e6e6df] pt-5">
