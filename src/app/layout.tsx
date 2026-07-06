@@ -49,8 +49,8 @@ export const metadata: Metadata = {
       "Independent pre-feasibility intelligence for biotech sponsors. Review public trial data, visible recruitment competition and vendor proposal assumptions before country selection, formal feasibility or CRO contracts.",
     images: [
       {
-        url: "https://www.miterion.com/landingshot.png",
-        secureUrl: "https://www.miterion.com/landingshot.png",
+        url: "https://www.miterion.com/meta-preview.png",
+        secureUrl: "https://www.miterion.com/meta-preview.png",
         width: 1200,
         height: 630,
         alt: "Miterion - Independent Clinical Trial Intelligence Dashboard Preview",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     title: "Miterion | Independent Pre-Feasibility Intelligence for Biotech Sponsors",
     description:
       "Independent intelligence before CRO assumptions become expensive mistakes. Review public trial data, visible recruitment competition and vendor proposal assumptions.",
-    images: ["https://www.miterion.com/landingshot.png"],
+    images: ["https://www.miterion.com/meta-preview.png"],
   },
   robots: {
     index: true,
