@@ -17,7 +17,7 @@ export default function Footer() {
             </Link>
 
             <p className="mt-3 max-w-md text-[14px] leading-relaxed text-slate-500">
-              Independent pre-feasibility intelligence for biotech sponsors before expensive trial decisions.
+              Independent feasibility risk review for biotech sponsors before expensive trial decisions.
             </p>
           </div>
 

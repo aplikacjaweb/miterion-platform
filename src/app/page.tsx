@@ -472,59 +472,394 @@ export default function Home() {
             </RevealOnScroll>
           </div>
         </div>
-      </section>{/* 3. HOW MITERION WORKS SECTION */}
-      <section className="py-20 sm:py-28 bg-white border-b border-[#deded8]">
+      </section>
+
+      {/* ================================================================= */}
+      {/* PHASE 2 — PROOF & TRUST LAYER (INSERTED BETWEEN PACKAGES & PROCESS) */}
+      {/* ================================================================= */}
+
+      {/* 2.1. WHAT YOU GET SECTION */}
+      <section className="py-20 bg-[#fbfbf8] border-b border-[#deded8]">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <RevealOnScroll>
-            <div className="mb-16 text-center">
+            <div className="mb-14 text-center">
               <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-slate-400 mb-4">
-                Process
+                Deliverables
               </p>
               <h2 className="text-[32px] sm:text-[42px] font-normal text-slate-900 tracking-tight">
-                How Miterion works
+                What you get
               </h2>
+              <p className="mt-4 text-[17px] text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+                A focused review designed to show what should be trusted, challenged or narrowed before feasibility assumptions become commitments.
+              </p>
             </div>
           </RevealOnScroll>
 
-          <div className="grid gap-8 md:grid-cols-3 relative">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* RZĄD 1 — TRZY RÓWNE KARTY */}
             <RevealOnScroll delay={0}>
-              <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
-                <div className="text-[44px] font-light text-slate-300 mb-2">01</div>
-                <div className="text-[18px] font-semibold text-slate-900 mb-3">
-                  We collect visible signals
+              <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[17px] font-semibold text-slate-900 tracking-tight">
+                    Executive Risk Summary
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    A one-page view of the main feasibility risks, visible pressure points and recommended next step.
+                  </p>
                 </div>
-                <p className="text-[15px] text-slate-600 leading-relaxed">
-                  Public trial registries, CTIS/EU records, WHO ICTRP, ISRCTN, selected national registries and vendor assumptions where provided.
-                </p>
               </div>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={90}>
-              <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
-                <div className="text-[44px] font-light text-slate-300 mb-2">02</div>
-                <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
-                  We normalize and validate
-                </h3>
-                <p className="text-[15px] text-slate-600 leading-relaxed">
-                  Fragmented registry checks should not be the basis for expensive CRO decisions. Miterion combines automated retrieval where available with manual expert validation.
-                </p>
+            <RevealOnScroll delay={60}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <Database className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[17px] font-semibold text-slate-900 tracking-tight">
+                    Country-Level Risk Table
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    A structured view of country-level trial activity, visible recruitment pressure and public-data support.
+                  </p>
+                </div>
               </div>
             </RevealOnScroll>
 
+            <RevealOnScroll delay={120}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <ClipboardList className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[17px] font-semibold text-slate-900 tracking-tight">
+                    Assumption Gaps
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    Weak, unsupported or overly optimistic assumptions found in a CRO proposal, country shortlist or planning narrative.
+                  </p>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            {/* RZĄD 2 — TRZY RÓWNE KARTY */}
             <RevealOnScroll delay={180}>
-              <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
-                <div className="text-[44px] font-light text-slate-300 mb-2">03</div>
-                <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
-                  We turn it into a decision memo
-                </h3>
-                <p className="text-[15px] text-slate-600 leading-relaxed">
-                  You get risk signals, country-level implications, proposal gaps and recommended next questions before committing budget.
-                </p>
+              <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <Search className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[17px] font-semibold text-slate-900 tracking-tight">
+                    Sponsor Footprint
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    An analysis of active sponsors currently operating trials in your target countries to gauge resource and investigator competition.
+                  </p>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={240}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[17px] font-semibold text-slate-900 tracking-tight">
+                    CRO Questions
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    Practical questions to send back before bid defense, scope lock or signature.
+                  </p>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={300}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[17px] font-semibold text-slate-900 tracking-tight">
+                    Data Confidence
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    A clear distinction between what public data supports, what it only suggests and what it cannot confirm.
+                  </p>
+                </div>
               </div>
             </RevealOnScroll>
           </div>
+
+          {/* 2.2. SAMPLE MEMO CTA (SAFE PLACEHOLDER) */}
+          <RevealOnScroll delay={300}>
+            <div className="mt-14 max-w-[720px] mx-auto text-center p-6 rounded-xl border border-dashed border-[#deded8] bg-white/40">
+              <h3 className="text-[16px] font-semibold text-slate-900">
+                See the structure before you request a review
+              </h3>
+              <p className="mt-2 text-[14px] text-slate-500 leading-relaxed max-w-xl mx-auto">
+                Review a sample memo structure showing how Miterion separates public signals, assumption gaps, CRO questions and decision recommendations.
+              </p>
+              <div className="mt-4">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1f1ec] px-3 py-1 text-[12px] font-medium text-slate-500">
+                  Sample memo coming next
+                </span>
+              </div>
+            </div>
+          </RevealOnScroll>
         </div>
       </section>
+
+      {/* 2.3. METHODOLOGY & DECISION CONFIDENCE SECTION (COMBINED) */}
+      <section className="py-20 bg-white border-b border-[#deded8]">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-14 text-center">
+              <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-slate-400 mb-4">
+                Framework
+              </p>
+              <h2 className="text-[32px] sm:text-[42px] font-normal text-slate-900 tracking-tight">
+                How we review feasibility assumptions
+              </h2>
+              <p className="mt-4 text-[17px] text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+                Miterion does not replace formal feasibility. It checks whether visible public signals support, challenge or fail to confirm the assumptions behind a planned decision.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          {/* METHODOLOGY THREE COLUMNS */}
+          <div className="grid gap-8 md:grid-cols-3 pb-14 border-b border-[#f1f1ec]">
+            <div className="space-y-3">
+              <div className="text-[13px] font-semibold text-slate-400 tracking-wider uppercase">01 / Analysis</div>
+              <h3 className="text-[18px] font-semibold text-slate-900">Public Signal Review</h3>
+              <p className="text-[14px] text-slate-500 leading-relaxed">
+                We check visible registry activity, competing trials, sponsor presence, recruitment status and country-level trial density.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="text-[13px] font-semibold text-slate-400 tracking-wider uppercase">02 / Evaluation</div>
+              <h3 className="text-[18px] font-semibold text-slate-900">Assumption Challenge</h3>
+              <p className="text-[14px] text-slate-500 leading-relaxed">
+                We compare public signals against the proposed country mix, timeline, site assumptions and vendor narrative.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="text-[13px] font-semibold text-slate-400 tracking-wider uppercase">03 / Output</div>
+              <h3 className="text-[18px] font-semibold text-slate-900">Decision Framing</h3>
+              <p className="text-[14px] text-slate-500 leading-relaxed">
+                We translate findings into practical questions, risks and next steps before RFP, bid defense, formal feasibility or CRO commitment.
+              </p>
+            </div>
+          </div>
+
+          {/* DECISION CONFIDENCE LEVELS */}
+          <div className="mt-14">
+            <div className="max-w-2xl">
+              <h3 className="text-[20px] font-semibold text-slate-900 tracking-tight">
+                Decision confidence levels
+              </h3>
+              <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                Each finding should be framed by confidence level, so sponsors know what can be used for early decision support and what requires formal feasibility or vendor clarification.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-xl border border-[#deded8] bg-[#fbfbf8] p-5">
+                <div className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 uppercase tracking-wide mb-3">
+                  A — Supported
+                </div>
+                <p className="text-[13px] text-slate-600 leading-relaxed">
+                  Public signals are consistent and directionally useful for early decision support.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[#deded8] bg-[#fbfbf8] p-5">
+                <div className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60 uppercase tracking-wide mb-3">
+                  B — Challenge
+                </div>
+                <p className="text-[13px] text-slate-600 leading-relaxed">
+                  Public signals raise questions, show contradiction or suggest the assumption needs vendor clarification.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[#deded8] bg-[#fbfbf8] p-5">
+                <div className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700 uppercase tracking-wide mb-3">
+                  C — Cannot Confirm
+                </div>
+                <p className="text-[13px] text-slate-600 leading-relaxed">
+                  Public data is insufficient. Formal feasibility, site outreach or CRO clarification is required.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2.4. DATA LIMITATIONS SECTION */}
+      <section className="py-20 bg-[#f7f7f3] border-b border-[#deded8]" style={dotGridBg}>
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+          <RevealOnScroll>
+            <div className="max-w-3xl mx-auto text-center mb-14">
+              <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-slate-400 mb-4">
+                Data Boundaries
+              </p>
+              <h2 className="text-[32px] sm:text-[42px] font-normal text-slate-900 tracking-tight">
+                What public data can and cannot support
+              </h2>
+              <p className="mt-3 text-[16px] text-slate-500 font-normal leading-relaxed">
+                Public registry data is useful for early risk detection, but it does not replace formal site feasibility.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-[#deded8] shadow-sm">
+            <div>
+              <h3 className="text-[16px] font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-[#f1f1ec] mb-4">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 text-[12px]">✓</span>
+                Public data can help detect
+              </h3>
+              <ul className="space-y-2.5 text-[14px] text-slate-600">
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Visible recruitment competition</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Crowded indications</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Country-level trial activity</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Sponsor presence</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Registry inconsistencies</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Weak assumptions in proposal narratives</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Visible mismatch between public signals and vendor claims</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-[16px] font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-[#f1f1ec] mb-4">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 text-[12px]">×</span>
+                Public data cannot confirm
+              </h3>
+              <ul className="space-y-2.5 text-[14px] text-slate-600">
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Actual site enrollment performance</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Investigator availability</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Contracted recruitment targets</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Coordinator capacity</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Contract and budget negotiation timelines</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>True site readiness</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Real screen-failure risk</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-300 mt-0.5">•</span>
+                  <span>Operational execution quality</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <RevealOnScroll delay={100}>
+            <p className="mt-10 text-[13px] text-slate-400 text-center max-w-2xl mx-auto italic leading-relaxed">
+              That is why Miterion is not a replacement for formal feasibility. It is an early independent risk review before formal feasibility spend, RFP decisions or CRO commitment.
+            </p>
+          </RevealOnScroll>
+        </div>
+      </section>{/* 3. REVIEW DELIVERY FLOW SECTION */}
+<section className="py-20 sm:py-28 bg-white border-b border-[#deded8]">
+  <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+    <RevealOnScroll>
+      <div className="mb-16 text-center">
+        <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-slate-400 mb-4">
+          Delivery Flow
+        </p>
+        <h2 className="text-[32px] sm:text-[42px] font-normal text-slate-900 tracking-tight">
+          How the review is delivered
+        </h2>
+        <p className="mt-4 text-[17px] text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+          A short, focused review process designed for decisions that cannot wait for another long feasibility cycle.
+        </p>
+      </div>
+    </RevealOnScroll>
+
+    <div className="grid gap-8 md:grid-cols-3 relative">
+      <RevealOnScroll delay={0}>
+        <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
+          <div className="text-[44px] font-light text-slate-300 mb-2">01</div>
+          <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
+            Send the decision context
+          </h3>
+          <p className="text-[15px] text-slate-600 leading-relaxed">
+            Tell us what you need to validate: CRO proposal, country shortlist, RFP decision, indication, phase and target geography.
+          </p>
+        </div>
+      </RevealOnScroll>
+
+      <RevealOnScroll delay={90}>
+        <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
+          <div className="text-[44px] font-light text-slate-300 mb-2">02</div>
+          <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
+            We review signals and assumptions
+          </h3>
+          <p className="text-[15px] text-slate-600 leading-relaxed">
+            Miterion checks visible registry activity, recruitment competition, sponsor footprint and proposal assumptions against the decision you are about to make.
+          </p>
+        </div>
+      </RevealOnScroll>
+
+      <RevealOnScroll delay={180}>
+        <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
+          <div className="text-[44px] font-light text-slate-300 mb-2">03</div>
+          <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
+            You receive a decision-ready memo
+          </h3>
+          <p className="text-[15px] text-slate-600 leading-relaxed">
+            You get a focused review with risk signals, assumption gaps, CRO questions and recommended next steps before budget or CRO commitment.
+          </p>
+        </div>
+      </RevealOnScroll>
+    </div>
+  </div>
+</section>
 
       {/* 4. WHY INDEPENDENT REVIEW MATTERS SECTION */}
       <section
@@ -673,7 +1008,7 @@ export default function Home() {
                     size="lg"
                     className="w-full sm:w-auto rounded-full min-h-[50px] bg-slate-900 text-white hover:bg-slate-800 font-medium text-[15px] px-8 transition-all"
                   >
-                    Request Custom Review
+                    Request Independent Review
                   </Button>
                 }
               />
