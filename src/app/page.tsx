@@ -47,7 +47,7 @@ export default function Home() {
           <RevealOnScroll>
             <div className="mx-auto max-w-[860px]">
               <p className="mb-5 text-[13px] font-medium uppercase tracking-[0.22em] text-slate-500">
-                Independent pre-feasibility intelligence for biotech sponsors
+                Independent feasibility risk review for biotech sponsors
               </p>
 
               <h1 className="text-[38px] sm:text-[52px] lg:text-[64px] font-normal tracking-tight leading-[1.04] flex flex-col">
@@ -57,30 +57,37 @@ export default function Home() {
                 </span>
               </h1>
 
-              <p className="mx-auto mt-7 max-w-[660px] text-[17px] sm:text-[18px] text-slate-500 leading-relaxed font-normal">
-                Miterion reviews public trial data, visible recruitment competition and vendor proposal assumptions before you commit budget to country selection, formal feasibility or CRO contracts.
+              <p className="mx-auto mt-8 max-w-[720px] text-[17px] sm:text-[18px] text-slate-500 leading-relaxed font-normal">
+                Miterion helps biotech sponsors challenge CRO feasibility assumptions, country selection risks and visible recruitment competition before they become budget commitments.
               </p>
 
               <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <a href="#snapshot" className="inline-block">
-                  <Button
-                    size="lg"
-                    className="rounded-full gap-2 min-h-[50px] bg-slate-900 text-white hover:bg-slate-800 font-medium text-[15px] px-8 transition-all duration-300 hover:scale-[1.015] hover:shadow-lg hover:shadow-slate-900/10 active:scale-[0.98]"
-                  >
-                    Generate Free Snapshot <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </a>
+                <ExpertSupportDialog
+                  initialTab="expert"
+                  trigger={
+                    <Button
+                      size="lg"
+                      className="rounded-full gap-2 min-h-[50px] bg-slate-900 text-white hover:bg-slate-800 font-medium text-[15px] px-8 transition-all duration-300 hover:scale-[1.015] hover:shadow-lg hover:shadow-slate-900/10 active:scale-[0.98]"
+                    >
+                      Request Independent Review <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  }
+                />
 
-                <a href="#starting-points" className="inline-block">
+                <a href="#snapshot" className="inline-block">
                   <Button
                     size="lg"
                     variant="outline"
                     className="rounded-full min-h-[50px] border-[#deded8] bg-white/80 px-7 text-[15px] font-medium text-slate-700 transition-all hover:border-[#cfcfc7] hover:bg-white"
                   >
-                    See Review Options
+                    Generate Free Snapshot
                   </Button>
                 </a>
               </div>
+
+              <p className="mt-4 text-[12px] text-slate-400 font-normal">
+                48–72h review · public registry signals · manual validation · clear data limits
+              </p>
             </div>
           </RevealOnScroll>
 
@@ -97,7 +104,7 @@ export default function Home() {
                     </div>
 
                     <div className="hidden sm:block text-[12px] font-medium text-slate-400">
-                      pre-feasibility-decision-memo
+                      independent-review-preview
                     </div>
 
                     <div className="h-3 w-[52px]" />
@@ -112,7 +119,7 @@ export default function Home() {
                         </div>
 
                         <h2 className="mt-5 text-[22px] sm:text-[26px] font-semibold tracking-tight text-slate-900">
-                          Pre-Feasibility Decision Memo
+                          Independent Review Preview
                         </h2>
 
                         <p className="mt-3 max-w-[560px] text-[15px] sm:text-[16px] leading-relaxed text-slate-500">
@@ -223,7 +230,84 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. CHOOSE THE RIGHT STARTING POINT SECTION */}
+      {/* 1.5. USE MITERION WHEN SECTION */}
+      <section className="py-16 bg-[#fbfbf8] border-b border-[#deded8]">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-12 text-center">
+              <h2 className="text-[26px] sm:text-[32px] font-normal text-slate-900 tracking-tight">
+                Use Miterion before feasibility assumptions become commitments.
+              </h2>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <RevealOnScroll delay={0}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-5 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <ClipboardList className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[16px] font-semibold text-slate-900 tracking-tight">
+                    Your CRO proposal looks too optimistic
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    Check timeline, country mix, site assumptions and visible recruitment pressure before bid defense or signature.
+                  </p>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={60}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-5 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[16px] font-semibold text-slate-900 tracking-tight">
+                    You are narrowing countries before RFP
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    See where public registry signals support the shortlist — and where they raise questions.
+                  </p>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={120}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-5 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[16px] font-semibold text-slate-900 tracking-tight">
+                    Your team needs a board-ready second opinion
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    Turn fragmented public signals into a clear decision memo for internal discussion.
+                  </p>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={180}>
+              <div className="rounded-xl border border-[#deded8] bg-white p-5 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 mb-4">
+                    <Search className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[16px] font-semibold text-slate-900 tracking-tight">
+                    You do not have a large internal team
+                  </h3>
+                  <p className="mt-2 text-[14px] text-slate-500 leading-relaxed">
+                    Get a focused external challenge without adopting a full enterprise feasibility platform.
+                  </p>
+                </div>
+              </div>
+            </RevealOnScroll>
+          </div>
+        </div>
+      </section>{/* 2. CHOOSE THE RIGHT STARTING POINT SECTION */}
       <section
         id="starting-points"
         className="py-16 sm:py-20 lg:py-24 bg-white border-b border-[#deded8]"
@@ -244,53 +328,62 @@ export default function Home() {
           </RevealOnScroll>
 
           <div className="grid gap-6 lg:grid-cols-3">
-            {/* CARD 1: FREE SNAPSHOT */}
+            {/* CARD 1: CRO PROPOSAL RISK REVIEW */}
             <RevealOnScroll delay={0}>
-              <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[420px]">
+              <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[460px]">
                 <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-700 mb-6">
-                    <Search className="h-6 w-6" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white mb-6">
+                    <ClipboardList className="h-6 w-6" />
                   </div>
 
-                  <h3 className="text-[20px] sm:text-[22px] font-semibold tracking-tight text-slate-900">
-                    Free Snapshot
-                  </h3>
-
-                  <p className="mt-4 text-[15px] text-slate-600 leading-relaxed">
-                    For a first-pass view of visible clinical trial activity in your indication, phase and geography.
+                  <p className="text-[12px] font-bold text-amber-600 uppercase tracking-wider mb-2">
+                    Don’t sign a CRO feasibility plan blind.
                   </p>
 
-                  <ul className="mt-6 space-y-3 border-t border-[#e6e6df] pt-5">
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      Automated public registry signal.
-                    </li>
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      Useful for checking whether a landscape looks crowded, thin, sponsor-heavy or worth deeper review.
-                    </li>
-                    <li className="text-[14px] font-semibold text-slate-900 mt-2">
-                      Free
-                    </li>
-                  </ul>
+                  <h3 className="text-[20px] sm:text-[22px] font-semibold tracking-tight text-slate-900">
+                    CRO Proposal Risk Review
+                  </h3>
+
+                  <p className="text-[13px] text-slate-500 font-medium mt-1">
+                    Independent review of CRO feasibility assumptions before bid defense, scope lock or signature.
+                  </p>
+
+                  <p className="mt-3 text-[14px] text-slate-600 leading-relaxed">
+                    For biotech sponsors comparing CRO proposals, preparing for bid defense or validating country/site assumptions before commitment.
+                  </p>
+
+                  <div className="mt-4 pt-4 border-t border-[#e6e6df]">
+                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Scope & Analysis:</p>
+                    <ul className="space-y-1.5 text-[13px] text-slate-600">
+                      <li className="flex items-center gap-1.5">✓ Country mix & proposed timeline review</li>
+                      <li className="flex items-center gap-1.5">✓ Site count assumption review & visible recruitment competition</li>
+                      <li className="flex items-center gap-1.5">✓ Scope gaps, optimistic assumptions & questions to send back to the CRO</li>
+                    </ul>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-[#e6e6df]">
+                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Output:</p>
+                    <p className="text-[13px] text-slate-600">Proposal risk summary, assumption gap list, vendor comparison matrix, bid defense questions, and recommended next steps and validation questions.</p>
+                  </div>
                 </div>
 
-                <div className="mt-8 pt-4">
-                  <a href="#snapshot" className="inline-block w-full">
-                    <Button
-                      variant="outline"
-                      className="w-full rounded-full gap-2 border-[#deded8] bg-white hover:bg-slate-50 font-medium text-[14px]"
-                    >
-                      Generate Snapshot <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </a>
+                <div className="mt-6 pt-4 border-t border-[#e6e6df] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <span className="text-[14px] font-semibold text-slate-900">From €3,500 <span className="text-[12px] font-normal text-slate-400">for up to 3 proposals</span></span>
+                  <ExpertSupportDialog
+                    initialTab="expert"
+                    trigger={
+                      <Button className="rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[13px] px-4 py-2 w-full sm:w-auto">
+                        Request CRO Proposal Review <ArrowRight className="h-3.5 w-3.5" />
+                      </Button>
+                    }
+                  />
                 </div>
               </div>
             </RevealOnScroll>
 
             {/* CARD 2: PRE-FEASIBILITY DECISION MEMO */}
             <RevealOnScroll delay={90}>
-              <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[420px]">
+              <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[460px]">
                 <div>
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white mb-6">
                     <Target className="h-6 w-6" />
@@ -300,35 +393,36 @@ export default function Home() {
                     Pre-Feasibility Decision Memo
                   </h3>
 
-                  <p className="mt-4 text-[15px] text-slate-600 leading-relaxed">
-                    For sponsors before country selection, CRO feasibility or vendor commitment.
+                  <p className="text-[13px] text-slate-500 font-medium mt-1">
+                    Public-signal review before formal feasibility, country selection or RFP.
                   </p>
 
-                  <ul className="mt-6 space-y-3 border-t border-[#e6e6df] pt-5">
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      10–15 page board-ready PDF.
-                    </li>
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      Includes visible trial activity, recruitment recruitment competition, country-level risk and next-step recommendations.
-                    </li>
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      Delivery: 72h after scope.
-                    </li>
-                    <li className="text-[14px] font-semibold text-slate-900 mt-2">
-                      From €2,500
-                    </li>
-                  </ul>
+                  <p className="mt-3 text-[14px] text-slate-600 leading-relaxed">
+                    For sponsors who need to understand visible trial activity, recruitment competition and country-level risk before spending on formal feasibility.
+                  </p>
+
+                  <div className="mt-4 pt-4 border-t border-[#e6e6df]">
+                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Analysis Scope:</p>
+                    <ul className="space-y-1.5 text-[13px] text-slate-600">
+                      <li className="flex items-center gap-1.5">✓ Public registry signal summary</li>
+                      <li className="flex items-center gap-1.5">✓ Recruitment competition overview & country-level risk table</li>
+                      <li className="flex items-center gap-1.5">✓ Visible sponsor/trial activity & data limitation notes</li>
+                    </ul>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-[#e6e6df]">
+                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Output:</p>
+                    <p className="text-[13px] text-slate-600">Decision memo tailored to deliver clean, decision-oriented recommendations to show what should be trusted, challenged or narrowed before commitment.</p>
+                  </div>
                 </div>
 
-                <div className="mt-8 pt-4">
+                <div className="mt-6 pt-4 border-t border-[#e6e6df] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <span className="text-[14px] font-semibold text-slate-900">From €2,500</span>
                   <ExpertSupportDialog
                     initialTab="expert"
                     trigger={
-                      <Button className="w-full rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[14px]">
-                        Request Report <ArrowRight className="h-4 w-4" />
+                      <Button className="rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[13px] px-4 py-2 w-full sm:w-auto">
+                        Request Decision Memo <ArrowRight className="h-3.5 w-3.5" />
                       </Button>
                     }
                   />
@@ -336,55 +430,49 @@ export default function Home() {
               </div>
             </RevealOnScroll>
 
-            {/* CARD 3: CRO PROPOSAL RISK REVIEW */}
+            {/* CARD 3: FREE SNAPSHOT */}
             <RevealOnScroll delay={180}>
-              <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[420px]">
+              <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[460px]">
                 <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white mb-6">
-                    <ClipboardList className="h-6 w-6" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-700 mb-6">
+                    <Search className="h-6 w-6" />
                   </div>
 
                   <h3 className="text-[20px] sm:text-[22px] font-semibold tracking-tight text-slate-900">
-                    CRO Proposal Risk Review
+                    Free Trial Landscape Snapshot
                   </h3>
 
-                  <p className="mt-4 text-[15px] text-slate-600 leading-relaxed">
-                    For sponsors comparing CRO or vendor proposals before signature.
+                  <p className="text-[13px] text-slate-500 font-medium mt-1">
+                    A first-pass view of visible public registry activity. Not a feasibility decision.
                   </p>
 
-                  <ul className="mt-6 space-y-3 border-t border-[#e6e6df] pt-5">
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      Includes proposal comparison matrix, scope gaps, assumption risks, timeline realism and questions to send back to vendors.
-                    </li>
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      Delivery: 48–72h after document review.
-                    </li>
-                    <li className="text-[14px] text-slate-600 flex items-start gap-2">
-                      <span className="text-slate-400 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                      From €3,500 for up to 3 proposals. Additional vendors priced after review.
-                    </li>
-                  </ul>
+                  <p className="mt-3 text-[14px] text-slate-600 leading-relaxed">
+                    Generate a quick snapshot of visible public trial activity for an indication, geography or development question.
+                  </p>
+
+                  <div className="mt-6 pt-4 border-t border-[#e6e6df]">
+                    <p className="text-[13px] text-slate-500 font-medium italic">
+                      Need to challenge a CRO proposal or country shortlist? Request an analyst-led review.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="mt-8 pt-4">
-                  <ExpertSupportDialog
-                    initialTab="quote"
-                    trigger={
-                      <Button className="w-full rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[14px]">
-                        Start Harmonization <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    }
-                  />
+                <div className="mt-6 pt-4 border-t border-[#e6e6df] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <span className="text-[14px] font-semibold text-slate-900">Free</span>
+                  <a href="#snapshot" className="inline-block w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      className="rounded-full gap-2 border-[#deded8] bg-white hover:bg-slate-50 font-medium text-[13px] px-4 py-2 w-full"
+                    >
+                      Generate Free Snapshot <ArrowRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </a>
                 </div>
               </div>
             </RevealOnScroll>
           </div>
         </div>
-      </section>
-
-      {/* 3. HOW MITERION WORKS SECTION */}
+      </section>{/* 3. HOW MITERION WORKS SECTION */}
       <section className="py-20 sm:py-28 bg-white border-b border-[#deded8]">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <RevealOnScroll>
@@ -579,7 +667,7 @@ export default function Home() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <ExpertSupportDialog
-                initialTab="notsure"
+                initialTab="expert"
                 trigger={
                   <Button
                     size="lg"
