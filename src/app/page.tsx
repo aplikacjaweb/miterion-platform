@@ -307,7 +307,9 @@ export default function Home() {
             </RevealOnScroll>
           </div>
         </div>
-      </section>{/* 2. CHOOSE THE RIGHT STARTING POINT SECTION */}
+      </section>
+
+      {/* 2. CHOOSE THE RIGHT STARTING POINT SECTION */}
       <section
         id="starting-points"
         className="py-16 sm:py-20 lg:py-24 bg-white border-b border-[#deded8]"
@@ -328,58 +330,69 @@ export default function Home() {
           </RevealOnScroll>
 
           <div className="grid gap-6 lg:grid-cols-3">
-            {/* CARD 1: CRO PROPOSAL RISK REVIEW */}
-            <RevealOnScroll delay={0}>
-              <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[460px]">
-                <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white mb-6">
-                    <ClipboardList className="h-6 w-6" />
-                  </div>
+            {/* CARD 1: CRO PROPOSAL COMPARISON REVIEW */}
+<RevealOnScroll delay={0}>
+  <div className="group relative rounded-2xl border border-[#deded8] bg-[#fbfbf8] p-6 sm:p-8 transition-all duration-300 hover:border-[#cfcfc7] hover:shadow-[0_24px_60px_-44px_rgba(15,23,42,0.38)] flex flex-col justify-between min-h-[460px]">
+    <div>
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white mb-6">
+        <ClipboardList className="h-6 w-6" />
+      </div>
 
-                  <p className="text-[12px] font-bold text-amber-600 uppercase tracking-wider mb-2">
-                    Don’t sign a CRO feasibility plan blind.
-                  </p>
+      <p className="text-[12px] font-bold text-amber-600 uppercase tracking-wider mb-2">
+      </p>
 
-                  <h3 className="text-[20px] sm:text-[22px] font-semibold tracking-tight text-slate-900">
-                    CRO Proposal Risk Review
-                  </h3>
+      <h3 className="text-[20px] sm:text-[22px] font-semibold tracking-tight text-slate-900">
+        CRO Proposal Comparison Review
+      </h3>
 
-                  <p className="text-[13px] text-slate-500 font-medium mt-1">
-                    Independent review of CRO feasibility assumptions before bid defense, scope lock or signature.
-                  </p>
+      <p className="text-[13px] text-slate-500 font-medium mt-1">
+        Independent comparison and risk review of CRO feasibility assumptions before bid defense, scope lock or signature.
+      </p>
 
-                  <p className="mt-3 text-[14px] text-slate-600 leading-relaxed">
-                    For biotech sponsors comparing CRO proposals, preparing for bid defense or validating country/site assumptions before commitment.
-                  </p>
+      <p className="mt-3 text-[14px] text-slate-600 leading-relaxed">
+        For biotech sponsors comparing multiple CRO proposals, preparing for bid defense or validating country/site assumptions before commitment.
+      </p>
 
-                  <div className="mt-4 pt-4 border-t border-[#e6e6df]">
-                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Scope & Analysis:</p>
-                    <ul className="space-y-1.5 text-[13px] text-slate-600">
-                      <li className="flex items-center gap-1.5">✓ Country mix & proposed timeline review</li>
-                      <li className="flex items-center gap-1.5">✓ Site count assumption review & visible recruitment competition</li>
-                      <li className="flex items-center gap-1.5">✓ Scope gaps, optimistic assumptions & questions to send back to the CRO</li>
-                    </ul>
-                  </div>
+      <div className="mt-4 pt-4 border-t border-[#e6e6df]">
+        <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Scope & Analysis:</p>
+        <ul className="space-y-1.5 text-[13px] text-slate-600">
+          <li className="flex items-center gap-1.5">✓ Cross-vendor country mix & proposed timeline comparison</li>
+          <li className="flex items-center gap-1.5">✓ Site count assumption review & visible recruitment competition</li>
+          <li className="flex items-center gap-1.5">✓ Scope gaps, optimistic assumptions & benchmarking between proposals</li>
+        </ul>
+      </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#e6e6df]">
-                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Output:</p>
-                    <p className="text-[13px] text-slate-600">Proposal risk summary, assumption gap list, vendor comparison matrix, bid defense questions, and recommended next steps and validation questions.</p>
-                  </div>
-                </div>
+      <div className="mt-4 pt-3 border-t border-[#e6e6df]">
+        <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Output:</p>
+        <p className="text-[13px] text-slate-600">Proposal risk summary, assumption gap list, vendor comparison matrix, bid defense questions, and recommended next steps and validation questions.</p>
+      </div>
+    </div>
 
-                <div className="mt-6 pt-4 border-t border-[#e6e6df] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <span className="text-[14px] font-semibold text-slate-900">From €3,500 <span className="text-[12px] font-normal text-slate-400">for up to 3 proposals</span></span>
-                  <ExpertSupportDialog
-                    initialTab="expert"
-                    trigger={
-                      <Button className="rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[13px] px-4 py-2 w-full sm:w-auto">
-                        Request CRO Proposal Review <ArrowRight className="h-3.5 w-3.5" />
-                      </Button>
-                    }
-                  />
-                </div>
-              </div>
-            </RevealOnScroll>
+    <div className="mt-6 pt-4 border-t border-[#e6e6df] flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <span className="text-[14px] font-semibold text-slate-900 mt-2">
+        From €3,500 <span className="text-[12px] font-normal text-slate-400 block xl:inline">for up to 3 proposals</span>
+      </span>
+      
+      <div className="flex flex-col items-start sm:items-end gap-3 w-full sm:w-auto">
+        {/* TUTAJ: initialTab ustawione na "quote" wymusza otwarcie formularza RFP */}
+        <ExpertSupportDialog
+          initialTab="quote"
+          trigger={
+            <Button className="rounded-full gap-2 bg-slate-900 text-white hover:bg-slate-800 font-medium text-[13px] px-4 py-2 w-full sm:w-auto">
+              Request Review
+            </Button>
+          }
+        />
+        <a
+          href="/cro-proposal-comparison-review"
+          className="text-[13px] font-medium text-slate-500 hover:text-slate-900 transition-colors inline-flex items-center gap-1 sm:pr-2"
+        >
+          Learn more <ArrowRight className="h-3 w-3" />
+        </a>
+      </div>
+    </div>
+  </div>
+</RevealOnScroll>
 
             {/* CARD 2: PRE-FEASIBILITY DECISION MEMO */}
             <RevealOnScroll delay={90}>
@@ -474,10 +487,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================================================================= */}
-      {/* PHASE 2 — PROOF & TRUST LAYER (INSERTED BETWEEN PACKAGES & PROCESS) */}
-      {/* ================================================================= */}
-
       {/* 2.1. WHAT YOU GET SECTION */}
       <section className="py-20 bg-[#fbfbf8] border-b border-[#deded8]">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
@@ -496,7 +505,6 @@ export default function Home() {
           </RevealOnScroll>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* RZĄD 1 — TRZY RÓWNE KARTY */}
             <RevealOnScroll delay={0}>
               <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
                 <div>
@@ -545,7 +553,6 @@ export default function Home() {
               </div>
             </RevealOnScroll>
 
-            {/* RZĄD 2 — TRZY RÓWNE KARTY */}
             <RevealOnScroll delay={180}>
               <div className="rounded-xl border border-[#deded8] bg-white p-6 shadow-sm h-full flex flex-col justify-between">
                 <div>
@@ -614,7 +621,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2.3. METHODOLOGY & DECISION CONFIDENCE SECTION (COMBINED) */}
+      {/* 2.3. METHODOLOGY & DECISION CONFIDENCE SECTION */}
       <section className="py-20 bg-white border-b border-[#deded8]">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <RevealOnScroll>
@@ -709,7 +716,7 @@ export default function Home() {
               <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-slate-400 mb-4">
                 Data Boundaries
               </p>
-              <h2 className="text-[32px] sm:text-[42px] font-normal text-slate-900 tracking-tight">
+              <h2 className="text-[32px] sm:text-[42px] lg:text-[50px] font-normal text-slate-900 tracking-tight">
                 What public data can and cannot support
               </h2>
               <p className="mt-3 text-[16px] text-slate-500 font-normal leading-relaxed">
@@ -804,62 +811,64 @@ export default function Home() {
             </p>
           </RevealOnScroll>
         </div>
-      </section>{/* 3. REVIEW DELIVERY FLOW SECTION */}
-<section className="py-20 sm:py-28 bg-white border-b border-[#deded8]">
-  <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-    <RevealOnScroll>
-      <div className="mb-16 text-center">
-        <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-slate-400 mb-4">
-          Delivery Flow
-        </p>
-        <h2 className="text-[32px] sm:text-[42px] font-normal text-slate-900 tracking-tight">
-          How the review is delivered
-        </h2>
-        <p className="mt-4 text-[17px] text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
-          A short, focused review process designed for decisions that cannot wait for another long feasibility cycle.
-        </p>
-      </div>
-    </RevealOnScroll>
+      </section>
 
-    <div className="grid gap-8 md:grid-cols-3 relative">
-      <RevealOnScroll delay={0}>
-        <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
-          <div className="text-[44px] font-light text-slate-300 mb-2">01</div>
-          <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
-            Send the decision context
-          </h3>
-          <p className="text-[15px] text-slate-600 leading-relaxed">
-            Tell us what you need to validate: CRO proposal, country shortlist, RFP decision, indication, phase and target geography.
-          </p>
-        </div>
-      </RevealOnScroll>
+      {/* 3. REVIEW DELIVERY FLOW SECTION */}
+      <section className="py-20 sm:py-28 bg-white border-b border-[#deded8]">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-16 text-center">
+              <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-slate-400 mb-4">
+                Delivery Flow
+              </p>
+              <h2 className="text-[32px] sm:text-[42px] font-normal text-slate-900 tracking-tight">
+                How the review is delivered
+              </h2>
+              <p className="mt-4 text-[17px] text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+                A short, focused review process designed for decisions that cannot wait for another long feasibility cycle.
+              </p>
+            </div>
+          </RevealOnScroll>
 
-      <RevealOnScroll delay={90}>
-        <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
-          <div className="text-[44px] font-light text-slate-300 mb-2">02</div>
-          <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
-            We review signals and assumptions
-          </h3>
-          <p className="text-[15px] text-slate-600 leading-relaxed">
-            Miterion checks visible registry activity, recruitment competition, sponsor footprint and proposal assumptions against the decision you are about to make.
-          </p>
-        </div>
-      </RevealOnScroll>
+          <div className="grid gap-8 md:grid-cols-3 relative">
+            <RevealOnScroll delay={0}>
+              <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
+                <div className="text-[44px] font-light text-slate-300 mb-2">01</div>
+                <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
+                  Send the decision context
+                </h3>
+                <p className="text-[15px] text-slate-600 leading-relaxed">
+                  Tell us what you need to validate: CRO proposal, country shortlist, RFP decision, indication, phase and target geography.
+                </p>
+              </div>
+            </RevealOnScroll>
 
-      <RevealOnScroll delay={180}>
-        <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
-          <div className="text-[44px] font-light text-slate-300 mb-2">03</div>
-          <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
-            You receive a decision-ready memo
-          </h3>
-          <p className="text-[15px] text-slate-600 leading-relaxed">
-            You get a focused review with risk signals, assumption gaps, CRO questions and recommended next steps before budget or CRO commitment.
-          </p>
+            <RevealOnScroll delay={90}>
+              <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
+                <div className="text-[44px] font-light text-slate-300 mb-2">02</div>
+                <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
+                  We review signals and assumptions
+                </h3>
+                <p className="text-[15px] text-slate-600 leading-relaxed">
+                  Miterion checks visible registry activity, recruitment competition, sponsor footprint and proposal assumptions against the decision you are about to make.
+                </p>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={180}>
+              <div className="relative p-6 rounded-xl border border-dashed border-[#deded8] bg-[#fbfbf8]/40">
+                <div className="text-[44px] font-light text-slate-300 mb-2">03</div>
+                <h3 className="text-[18px] font-semibold text-slate-900 mb-3">
+                  You receive a decision-ready memo
+                </h3>
+                <p className="text-[15px] text-slate-600 leading-relaxed">
+                  You get a focused review with risk signals, assumption gaps, CRO questions and recommended next steps before budget or CRO commitment.
+                </p>
+              </div>
+            </RevealOnScroll>
+          </div>
         </div>
-      </RevealOnScroll>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* 4. WHY INDEPENDENT REVIEW MATTERS SECTION */}
       <section

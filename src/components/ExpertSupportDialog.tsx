@@ -179,7 +179,7 @@ Timeline: ${situationFields.timeline}
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-navy">
                 {activeTab === 'expert' && 'Request Pre-Feasibility Report'}
-                {activeTab === 'quote' && 'Start Quote Review'}
+                {activeTab === 'quote' && 'CRO Proposal Compartion Review'}
                 {activeTab === 'notsure' && 'Describe My Situation'}
               </DialogTitle>
             </DialogHeader>
@@ -314,7 +314,7 @@ Timeline: ${situationFields.timeline}
 
             <div className="pt-2">
               <Button type="submit" disabled={loading || !captchaToken} className="w-full rounded-xl py-2 font-bold text-white bg-navy hover:opacity-90 disabled:opacity-50">
-                {loading ? 'Processing...' : !captchaToken ? 'Verify Security...' : activeTab === 'expert' ? 'Request Scope Review' : activeTab === 'quote' ? 'Start Document Review' : 'Send Request'}
+                {loading ? 'Processing...' : !captchaToken ? 'Verify Security...' : activeTab === 'expert' ? 'Request Scope Review' : activeTab === 'quote' ? 'Request Proposal Review' : 'Send Request'}
               </Button>
             </div>
           </form>
